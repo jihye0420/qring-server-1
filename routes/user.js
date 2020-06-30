@@ -4,12 +4,17 @@ const util = require('../modules/util');
 const jwt = require('../modules/jwt');
 const user = require('../controllers/user');
 
+
 /**
  * 회원 가입
  */
 router.post('/signup', async(req, res) => {
 
-    const {email, pw, pwCheck} = req.body;
+    const {
+        email,
+        pw,
+        pwCheck
+    } = req.body;
 
     // 비밀번호와 비밀번호 확인이 같지 않을 때
     if (pw !== pwCheck){
@@ -18,7 +23,7 @@ router.post('/signup', async(req, res) => {
     }
 
     // 파라미터 확인
-    if (!email || !pw || !pwCheck){
+    if (!email || !pw || !pwCheck) {
         res.status(400).send(util.fail(400, "필수 정보를 입력하세요."));
         return;
     }
