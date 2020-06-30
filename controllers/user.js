@@ -2,6 +2,7 @@ const nodemailer = require('nodemailer');
 const emailInfo = require('../config/emailinfo.json');
 const encrypt = require('../modules/crypto');
 const jwt = require('../modules/jwt');
+const adminModel = require('../models/admin');
 
 module.exports = {
 
@@ -14,6 +15,9 @@ module.exports = {
             }
         });
 
+        // 난수 문자열 생성
+        //const token = Math.random().toString(36).substr(2,11);
+
         const mailOptions = {
             from: "", // 발송 메일 주소
             to: email, // 수신 메일 주소
@@ -21,7 +25,7 @@ module.exports = {
             html: "<p>아래의 링크를 클릭해주세요 !</p>" +
                 "<a href='http://localhost:3001/user/auth?email=" +
                 email +
-                "&token=abcdefg'>인증하기</a>",
+                "&token=aqswdefr'>인증하기</a>",
         };
 
         transporter.sendMail(mailOptions, function (error, info) {
@@ -31,19 +35,23 @@ module.exports = {
                 console.log("Email Test : " + info.response);
             }
         });
-
+        
     },
 
-    signUp: async (password) => {
+    signUp: async (email, password) => {
         const {
             salt,
             hashed
         } = await encrypt.encrypt(password);
 
-        console.log(salt);
         console.log(hashed);
 
-        // push email, password, salt
+        var admin = new adminModel();
+        admin.email = email;
+        admin.password = hashed;
+        admin.salt = salt;
+        admin.auth = false;
+        await admin.save();
     }
 
 }
