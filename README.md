@@ -24,6 +24,15 @@ ex) startTime
 
 > 프로그래밍
 * 변수는 const
+* 함수 위에 아래 예시처럼 써주기! 
+/* 
+    ✔️ update profile
+    METHOD : POST
+    URI : localhost:3000/user/profile
+    REQUEST HEADER : JWT
+    REQUEST BODY : ⭐️image file ⭐️
+    RESPONSE DATA : user profile
+*/
 
 
 
