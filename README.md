@@ -97,13 +97,13 @@ ex) `[UPDATE] 구현내용`
     </tr>
     <tr align="center">
         <td>
-            <a href="https://github.com/namsoo5"><I>김민지</I></a>
+            <I>김민지</I>
         </td>
         <td>
-            <a href="https://github.com/MyunDev"><I>이현주</I></a>
+            <I>이현주</I>
         </td>
         <td>
-            <a href="https://github.com/mohazi"><I>이지윤</I></a>
+            <I>이지윤</I>
         </td>
     </tr>
 </table>
