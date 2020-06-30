@@ -2,23 +2,29 @@ const express = require('express');
 const router = express.Router();
 const util = require('../modules/util');
 const user = require('../controllers/user');
-const { sendEmail } = require('../controllers/user');
+const {
+    sendEmail
+} = require('../controllers/user');
 
 /**
  * 회원 가입
  */
-router.post('/', async(req, res) => {
+router.post('/', async (req, res) => {
 
-    const {email, pw, pwCheck} = req.body;
+    const {
+        email,
+        pw,
+        pwCheck
+    } = req.body;
 
     // 비밀번호와 비밀번호 확인이 같지 않을 때
-    if (pw !== pwCheck){
+    if (pw !== pwCheck) {
         res.status(400).send(util.fail(400, "비밀번호 확인 실패"));
         return;
     }
 
     // 파라미터 확인
-    if (!email || !pw || !pwCheck){
+    if (!email || !pw || !pwCheck) {
         res.status(400).send(util.fail(400, "필수 정보를 입력하세요."));
         return;
     }
