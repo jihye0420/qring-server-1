@@ -35,7 +35,7 @@ module.exports = {
 
     },
 
-    signUp : async (password) => {
+    signUp : async (email, password) => {
         const {salt, hashed} = await encrypt.encrypt(password);
         console.log(salt);
         console.log(hashed);
