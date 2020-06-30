@@ -11,12 +11,12 @@ const AdminSchema = new Schema({
     auth: Boolean,
     name: {
         type: String,
-        required: true,
+        //required: true,
     },
     phone: String,
     birth: {
         type: Date,
-        required: true,
+        //required: true,
     }
 });
 
