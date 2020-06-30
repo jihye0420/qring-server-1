@@ -39,6 +39,7 @@ module.exports = {
             salt,
             hashed
         } = await encrypt.encrypt(password);
+
         console.log(salt);
         console.log(hashed);
 
