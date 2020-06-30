@@ -23,6 +23,7 @@ ex) startTime
 <br>
 
 > 프로그래밍
+* 변수는 const
 
 
 
