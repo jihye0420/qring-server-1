@@ -6,28 +6,26 @@ const async = require('pbkdf2/lib/async');
 module.exports = {
     //피드백 질문 생성
     create: async (req, res) => {
-        const {
-            title,
-            content,
-            form
-        } = req.body;
+        //user Id 가져옴
+        const userId = req.email;
+        console.log(userId);
+        // // 파라미터 확인
+        // if (!title || !content || !form) {
+        //     res.status(400).send(util.fail(400, "필수 정보 누락"));
+        //     return;
+        // }
 
-        // 파라미터 확인
-        if (!title || !content || !form) {
-            res.status(400).send(util.fail(400, "필수 정보 누락"));
-            return;
-        }
+        // // 질문 생성
+        // const newQuestion = new GroupModel();
+        // newQuestion.feedback.title = req.body.title;
+        // newQuestion.feedback.content = req.body.content;
+        // newQuestion.feedback.form = req.body.form;
 
-        // 질문 생성
-        const newQuestion = new GroupModel();
-        newQuestion.feedback.title = req.body.title;
-        newQuestion.feedback.content = req.body.content;
-        newQuestion.feedback.form = req.body.form;
+        // // 데이터베이스에 저장
+        // await newQuestion.save()
 
-        // 데이터베이스에 저장
-        await newQuestion.save()
-
-        res.status(200).send(util.success(200, "피드백 질문 추가 완료", newQuestion));
+        //res.status(200).send(util.success(200, "피드백 질문 추가 완료", newQuestion));
+        res.status(200).send(util.success(200, "_id는", userId));
 
     },
 
