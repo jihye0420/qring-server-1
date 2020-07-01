@@ -9,5 +9,6 @@ router.get('/', function (req, res, next) {
 });
 
 router.use('/user', require('./user'));
+router.use('/feedback', require('./feedback'));
 
 module.exports = router;

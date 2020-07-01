@@ -1,69 +1,69 @@
-import mongoose from 'mongoose'
-import schema from 'mongoose.schema'
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const Groupschema = new schema({
-    admin:{
-        type : mongoose.SchemaTypes.ObjectId,
-        required : true,
+const GroupSchema = new Schema({
+    admin: {
+        type: String,
+        required: true,
     },
-    meeting : [{
+    meeting: [{
         name: {
             type: String,
-            required : true,
+            required: true,
         },
-        date :{
+        date: {
             type: Date,
-            required : true,
+            required: true,
         },
-        startTime :{
+        startTime: {
             type: Date,
-            required : true,
+            required: true,
         },
-        endTime :{
+        endTime: {
             type: Date,
-            required : true,
+            required: true,
         },
-        headCount :{
+        headCount: {
             type: Number,
-            required : true,
+            required: true,
         },
-        image :{
+        image: {
             data: Buffer,
-            contentsType : String,
+            contentsType: String,
         },
     }],
-    user : [{
+    user: [{
         name: {
             type: String,
-            required : true,
+            required: true,
         },
-        email :{
+        email: {
             type: String,
-            required : true,
+            required: true,
         },
-        health:{
+        health: {
             type: Boolean,
 
         },
     }],
-    feedBack:[{
-        title :{
+    feedback: [{
+        title: {
             type: String,
             required: true,
         },
-        context: {
+        content: {
             type: String,
-            required : true,
+            required: true,
         },
         //0이 단답형, 1이 객관식, 2는 평점
         form: {
             type: Number,
             required: true,
         },
-        result:[{
+        result: [{
             type: String,
         }]
     }]
 })
 
-module.exports = mongoose.model("group",Groupschema);
+module.exports = mongoose.model("group", GroupSchema);
