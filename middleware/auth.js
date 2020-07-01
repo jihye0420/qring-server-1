@@ -13,14 +13,11 @@ module.exports = {
         if (!token){
             return res.json(util.fail(400, "토큰이 없습니다."));
         }
-        const user = jwt.verify(token);
+        const user = await jwt.verify(token);
         if (user === TOKEN_EXPIRED){
             return res.json(util.fail(401, "만료된 토큰입니다."));
         }
         if (user === TOKEN_INVALID){
-            return res.json(util.fail(401, "유효하지 않은 토큰입니다."));
-        }
-        if (user.idx === undefined){
             return res.json(util.fail(401, "유효하지 않은 토큰입니다."));
         }
 
