@@ -3,7 +3,7 @@ const jwt = require('../modules/jwt');
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 
-const authUtil = {
+module.exports = {
     // middlewares
     // 미들웨어로 token이 있는지 없는지 확인하고
     // token이 있다면 jwt.verify 함수를 이용해서 토큰 hash를 확인하고 토큰에 들어있는 정보 해독
@@ -21,11 +21,16 @@ const authUtil = {
             return res.json(util.fail(401, "유효하지 않은 토큰입니다."));
         }
         if (user.idx === undefined){
-            return res.json(util.fail(401, "토큰이 유효하지 않습니다."));
+            return res.json(util.fail(401, "유효하지 않은 토큰입니다."));
         }
-        req.decoded = user;
-        next();
+
+        const userEmail = user.email;
+        if (!userEmail){
+            return res.status(401).json({message : "유효하지 않은 토큰입니다."});
+        } else {
+            req.email = userEmail;
+            req.decode = user;
+            next();
+        }
     }
 }
-
-module.exports = authUtil;
