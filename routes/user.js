@@ -76,15 +76,6 @@ router.get("/auth", async (req, res) =>  {
     res.status(200).send(util.success(200, "이메일 인증에 성공하였습니다."));
 });
 
-
-/**
- * 유저 정보 받아오기#################### 나중에 삭제~~~~~~~~~~~~~~~~~~~~~~~~~!
- */
-router.get("/", async(req, res) => {
-    const users = await adminModel.find();
-    res.status(200).send(util.success(200, "유저 정보", users));
-});
-
 /**
  * 로그인
  */
@@ -100,9 +91,6 @@ router.post("/signin", async(req, res) => {
 
     const salt = result.salt;
     const hashed = await encrypt.encryptWithSalt(pw, salt);
-
-
-    console.log(hashed);
 
     if (result.password === hashed){
         const {token, _} = await jwt.sign(user)
