@@ -115,15 +115,10 @@ router.post("/signin", async (req, res) => {
     const salt = result.salt;
     const hashed = await encrypt.encryptWithSalt(pw, salt);
 
-    if (result.password === hashed) {
-        const {
-            token,
-            _
-        } = await jwt.sign(result)
-        return res.status(200).send(util.success(200, "로그인 성공", {
-            accessToken: token
-        }));
-    } else {
+    if (result.password === hashed){
+        const {token, _} = await jwt.sign(result)
+        return res.status(200).send(util.success(200, "로그인 성공", {accessToken : token}));
+    } else{
         return res.status(400).send(util.fail(400, "로그인 실패"));
     }
 });
