@@ -22,18 +22,13 @@ module.exports = {
 
         var newMeeting = new groupModel();
         newMeeting.admin = req.body.admin;
-        newMeeting.meeting = [
-            name = req.body.name,
-            date = req.body.date,
-            startTime = req.body.startTime,
-            endTime = req.body.endTime,
-            headCount = req.body.headCount
-        ]
-
-        console.log(newMeeting);
-        console.log(newMeeting.meeting);
-        console.log(newMeeting.meeting.name);
-        console.log(newMeeting.meeting.date);
+        newMeeting.meeting = {
+            name : req.body.name,
+            date : req.body.date,
+            startTime : req.body.startTime,
+            endTime : req.body.endTime,
+            headCount : req.body.headCount
+        }
 
         await newMeeting.save();
 
@@ -46,16 +41,26 @@ module.exports = {
     },
     // router.get('/info',meetingController.getInfo);
     getInfo : async(req, res) => {
-        // let meeting = await groupModel.findById(req.params.id)
+        const meetingId = req.params.id
+        const meetingObject = await groupModel.find(
+            {
+            "meeting._id" : meetingId
+        },{
+            "_id":0,
+            "meeting" : 1,
+        });
+        console.log(meetingObject);
+        res.status(200).json({
+            name : meetingObject.meeting.name,
+            date : meetingObject.meeting.date,
+            startTime : meetingObject.meeting.startTime,
+            endTime : meetingObject.meeting.endTime,
+            headCount : meetingObject.meeting.headCount
+        })
 
-        // res.status(200).json({
-        //     admin : meeting.admin,
-        //     name : meeting.name,
-        //     date : meeting.date,
-        //     startTime : meeting.startTime,
-        //     endTime : meeting.endTime,
-        //     headCount : meeting.headCount
-        // })
+        // for (var i in meetingObject) {
+        //     meetingObject[i].name 
+        // }
 
     },
     // router.put('/list',meetingController.putInfo);

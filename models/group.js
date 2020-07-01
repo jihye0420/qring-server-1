@@ -11,11 +11,11 @@ const MeetingSchema = new schema({
         required : true,
     },
     startTime :{
-        type: Date,
+        type: String,
         required : true,
     },
     endTime :{
-        type: Date,
+        type: String,
         required : true,
     },
     headCount :{
