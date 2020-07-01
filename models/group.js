@@ -1,38 +1,40 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const schema = mongoose.Schema;
 
-const GroupSchema = new Schema({
-    admin: {
+const MeetingSchema = new schema({
+    name: {
         type: String,
-        required: true,
+        required : true,
     },
-    meeting: [{
-        name: {
-            type: String,
-            required: true,
-        },
-        date: {
-            type: Date,
-            required: true,
-        },
-        startTime: {
-            type: Date,
-            required: true,
-        },
-        endTime: {
-            type: Date,
-            required: true,
-        },
-        headCount: {
-            type: Number,
-            required: true,
-        },
-        image: {
-            data: Buffer,
-            contentsType: String,
-        },
-    }],
-    user: [{
+    date :{
+        type: Date,
+        required : true,
+    },
+    startTime :{
+        type: Date,
+        required : true,
+    },
+    endTime :{
+        type: Date,
+        required : true,
+    },
+    headCount :{
+        type: Number,
+        required : true,
+    },
+    image :{
+        data: Buffer,
+        contentsType : String,
+    },
+});
+
+const GroupSchema = new schema({
+    admin:{
+        type : String,
+        required : true,
+    },
+    meeting : [MeetingSchema],
+    user : [{
         name: {
             type: String,
             required: true,
@@ -46,8 +48,12 @@ const GroupSchema = new Schema({
 
         },
     }],
-    feedback: [{
-        title: {
+    feedBack:[{
+        meetingID:{
+            type: mongoose.SchemaTypes.ObjectId,
+            required : true,
+        },
+        title :{
             type: String,
             required: true,
         },
@@ -64,6 +70,6 @@ const GroupSchema = new Schema({
             type: String,
         }]
     }]
-})
+});
 
 module.exports = mongoose.model("group", GroupSchema);
