@@ -5,19 +5,11 @@ const feedbackController = require('../controllers/feedback');
 const auth = require('../middleware/auth');
 
 
-router.get('/question/list', auth.checkToken, async (req, res, next) => {
-    const userEmail = req.email
-    const decoded = req.decoded
-    console.log(userEmail)
-    console.log(decoded)
-    //await feedbackController.readAll
-});
+router.get('/question/list', auth.checkToken, feedbackController.readAll);
 
 router.post('/question', auth.checkToken, feedbackController.create);
 
-
-//router.post('/question', feedbackController.create);
-//router.put('/question', feedbackController.update);
-//router.delete('/question', feedbackController.remove);
+//router.put('/question/:id', feedbackController.update);
+//router.delete('/question/:id', feedbackController.remove);
 
 module.exports = router;
