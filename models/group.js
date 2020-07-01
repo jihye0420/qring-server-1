@@ -37,13 +37,13 @@ const GroupSchema = new schema({
     user : [{
         name: {
             type: String,
-            required : true,
+            required: true,
         },
-        email :{
+        email: {
             type: String,
-            required : true,
+            required: true,
         },
-        health:{
+        health: {
             type: Boolean,
 
         },
@@ -59,17 +59,17 @@ const GroupSchema = new schema({
         },
         content: {
             type: String,
-            required : true,
+            required: true,
         },
         //0이 단답형, 1이 객관식, 2는 평점
         form: {
             type: Number,
             required: true,
         },
-        result:[{
+        result: [{
             type: String,
         }]
     }]
 });
 
-module.exports = mongoose.model("group",GroupSchema);
+module.exports = mongoose.model("group", GroupSchema);
