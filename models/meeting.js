@@ -25,6 +25,9 @@ const MeetingSchema = new schema({
     image: {
         type: String,
     },
+    qrImg: {
+        type: String,
+    },
     user: [{
         name: {
             type: String,
@@ -34,9 +37,11 @@ const MeetingSchema = new schema({
             type: String,
             required: true,
         },
+        abroad:{
+            type: Boolean,
+        },
         health: {
             type: Boolean,
-
         },
     }],
     feedBack: [{
