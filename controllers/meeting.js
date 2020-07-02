@@ -25,18 +25,19 @@ module.exports = {
         newMeeting.startTime = req.body.startTime,
         newMeeting.endTime = req.body.endTime,
         newMeeting.headCount = req.body.headCount
+
         console.log(newMeeting);
-        // console.log(req.file);
-        // const image = req.file.location;
-        // // data check - undefined
-        // if (image !== undefined) {
-        //     const type = req.file.mimetype.split('/')[1];
-        //     if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
-        //         return res.status(CODE.OK).send(util.fail(CODE.OK, '유효하지 않은 형식입니다.'));
-        //     }
-        //     //const result = await UserModel.updateProfile(userIdx, image);
-        //     newMeeting.image = image;
-        // }
+        console.log(req.file);
+
+        const image = req.file.location;
+        // data check - undefined
+        if (image !== undefined) {
+            const type = req.file.mimetype.split('/')[1];
+            if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
+                return res.status(CODE.OK).send(util.fail(CODE.OK, '유효하지 않은 형식입니다.'));
+            }
+            newMeeting.image = image;
+        }
         
         
         let fin_meeting = await newMeeting.save();
