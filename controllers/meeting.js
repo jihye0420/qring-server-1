@@ -164,27 +164,31 @@ module.exports = {
     },
     // router.get('/list/:id',meetingController.list);
     list : async (req, res)=>{
-        // const adminId = req.params.id;
+        const adminId = req.params.id;
         
-        // const group = await groupModel.findOne({
-        //     admin : adminId
-        // })
+        const group = await groupModel.findOne({
+            admin : adminId
+        })
 
-        // console.log(group);
-        // // const meetings= group.meeting;
-        // // for(let item of meetingArray){
-        // //     meetings.push({
-        // //         name : item.name,
-        // //         date : item.date,
-        // //         startTime : item.startTime,
-        // //         endTime : item.endTime,
-        // //         headCount : item.headCount,
-        // //         image : item.image
-        // //     })
-        // // }
-        // res.status(200).json({
-        //     meetings : group.meeting
-        // })
+        const meetingArray = [];
+        const meetings= group.meetings;
+        for(let item of meetings){
+            let meeting = await meetingModel.findOne({
+                _id: item
+            })
+            meetingArray.push({
+                name : meeting.name,
+                date : meeting.date,
+                startTime : meeting.startTime,
+                endTime : meeting.endTime,
+                headCount : meeting.headCount,
+                image : meeting.image
+            })
+        }
+        
+        res.status(200).json({
+            meetings : meetingArray
+        })
     },
     // router.get('/result',meetingController.result);
     result: async (req, res) => {
