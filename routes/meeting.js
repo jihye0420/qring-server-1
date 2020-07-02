@@ -6,7 +6,7 @@ const meetingController = require('../controllers/meeting');
 router.post('/create',meetingController.create);
 // router.get('/list',meetingController.list);
 router.get('/info/:id',meetingController.getInfo);
-router.put('/list',meetingController.putInfo);
+//router.put('/list',meetingController.putInfo);
 // router.get('/result',meetingController.result);
 
 module.exports = router;
