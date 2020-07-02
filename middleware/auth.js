@@ -15,7 +15,7 @@ module.exports = {
         }
 
         const user = await jwt.verify(token);
-        if (user === TOKEN_EXPIRED){
+        if (user === TOKEN_EXPIRED) {
             return res.json(util.fail(401, "만료된 토큰입니다."));
         }
         if (user === TOKEN_INVALID) {
