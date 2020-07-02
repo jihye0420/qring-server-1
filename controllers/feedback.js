@@ -61,34 +61,7 @@ module.exports = {
                 message: "서버 에러",
             })
         }
-    },
-
-    // //피드백 질문 수정
-    // update: async (req, res) => {
-    //     const questionId = req.params.id;
-
-    //     const question = await GroupModel.findOne({
-    //         _id: questionId
-    //     }, {
-    //         _id: 0,
-    //         title: 1,
-    //         content: 1,
-    //         form: 1
-    //     });
-
-    //     if (question.length === 0)
-    //         return res.status(404).send(util.fail(404, "id에 매칭되는 것을 찾을 수 없음"));
-
-
-
-    // },
-
-    //피드백 질문 삭제
-    remove: async (req, res) => {
-
     }
-
-
 
 
 
