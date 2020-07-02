@@ -14,20 +14,30 @@ module.exports = {
             startTime,
             endTime,
             headCount,
-            image
         } = req.body;
         
-        if (!admin || !name || !date || !startTime || !endTime || !headCount ){
+        if (!admin || !name || !date || !startTime || !endTime || !headCount){
             res.status(400).send(util.fail(400,'필요한 값이 없습니다.'))
         }
-
-        
-        let newMeeting = new meetingModel ();
+        var newMeeting = new meetingModel ();
         newMeeting.name = req.body.name,
         newMeeting.date = req.body.date,
         newMeeting.startTime = req.body.startTime,
         newMeeting.endTime = req.body.endTime,
         newMeeting.headCount = req.body.headCount
+        console.log(newMeeting);
+        // console.log(req.file);
+        // const image = req.file.location;
+        // // data check - undefined
+        // if (image !== undefined) {
+        //     const type = req.file.mimetype.split('/')[1];
+        //     if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
+        //         return res.status(CODE.OK).send(util.fail(CODE.OK, '유효하지 않은 형식입니다.'));
+        //     }
+        //     //const result = await UserModel.updateProfile(userIdx, image);
+        //     newMeeting.image = image;
+        // }
+        
         
         let fin_meeting = await newMeeting.save();
 
@@ -46,52 +56,45 @@ module.exports = {
     },
     // router.get('/info',meetingController.getInfo);
     getInfo : async(req, res) => {
-        // const meetingId = req.params.id
-        // const meetingObject = await groupModel.find(
-        //     {
-        //     "meeting._id" : meetingId
-        // },{
-        //     "_id":0,
-        //     "meeting" : 1,
-        // });
-        // console.log(meetingObject);
-        // // res.status(200).json({
-        // //     name : meetingObject.meeting.name,
-        // //     date : meetingObject.meeting.date,
-        // //     startTime : meetingObject.meeting.startTime,
-        // //     endTime : meetingObject.meeting.endTime,
-        // //     headCount : meetingObject.meeting.headCount
-        // // })
-
-        // for (var i in meetingObject) {
-        //     console.log(meetingObject[i].name); 
-        // }
-
+        const meetingId = req.params.id
+        const meetingObject = await meetingModel.findOne({_id : meetingId})
+        console.log(meetingId);
+        console.log(meetingObject);
+        res.status(200).json({
+            name : meetingObject.name,
+            date : meetingObject.date,
+            startTime : meetingObject.startTime,
+            endTime : meetingObject.endTime,
+            headCount : meetingObject.headCount
+        })
     },
     // router.put('/list',meetingController.putInfo);
     putInfo : async(req, res)=>{
-        // let meeting = await groupModel.findById(req.params.id)
+        const meetingId = req.params.id
+        let meeting = await meetingModel.findOne({_id : meetingId})
 
-        // const {
-        //     admin,
-        //     name,
-        //     date,
-        //     startTime,
-        //     endTime,
-        //     headCount,
-        //     image
-        // } = req.body;
+        const {
+            name,
+            date,
+            startTime,
+            endTime,
+            headCount,
+            image
+        } = req.body;
 
-        // meeting.admin = req.body.admin;
-        // meeting.meeting.name = req.body.name;
-        // meeting.meeting.date = req.body.date;
-        // meeting.meeting.startTime = req.body.startTime;
-        // meeting.meeting.endTime = req.body.endTime;
-        // meeting.meeting.headCount = req.body.headCount;
+        if (!name || !date || !startTime || !endTime || !headCount ){
+            res.status(400).send(util.fail(400,'필요한 값이 없습니다.'))
+        }
 
-        // await meeting.save();
+        meeting.name = req.body.name;
+        meeting.date = req.body.date;
+        meeting.startTime = req.body.startTime;
+        meeting.endTime = req.body.endTime;
+        meeting.headCount = req.body.headCount;
 
-        // await res.status(200).send(util.success(200, '모임 정보 수정 성공'));
+        await meeting.save();
+
+        await res.status(200).send(util.success(200, '모임 정보 수정 성공'));
 
     },
     // router.get('/result',meetingController.result);
