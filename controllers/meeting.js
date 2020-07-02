@@ -6,7 +6,7 @@ const resMessage = require('../modules/responseMessage');
 
 module.exports = {
     // router.post('/create',meetingController.create);
-    create : async (req, res) => {
+    create: async (req, res) => {
         const {
             admin,
             name,
@@ -15,17 +15,17 @@ module.exports = {
             endTime,
             headCount,
         } = req.body;
-        
-        if (!admin || !name || !date || !startTime || !endTime || !headCount){
-            res.status(400).send(util.fail(400,'필요한 값이 없습니다.'))
+
+        if (!admin || !name || !date || !startTime || !endTime || !headCount) {
+            res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
-        var newMeeting = new meetingModel ();
+        var newMeeting = new meetingModel();
         newMeeting.name = req.body.name,
-        newMeeting.date = req.body.date,
-        newMeeting.startTime = req.body.startTime,
-        newMeeting.endTime = req.body.endTime,
-        newMeeting.headCount = req.body.headCount
+            newMeeting.date = req.body.date,
+            newMeeting.startTime = req.body.startTime,
+            newMeeting.endTime = req.body.endTime,
+            newMeeting.headCount = req.body.headCount
 
         const image = req.file.location;
         // data check - undefined
@@ -36,8 +36,8 @@ module.exports = {
             }
             newMeeting.image = image;
         }
-        
-        
+
+
         let fin_meeting = await newMeeting.save();
 
         var newGroup = new groupModel();
@@ -50,28 +50,32 @@ module.exports = {
 
     },
     // router.get('/list',meetingController.list);
-    list : async (req, res)=>{
+    list: async (req, res) => {
 
     },
     // router.get('/info',meetingController.getInfo);
-    getInfo : async(req, res) => {
+    getInfo: async (req, res) => {
         const meetingId = req.params.id
-        const meetingObject = await meetingModel.findOne({_id : meetingId})
+        const meetingObject = await meetingModel.findOne({
+            _id: meetingId
+        })
         console.log(meetingId);
         console.log(meetingObject);
         res.status(200).json({
-            name : meetingObject.name,
-            date : meetingObject.date,
-            startTime : meetingObject.startTime,
-            endTime : meetingObject.endTime,
-            headCount : meetingObject.headCount,
-            image : meetingObject.image
+            name: meetingObject.name,
+            date: meetingObject.date,
+            startTime: meetingObject.startTime,
+            endTime: meetingObject.endTime,
+            headCount: meetingObject.headCount,
+            image: meetingObject.image
         })
     },
     // router.put('/list',meetingController.putInfo);
-    putInfo : async(req, res)=>{
+    putInfo: async (req, res) => {
         const meetingId = req.params.id
-        let meeting = await meetingModel.findOne({_id : meetingId})
+        let meeting = await meetingModel.findOne({
+            _id: meetingId
+        })
 
         const {
             name,
@@ -79,10 +83,12 @@ module.exports = {
             startTime,
             endTime,
             headCount,
+            feedBack
         } = req.body;
 
-        if (!name || !date || !startTime || !endTime || !headCount ){
-            res.status(400).send(util.fail(400,'필요한 값이 없습니다.'))
+        if (!name || !date || !startTime || !endTime || !headCount) {
+            res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
+            return
         }
 
         meeting.name = req.body.name;
@@ -90,7 +96,15 @@ module.exports = {
         meeting.startTime = req.body.startTime;
         meeting.endTime = req.body.endTime;
         meeting.headCount = req.body.headCount;
-        
+
+        meeting.feedBack = {
+            title: req.body.title,
+            content: req.body.content,
+            choice: req.body.choice,
+            form: req.body.form
+        }
+
+
         const image = req.file.location;
         // data check - undefined
         if (image !== undefined) {
@@ -103,14 +117,11 @@ module.exports = {
 
         await meeting.save();
 
-        await res.status(200).send(util.success(200, '모임 정보 수정 성공'));
+        await res.status(200).send(util.success(200, '모임 정보 수정 성공', meeting));
 
     },
     // router.get('/result',meetingController.result);
-    result : async(req,res)=>{
+    result: async (req, res) => {
 
     }
 }
-
-
-
