@@ -14,20 +14,30 @@ module.exports = {
             startTime,
             endTime,
             headCount,
-            image
         } = req.body;
         
-        if (!admin || !name || !date || !startTime || !endTime || !headCount ){
+        if (!admin || !name || !date || !startTime || !endTime || !headCount){
             res.status(400).send(util.fail(400,'필요한 값이 없습니다.'))
         }
-
-        
-        let newMeeting = new meetingModel ();
+        var newMeeting = new meetingModel ();
         newMeeting.name = req.body.name,
         newMeeting.date = req.body.date,
         newMeeting.startTime = req.body.startTime,
         newMeeting.endTime = req.body.endTime,
         newMeeting.headCount = req.body.headCount
+        console.log(newMeeting);
+        // console.log(req.file);
+        // const image = req.file.location;
+        // // data check - undefined
+        // if (image !== undefined) {
+        //     const type = req.file.mimetype.split('/')[1];
+        //     if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
+        //         return res.status(CODE.OK).send(util.fail(CODE.OK, '유효하지 않은 형식입니다.'));
+        //     }
+        //     //const result = await UserModel.updateProfile(userIdx, image);
+        //     newMeeting.image = image;
+        // }
+        
         
         let fin_meeting = await newMeeting.save();
 
