@@ -23,8 +23,7 @@ const MeetingSchema = new schema({
         required: true,
     },
     image: {
-        data: Buffer,
-        contentsType: String,
+        type: String,
     },
     user: [{
         name: {
