@@ -9,7 +9,7 @@ const util = require('../modules/util')
 module.exports = {
     //피드백 질문 생성
     create: async (req, res) => {
-        const meetingId = req.params.meetingId;
+        const meetingId = req.params.id;
 
         // 모든 피드백 정보들 가져옴
         const meeting = await MeetingModel.findOne({
@@ -18,9 +18,9 @@ module.exports = {
             _id: 1,
             name: 1,
             date: 1,
-            start_time: 1,
-            end_time: 1,
-            headcount: 1,
+            startTime: 1,
+            endTime: 1,
+            headCount: 1,
             image: 1,
             user: 1,
             feedBack: 1
@@ -40,8 +40,8 @@ module.exports = {
         }
 
         // 객관식일때는, 객관식 선택지 필요
-        if (form === 1) {
-            if (!choice) {
+        if (form == 1) {
+            if (choice === undefined) {
                 res.status(400).send(util.fail(400, "객관식 선택지 누락"));
                 return;
             }
@@ -55,12 +55,12 @@ module.exports = {
         newResult.date = meeting.date;
         newResult.startTime = meeting.startTime;
         newResult.endTime = meeting.endTime;
-        newResult.headcount = meeting.headcount;
+        newResult.headCount = meeting.headCount;
         newResult.image = meeting.image;
         newResult.user = meeting.user;
 
 
-        newResult.feedback = {
+        newResult.feedBack = {
             title: req.body.title,
             content: req.body.content,
             choice: req.body.choice,
@@ -77,6 +77,23 @@ module.exports = {
 
     //피드백 질문 목록
     readAll: async (req, res) => {
+
+        const meetingId = req.params.id;
+
+        // 모든 피드백 정보들 가져옴
+        const meeting = await MeetingModel.findOne({
+            _id: meetingId
+        }, {
+            _id: 1,
+            name: 1,
+            date: 1,
+            startTime: 1,
+            endTime: 1,
+            headCount: 1,
+            image: 1,
+            user: 1,
+            feedBack: 1
+        });
         //find({}) -> feedBack 모든 데이터 다 불러오는 것
         const questions = await MeetingModel.find({
             feedBack: 1
