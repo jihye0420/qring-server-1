@@ -66,7 +66,8 @@ module.exports = {
             date : meetingObject.date,
             startTime : meetingObject.startTime,
             endTime : meetingObject.endTime,
-            headCount : meetingObject.headCount
+            headCount : meetingObject.headCount,
+            image : meetingObject.image
         })
     },
     // router.put('/list',meetingController.putInfo);
