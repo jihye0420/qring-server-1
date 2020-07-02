@@ -6,7 +6,11 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+<<<<<<< HEAD
     "aws-sdk": "^2.709.0",
+=======
+    "aws-sdk": "^2.708.0",
+>>>>>>> d1f8157eba6dcf192bde05a528416c959400f5b2
     "body-parser": "^1.19.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",

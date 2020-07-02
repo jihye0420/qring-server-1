@@ -9,8 +9,8 @@ router.get('/', function (req, res, next) {
 });
 
 router.use('/user', require('./user'));
+router.use('/meeting', require('./meeting'));
 router.use('/feedback', require('./feedback'));
 router.use('/qrcode', require('./qrcode'));
-
 
 module.exports = router;
