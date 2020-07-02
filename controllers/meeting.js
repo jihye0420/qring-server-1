@@ -1,4 +1,5 @@
 const groupModel = require('../models/group');
+const meetingModel = require('../models/meeting');
 const util = require('../modules/util');
 const statusCode = require('../modules/statusCode');
 const resMessage = require('../modules/responseMessage');
@@ -20,17 +21,21 @@ module.exports = {
             res.status(400).send(util.fail(400,'필요한 값이 없습니다.'))
         }
 
-        var newMeeting = new groupModel();
-        newMeeting.admin = req.body.admin;
-        newMeeting.meeting = {
-            name : req.body.name,
-            date : req.body.date,
-            startTime : req.body.startTime,
-            endTime : req.body.endTime,
-            headCount : req.body.headCount
-        }
+        
+        let newMeeting = new meetingModel ();
+        newMeeting.name = req.body.name,
+        newMeeting.date = req.body.date,
+        newMeeting.startTime = req.body.startTime,
+        newMeeting.endTime = req.body.endTime,
+        newMeeting.headCount = req.body.headCount
+        
+        let fin_meeting = await newMeeting.save();
 
-        await newMeeting.save();
+        var newGroup = new groupModel();
+        newGroup.admin = req.body.admin;
+        newGroup.meetings.push(fin_meeting._id)
+
+        await newGroup.save();
 
         res.status(200).send(util.success(200, '새 모임 생성 성공'));
 
@@ -41,25 +46,25 @@ module.exports = {
     },
     // router.get('/info',meetingController.getInfo);
     getInfo : async(req, res) => {
-        const meetingId = req.params.id
-        const meetingObject = await groupModel.find(
-            {
-            "meeting._id" : meetingId
-        },{
-            "_id":0,
-            "meeting" : 1,
-        });
-        console.log(meetingObject);
-        res.status(200).json({
-            name : meetingObject.meeting.name,
-            date : meetingObject.meeting.date,
-            startTime : meetingObject.meeting.startTime,
-            endTime : meetingObject.meeting.endTime,
-            headCount : meetingObject.meeting.headCount
-        })
+        // const meetingId = req.params.id
+        // const meetingObject = await groupModel.find(
+        //     {
+        //     "meeting._id" : meetingId
+        // },{
+        //     "_id":0,
+        //     "meeting" : 1,
+        // });
+        // console.log(meetingObject);
+        // // res.status(200).json({
+        // //     name : meetingObject.meeting.name,
+        // //     date : meetingObject.meeting.date,
+        // //     startTime : meetingObject.meeting.startTime,
+        // //     endTime : meetingObject.meeting.endTime,
+        // //     headCount : meetingObject.meeting.headCount
+        // // })
 
         // for (var i in meetingObject) {
-        //     meetingObject[i].name 
+        //     console.log(meetingObject[i].name); 
         // }
 
     },
