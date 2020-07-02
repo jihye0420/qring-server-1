@@ -35,7 +35,6 @@ module.exports = {
                 console.log("Email Test : " + info.response);
             }
         });
-        
     },
 
     signUp: async (email, password) => {
@@ -44,14 +43,14 @@ module.exports = {
             hashed
         } = await encrypt.encrypt(password);
 
-        console.log(hashed);
-
         var admin = new adminModel();
         admin.email = email;
         admin.password = hashed;
         admin.salt = salt;
         admin.auth = false;
         await admin.save();
-    }
+    },
+
+    
 
 }

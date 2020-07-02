@@ -5,6 +5,7 @@ const jwt = require('../modules/jwt');
 const user = require('../controllers/user');
 const adminModel = require('../models/admin');
 const encrypt = require('../modules/crypto');
+const auth = require('../middleware/auth');
 
 /**
  * 회원 가입
