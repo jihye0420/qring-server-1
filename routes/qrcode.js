@@ -10,12 +10,11 @@ const qrcodeGenerator = require('../modules/qrcode');
 router.get('/', auth.checkToken, async(req, res) => {
 
   const userEmail = req.email;
-  const meetingId = req.params.meetingId;
+  const meetingId = req.query.meetingId;
 
-  const img_link = await qrcodeGenerator.makeQrcode(userEmail, meetingId); 
-  console.log(img_link);
+  await qrcodeGenerator.makeQrcode(userEmail, meetingId); 
 
-  res.status(200).send(util.success(200, "QR코드 생성 성공", img_link));
-});
+  res.status(200).send(util.success(200, "QR코드 생성 성공"));
+}); 
 
 module.exports = router;
