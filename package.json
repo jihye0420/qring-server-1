@@ -21,6 +21,7 @@
     "nodemailer": "^6.4.10",
     "nodemailer-smtp-transport": "^2.7.4",
     "pbkdf2": "^3.1.1",
+    "qrcode": "^1.4.4",
     "qrcode-with-logos": "^1.0.2",
     "rand-token": "^1.0.1"
   }
