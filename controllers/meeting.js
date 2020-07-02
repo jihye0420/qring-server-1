@@ -19,15 +19,13 @@ module.exports = {
         if (!admin || !name || !date || !startTime || !endTime || !headCount) {
             res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
+
         var newMeeting = new meetingModel();
         newMeeting.name = req.body.name,
             newMeeting.date = req.body.date,
             newMeeting.startTime = req.body.startTime,
             newMeeting.endTime = req.body.endTime,
             newMeeting.headCount = req.body.headCount
-
-        console.log(newMeeting);
-        console.log(req.file);
 
         const image = req.file.location;
         // data check - undefined
@@ -85,7 +83,6 @@ module.exports = {
             startTime,
             endTime,
             headCount,
-            image,
             feedBack
         } = req.body;
 
@@ -99,7 +96,6 @@ module.exports = {
         meeting.startTime = req.body.startTime;
         meeting.endTime = req.body.endTime;
         meeting.headCount = req.body.headCount;
-        meeting.image = req.body.image;
 
         meeting.feedBack = {
             title: req.body.title,
@@ -108,6 +104,16 @@ module.exports = {
             form: req.body.form
         }
 
+
+        const image = req.file.location;
+        // data check - undefined
+        if (image !== undefined) {
+            const type = req.file.mimetype.split('/')[1];
+            if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
+                return res.status(CODE.OK).send(util.fail(CODE.OK, '유효하지 않은 형식입니다.'));
+            }
+            meeting.image = image;
+        }
 
         await meeting.save();
 
