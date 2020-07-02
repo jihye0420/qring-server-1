@@ -4,29 +4,29 @@ const schema = mongoose.Schema;
 const MeetingSchema = new schema({
     name: {
         type: String,
-        required : true,
+        required: true,
     },
-    date :{
+    date: {
         type: Date,
-        required : true,
+        required: true,
     },
-    startTime :{
+    startTime: {
         type: String,
-        required : true,
+        required: true,
     },
-    endTime :{
+    endTime: {
         type: String,
-        required : true,
+        required: true,
     },
-    headCount :{
+    headCount: {
         type: Number,
-        required : true,
+        required: true,
     },
-    image :{
+    image: {
         data: Buffer,
-        contentsType : String,
+        contentsType: String,
     },
-    user : [{
+    user: [{
         name: {
             type: String,
             required: true,
@@ -40,8 +40,8 @@ const MeetingSchema = new schema({
 
         },
     }],
-    feedBack:[{
-        title :{
+    feedBack: [{
+        title: {
             type: String,
             required: true,
         },
@@ -49,7 +49,7 @@ const MeetingSchema = new schema({
             type: String,
             required: true,
         },
-        choice : [{
+        choice: [{
             type: String,
         }],
         //0이 단답형, 1이 객관식, 2는 평점
