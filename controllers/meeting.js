@@ -60,28 +60,31 @@ module.exports = {
     },
     // router.put('/list',meetingController.putInfo);
     putInfo : async(req, res)=>{
-        // let meeting = await groupModel.findById(req.params.id)
+        const meetingId = req.params.id
+        let meeting = await meetingModel.findOne({_id : meetingId})
 
-        // const {
-        //     admin,
-        //     name,
-        //     date,
-        //     startTime,
-        //     endTime,
-        //     headCount,
-        //     image
-        // } = req.body;
+        const {
+            name,
+            date,
+            startTime,
+            endTime,
+            headCount,
+            image
+        } = req.body;
 
-        // meeting.admin = req.body.admin;
-        // meeting.meeting.name = req.body.name;
-        // meeting.meeting.date = req.body.date;
-        // meeting.meeting.startTime = req.body.startTime;
-        // meeting.meeting.endTime = req.body.endTime;
-        // meeting.meeting.headCount = req.body.headCount;
+        if (!name || !date || !startTime || !endTime || !headCount ){
+            res.status(400).send(util.fail(400,'필요한 값이 없습니다.'))
+        }
 
-        // await meeting.save();
+        meeting.name = req.body.name;
+        meeting.date = req.body.date;
+        meeting.startTime = req.body.startTime;
+        meeting.endTime = req.body.endTime;
+        meeting.headCount = req.body.headCount;
 
-        // await res.status(200).send(util.success(200, '모임 정보 수정 성공'));
+        await meeting.save();
+
+        await res.status(200).send(util.success(200, '모임 정보 수정 성공'));
 
     },
     // router.get('/result',meetingController.result);
