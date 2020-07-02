@@ -46,27 +46,17 @@ module.exports = {
     },
     // router.get('/info',meetingController.getInfo);
     getInfo : async(req, res) => {
-        // const meetingId = req.params.id
-        // const meetingObject = await groupModel.find(
-        //     {
-        //     "meeting._id" : meetingId
-        // },{
-        //     "_id":0,
-        //     "meeting" : 1,
-        // });
-        // console.log(meetingObject);
-        // // res.status(200).json({
-        // //     name : meetingObject.meeting.name,
-        // //     date : meetingObject.meeting.date,
-        // //     startTime : meetingObject.meeting.startTime,
-        // //     endTime : meetingObject.meeting.endTime,
-        // //     headCount : meetingObject.meeting.headCount
-        // // })
-
-        // for (var i in meetingObject) {
-        //     console.log(meetingObject[i].name); 
-        // }
-
+        const meetingId = req.params.id
+        const meetingObject = await meetingModel.findOne({_id : meetingId})
+        console.log(meetingId);
+        console.log(meetingObject);
+        res.status(200).json({
+            name : meetingObject.name,
+            date : meetingObject.date,
+            startTime : meetingObject.startTime,
+            endTime : meetingObject.endTime,
+            headCount : meetingObject.headCount
+        })
     },
     // router.put('/list',meetingController.putInfo);
     putInfo : async(req, res)=>{
