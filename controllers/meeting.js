@@ -49,10 +49,6 @@ module.exports = {
         res.status(200).send(util.success(200, '새 모임 생성 성공'));
 
     },
-    // router.get('/list',meetingController.list);
-    list: async (req, res) => {
-
-    },
     // router.get('/info',meetingController.getInfo);
     getInfo: async (req, res) => {
         const meetingId = req.params.id
@@ -118,6 +114,10 @@ module.exports = {
         await meeting.save();
 
         await res.status(200).send(util.success(200, '모임 정보 수정 성공', meeting));
+
+    },
+    // router.get('/list',meetingController.list);
+    list : async (req, res)=>{
 
     },
     // router.get('/result',meetingController.result);
