@@ -11,6 +11,11 @@
 
 <br>
 
+## database ERD
+![큐링 ERD](https://user-images.githubusercontent.com/37949197/86369943-10cc8800-bcba-11ea-95f2-d1f434d59032.png)
+
+<br>
+
 
 
 ## Code Convention
