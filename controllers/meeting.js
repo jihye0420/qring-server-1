@@ -19,7 +19,7 @@ module.exports = {
         } = req.body;
 
         if (!admin || !name || !date || !startTime || !endTime || !headCount) {
-            res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
+            return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
         var newMeeting = new meetingModel();
@@ -34,7 +34,7 @@ module.exports = {
         if (image !== undefined) {
             const type = req.file.mimetype.split('/')[1];
             if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
-                return res.status(CODE.OK).send(util.fail(CODE.OK, '유효하지 않은 형식입니다.'));
+                return res.status(400).send(util.fail(400, '유효하지 않은 형식입니다.'));
             }
             newMeeting.image = image;
         }
@@ -49,7 +49,7 @@ module.exports = {
 
         await newGroup.save();
 
-        res.status(200).send(util.success(200, '새 모임 생성 성공'));
+        return res.status(200).send(util.success(200, '새 모임 생성 성공', newGroup));
 
     },
 
@@ -57,7 +57,7 @@ module.exports = {
      * 이어서 모임 생성
      */
     createNewMeeting: async (req, res) => {
-        const adminId = req.params.id;
+        const groupId = req.params.id;
         const {
             name,
             date,
@@ -67,7 +67,7 @@ module.exports = {
         } = req.body;
 
         if (!name || !date || !startTime || !endTime || !headCount) {
-            res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
+            return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
         var newMeeting = new meetingModel();
@@ -82,7 +82,7 @@ module.exports = {
         if (image !== undefined) {
             const type = req.file.mimetype.split('/')[1];
             if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
-                return res.status(CODE.OK).send(util.fail(CODE.OK, '유효하지 않은 형식입니다.'));
+                return res.status(400).send(util.fail(400, '유효하지 않은 형식입니다.'))
             }
             newMeeting.image = image;
         }
@@ -92,13 +92,13 @@ module.exports = {
         let fin_meeting = await newMeeting.save();
 
         const group = await groupModel.findOne({
-            admin: adminId
+            _id: groupId
         })
         group.meetings.push(fin_meeting._id);
 
         await group.save();
 
-        res.status(200).send(util.success(200, '새 모임 생성 성공'));
+        return res.status(200).send(util.success(200, '새 모임 생성 성공', group));
 
     },
 
@@ -110,20 +110,11 @@ module.exports = {
         const meetingObject = await meetingModel.findOne({
             _id: meetingId
         })
-        console.log(meetingId);
-        console.log(meetingObject);
-        res.status(200).json({
-            name: meetingObject.name,
-            date: meetingObject.date,
-            startTime: meetingObject.startTime,
-            endTime: meetingObject.endTime,
-            headCount: meetingObject.headCount,
-            image: meetingObject.image
-        })
+        return res.status(200).send(util.success(200, '모임 정보 조회 성공', meetingObject));
     },
 
     /**
-     * 모임 편집 및 피드백 질문 편집 기능
+     * 모임 편집 기능
      */
     putInfo: async (req, res) => {
         const meetingId = req.params.id
@@ -137,15 +128,10 @@ module.exports = {
             startTime,
             endTime,
             headCount,
-            title,
-            content,
-            choice,
-            form
         } = req.body;
 
         if (!name || !date || !startTime || !endTime || !headCount) {
-            res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
-            return
+            return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
         meeting.name = req.body.name;
@@ -154,59 +140,107 @@ module.exports = {
         meeting.endTime = req.body.endTime;
         meeting.headCount = req.body.headCount;
 
-        meeting.feedBack = {
-            title: req.body.title,
-            content: req.body.content,
-            choice: req.body.choice,
-            form: req.body.form
-        }
-
-
         const image = req.file.location;
         // data check - undefined
         if (image !== undefined) {
             const type = req.file.mimetype.split('/')[1];
             if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
-                return res.status(CODE.OK).send(util.fail(CODE.OK, '유효하지 않은 형식입니다.'));
+                return res.status(400).send(util.fail(400, '유효하지 않은 형식입니다.'));
             }
             meeting.image = image;
         }
 
         await meeting.save();
 
-        await res.status(200).send(util.success(200, '모임 정보 수정 성공', meeting));
+        return res.status(200).send(util.success(200, '모임 정보 수정 성공', meeting));
 
     },
 
-    /**
-     * 이어서 모임 생성할 때, default값으로 띄어줄때 사용하는 API
-     */
-    list: async (req, res) => {
+    // router.get('/list/:id/:round',meetingController.round);
+    round: async (req, res) => {
         const adminId = req.params.id;
+        const round = req.params.round;
 
         const group = await groupModel.findOne({
             admin: adminId
         })
 
-        const meetingArray = [];
         const meetings = group.meetings;
-        for (let item of meetings) {
-            let meeting = await meetingModel.findOne({
-                _id: item
-            })
-            meetingArray.push({
-                name: meeting.name,
-                date: meeting.date,
-                startTime: meeting.startTime,
-                endTime: meeting.endTime,
-                headCount: meeting.headCount,
-                image: meeting.image
-            })
-        }
 
-        res.status(200).json({
-            meetings: meetingArray
-        })
+        if (round == -1) {
+            let meeting = await meetingModel.findOne({
+                _id: meetings[meetings.length - 1]
+            })
+
+            let user = [];
+            let cnt = 1;
+            for (let item of meeting.user) {
+                if (cnt > 3) break;
+                user.push(item);
+                cnt++;
+            }
+
+            let feedBack = [];
+            cnt = 1;
+            for (let item of meeting.feedBack) {
+                if (cnt > 3) break;
+                feedBack.push(item);
+                cnt++;
+            }
+
+            const data = {
+                meeting: {
+                    user: user,
+                    feedBack: feedBack,
+                    name: meeting.name,
+                    date: meeting.date,
+                    startTime: meeting.startTime,
+                    endTime: meeting.endTime,
+                    headCount: meeting.headCount,
+                    image: meeting.image,
+                    qrImg: meeting.qrImg
+                }
+            }
+
+            return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
+        } else {
+            let meeting = await meetingModel.findOne({
+                _id: meetings[round - 1]
+            })
+
+            let user = [];
+            let cnt = 1;
+            for (let item of meeting.user) {
+                if (cnt > 3) break;
+                user.push(item);
+                cnt++;
+            }
+
+            let feedBack = [];
+            cnt = 1;
+            for (let item of meeting.feedBack) {
+                if (cnt > 3) break;
+                feedBack.push(item);
+                cnt++;
+            }
+
+            const data = {
+                meeting: {
+                    user: user,
+                    feedBack: feedBack,
+                    name: meeting.name,
+                    date: meeting.date,
+                    startTime: meeting.startTime,
+                    endTime: meeting.endTime,
+                    headCount: meeting.headCount,
+                    image: meeting.image,
+
+                    qrImg: meeting.qrImg
+                }
+            }
+
+            return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
+        }
     },
     // router.get('/result',meetingController.result);
     result: async (req, res) => {
