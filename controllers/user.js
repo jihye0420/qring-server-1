@@ -16,7 +16,7 @@ module.exports = {
         });
 
         // 난수 문자열 생성
-        //const token = Math.random().toString(36).substr(2,11);
+        const token = Math.random().toString(36).substr(2,11);
 
         const mailOptions = {
             from: "", // 발송 메일 주소
@@ -25,7 +25,7 @@ module.exports = {
             html: "<p>아래의 링크를 클릭해주세요 !</p>" +
                 "<a href='http://localhost:3001/user/auth?email=" +
                 email +
-                "&token=aqswdefr'>인증하기</a>",
+                "&token="+token+"'>인증하기</a>",
         };
 
         transporter.sendMail(mailOptions, function (error, info) {
@@ -35,9 +35,11 @@ module.exports = {
                 console.log("Email Test : " + info.response);
             }
         });
+        
+        return token;
     },
 
-    signUp: async (email, password) => {
+    signUp: async (email, password, token) => {
         const {
             salt,
             hashed
@@ -48,6 +50,7 @@ module.exports = {
         admin.password = hashed;
         admin.salt = salt;
         admin.auth = false;
+        admin.authToken = token;
         await admin.save();
     },
 
