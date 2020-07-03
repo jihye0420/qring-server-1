@@ -102,14 +102,6 @@ module.exports = {
             _id: meetingId
         })
         return res.status(200).send(util.success(200, '모임 정보 조회 성공', meetingObject));
-        // res.status(200).json({
-        //     name: meetingObject.name,
-        //     date: meetingObject.date,
-        //     startTime: meetingObject.startTime,
-        //     endTime: meetingObject.endTime,
-        //     headCount: meetingObject.headCount,
-        //     image: meetingObject.image
-        // })
     },
     // router.put('/list',meetingController.putInfo);
     putInfo: async (req, res) => {
@@ -160,31 +152,92 @@ module.exports = {
         return res.status(200).send(util.success(200, '모임 정보 수정 성공', meeting));
 
     },
-    // router.get('/list/:id',meetingController.list);
-    list : async (req, res)=>{
+    // router.get('/list/:id/:round',meetingController.round);
+    round : async (req, res)=>{
         const adminId = req.params.id;
+        const round = req.params.round;
         
         const group = await groupModel.findOne({
             admin : adminId
         })
 
-        const meetingArray = [];
         const meetings= group.meetings;
-        for(let item of meetings){
+        
+        if (round==-1){
             let meeting = await meetingModel.findOne({
-                _id: item
+                _id: meetings[meetings.length-1]
             })
-            meetingArray.push({
-                name : meeting.name,
-                date : meeting.date,
-                startTime : meeting.startTime,
-                endTime : meeting.endTime,
-                headCount : meeting.headCount,
-                image : meeting.image
-            })
-        }
 
-        return res.status(200).send(util.success(200, '모임 정보 조회 성공', meetingArray));
+            let user = [];
+            let cnt = 1;
+            for(let item of meeting.user){
+                if (cnt > 3) break;
+                user.push(item);
+                cnt ++;
+            }
+
+            let feedBack = [];
+            cnt = 1;
+            for(let item of meeting.feedBack){
+                if (cnt > 3) break;
+                feedBack.push(item);
+                cnt ++;
+            }
+
+            const data = {
+                meeting : {
+                    user : user,
+                    feedBack : feedBack,
+                    name : meeting.name,
+                    date : meeting.date,
+                    startTime : meeting.startTime,
+                    endTime : meeting.endTime,
+                    headCount : meeting.headCount,
+                    image : meeting.image,
+                    qrImg : meeting.qrImg
+                }
+            }
+
+            return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
+        }
+        else {
+            let meeting = await meetingModel.findOne({
+                _id: meetings[round-1]
+            })
+
+            let user = [];
+            let cnt = 1;
+            for(let item of meeting.user){
+                if (cnt > 3) break;
+                user.push(item);
+                cnt ++;
+            }
+
+            let feedBack = [];
+            cnt = 1;
+            for(let item of meeting.feedBack){
+                if (cnt > 3) break;
+                feedBack.push(item);
+                cnt ++;
+            }
+
+            const data = {
+                meeting : {
+                    user : user,
+                    feedBack : feedBack,
+                    name : meeting.name,
+                    date : meeting.date,
+                    startTime : meeting.startTime,
+                    endTime : meeting.endTime,
+                    headCount : meeting.headCount,
+                    image : meeting.image,
+                 
+                    qrImg : meeting.qrImg
+                }
+            }
+
+            return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
+        }
     },
     // router.get('/result',meetingController.result);
     result: async (req, res) => {
