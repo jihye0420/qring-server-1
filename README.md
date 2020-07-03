@@ -12,6 +12,8 @@
 - mongoose
 - qrcode-with-logos
 - aws-sdk
+- multer-s3
+- multer
 
 
 
