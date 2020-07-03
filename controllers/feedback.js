@@ -52,6 +52,18 @@ module.exports = {
 
         res.status(200).send(util.success(200, "피드백 질문 추가 완료", meeting));
 
+    },
+
+    readAll: async (req, res) => {
+        const meetingId = req.params.id;
+
+        // 모든 피드백 정보들 가져옴
+        const meeting = await MeetingModel.findOne({
+            _id: meetingId
+        });
+
+        res.status(200).send(util.success(200, "피드백 질문 목록 완료", meeting));
+
     }
 
 }
