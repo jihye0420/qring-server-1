@@ -9,6 +9,7 @@ const AdminSchema = new Schema({
     password: String,
     salt: String,
     auth: Boolean,
+    authToken : String,
     name: {
         type: String,
         //required: true,
