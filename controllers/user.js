@@ -211,8 +211,7 @@ const userController = {
 
         // 파라미터 확인
         if (!name || !birth) {
-            res.status(400).send(util.fail(400, "필수 정보를 입력하세요."));
-            return;
+            return res.status(400).send(util.fail(400, "필수 정보를 입력하세요."));
         }
 
         const filter = {email : userEmail};
@@ -220,6 +219,15 @@ const userController = {
         await adminModel.findOneAndUpdate(filter, update, {new : true});
         
         return res.status(200).send(util.success(200, "프로필 수정 성공"));
+    },
+
+    readProfile : async(req, res) => {
+        const userEmail = req.email;
+
+        const filter = {email : userEmail};
+        const result = await adminModel.find(filter, {_id:0, email:1, name:1, birth:1});
+
+        return res.status(200).send(util.success(200, "프로필 불러오기 성공", result));
     }
 }
 
