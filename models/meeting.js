@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
+const moment = require('moment');
+require('mongoose-moment');
 
 const MeetingSchema = new schema({
     name: {
@@ -43,6 +45,10 @@ const MeetingSchema = new schema({
         health: {
             type: Boolean,
         },
+        createdAt: {
+            type: String, 
+            default: moment().format('YYYY-MM-DD hh:mm:ss')
+        }
     }],
     feedBack: [{
         title: {

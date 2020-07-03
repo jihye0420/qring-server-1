@@ -17,15 +17,15 @@ router.post('/signup', async (req, res) => {
         pwCheck
     } = req.body;
 
-    // 비밀번호와 비밀번호 확인이 같지 않을 때
-    if (pw !== pwCheck) {
-        res.status(400).send(util.fail(400, "비밀번호가 맞지 않습니다."));
-        return;
-    }
-
     // 파라미터 확인
     if (!email || !pw || !pwCheck) {
         res.status(400).send(util.fail(400, "필수 정보를 입력하세요."));
+        return;
+    }
+
+    // 비밀번호와 비밀번호 확인이 같지 않을 때
+    if (pw !== pwCheck) {
+        res.status(400).send(util.fail(400, "비밀번호가 맞지 않습니다."));
         return;
     }
 
@@ -48,9 +48,7 @@ router.post('/signup', async (req, res) => {
         }
     } catch (err) {
         if (err) {
-            res.status(200).json({
-                message: "email server error."
-            })
+            res.status(500).send(util.fail(500, "이메일 서버 에러"));
             return;
         }
     }
@@ -110,6 +108,10 @@ router.post("/signin", async (req, res) => {
         salt: 1,
         password: 1
     });
+
+    if (result === null){
+        return res.status(400).send(util.fail(400, "가입 정보가 없습니다."));
+    }
 
     if (!result.auth) {
         return res.status(400).send(util.fail(400, "이메일 인증을 받지 않았습니다."));

@@ -4,6 +4,7 @@ const util  = require('../modules/util');
 const auth = require('../middleware/auth');
 const qrcodeGenerator = require('../modules/qrcode');
 const meetingModel = require('../models/meeting');
+const moment = require('moment');
 
 /**
  * QR코드 테스트
@@ -39,6 +40,8 @@ router.post('/', async(req, res) => {
       return true;
     }
   });
+
+  console.log(moment().format("dddd, MMMM Do YYYY, h:mm:ss a"));
 
   // DB에 추가하기
   if (!flag){
