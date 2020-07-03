@@ -3,10 +3,71 @@ const emailInfo = require('../config/emailinfo.json');
 const encrypt = require('../modules/crypto');
 const jwt = require('../modules/jwt');
 const adminModel = require('../models/admin');
+const util = require('../modules/util');
 
-module.exports = {
+const userController = {
+    // 회원 가입
+    signUp: async(req, res) => {
+        const {
+            email,
+            pw,
+            pwCheck
+        } = req.body;
+    
+        // 파라미터 확인
+        if (!email || !pw || !pwCheck) {
+            res.status(400).send(util.fail(400, "필수 정보를 입력하세요."));
+            return;
+        }
+    
+        // 비밀번호와 비밀번호 확인이 같지 않을 때
+        if (pw !== pwCheck) {
+            res.status(400).send(util.fail(400, "비밀번호가 맞지 않습니다."));
+            return;
+        }
+    
+        // id 중복 확인
+        try {
+            const result = await adminModel.findOne({
+                email: email
+            }, {
+                _id: 0,
+                email: 1,
+                auth: 1
+            })
+    
+            // email이 존재하면
+            if (result) {
+                // 이메일 인증을 한 경우
+                if (result.auth) {
+                    res.status(400).send(util.fail(400, "이미 존재하는 email입니다."));
+                    return;
+                }
+                // 이메일 인증을 하지 않은 경우
+                else{
+                    const token = await userController.sendEmail(email);
+                    await userController.changeAuthToken(email, token);
+                    res.status(200).send(util.success(200, "이미 회원가입을 하셨습니다. 이메일 인증을 해주세요."));
+                    return;
+                }
+            }
+        } catch (err) {
+            if (err) {
+                res.status(500).send(util.fail(500, "이메일 서버 에러"));
+                return;
+            }
+        }
+    
+        // 이메일 전송
+        const token = userController.sendEmail(email);
+    
+        await userController.saveUserInfo(email, pw, token);
+    
+        res.status(200).send(util.success(200, "이메일 전송 완료"));
+    },
 
-    sendEmail: (email) => {
+    // 이메일 전송
+    sendEmail: async (email) => {
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
@@ -39,7 +100,8 @@ module.exports = {
         return token;
     },
 
-    signUp: async (email, password, token) => {
+    // 회원 정보 저장
+    saveUserInfo: async (email, password, token) => {
         const {
             salt,
             hashed
@@ -54,6 +116,74 @@ module.exports = {
         await admin.save();
     },
 
-    
+    // 이메일 인증 토큰 변경
+    changeAuthToken: async(email, token) => {
+        const filter = {email : email};
+        const update = {authToken : token};
+        await adminModel.findOneAndUpdate(filter, update, {new: true});
+    },
 
+    // 이메일 인증
+    authenticate: async(req, res) => {
+        const email = req.query.email;
+        const token = req.query.token;
+
+        // token 일치 시 auth를 true로 변경
+        const filter = {
+            email: email,
+            authToken : token,
+        };
+        const update = {
+            auth: true
+        };
+        const result = await adminModel.findOneAndUpdate(filter, update, {
+            new: true
+        })
+        
+        if (result === null){
+            res.status(400).send(util.fail(400, "이메일 인증에 실패하였습니다."));
+        }else{
+            await adminModel.update(filter, {$unset : {authToken : 1}});    // authToken 필드 삭제
+            res.status(200).send(util.success(200, "이메일 인증에 성공하였습니다."));
+        }
+    },
+
+    // 로그인
+    signIn : async(req, res) => {
+        const {
+            email,
+            pw
+        } = req.body;
+    
+        const result = await adminModel.findOne({
+            email: email
+        }, {
+            _id: 0,
+            email: 1,
+            auth: 1,
+            salt: 1,
+            password: 1
+        });
+    
+        if (result === null){
+            return res.status(400).send(util.fail(400, "가입 정보가 없습니다."));
+        }
+    
+        // auth가 true인지 확인하기
+        if (!result.auth) {
+            return res.status(400).send(util.fail(400, "이메일 인증을 받지 않았습니다."));
+        }
+    
+        const salt = result.salt;
+        const hashed = await encrypt.encryptWithSalt(pw, salt);
+    
+        if (result.password === hashed){
+            const {token, _} = await jwt.sign(result)
+            return res.status(200).send(util.success(200, "로그인 성공", {accessToken : token}));
+        } else{
+            return res.status(400).send(util.fail(400, "로그인 실패"));
+        }
+    },
 }
+
+module.exports = userController;

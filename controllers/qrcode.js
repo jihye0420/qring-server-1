@@ -3,6 +3,7 @@ const qrCode = require('qrcode');
 const AWS = require('aws-sdk');
 const fs = require('fs');
 const s3Info = require('../config/s3info.json');
+const util  = require('../modules/util');
 const meetingModel = require('../models/meeting');
 
 const s3 = new AWS.S3({
@@ -12,7 +13,11 @@ const s3 = new AWS.S3({
 })
 
 module.exports = {
-    makeQrcode: async (userEmail, meetingId) => {
+    // QR 코드 생성
+    makeQrcode: async (req, res) => {
+        const userEmail = req.email;
+        const meetingId = req.params.meetingId;
+
         const qrInformation = `https://github.com/bokdoll`;
         
         qrCode.toFile(path.join(__dirname, `../public/qrcode/${userEmail}and${meetingId}.png`), qrInformation,
@@ -45,8 +50,19 @@ module.exports = {
                     });
                 });
         });
+
+        res.status(200).send(util.success(200, "QR코드 생성 성공"));
     }, 
-    checkSubmission: async (meetingId, email) => {
+
+    // 웹 출석 폼 제출
+    submitForm: async (req, res) => {
+        const meetingId = req.params.meetingId;
+        const {name, email, abroad, health} = req.body;
+
+        if (!meetingId){
+            res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
+        }
+
         const result = await meetingModel.findById({
             _id: meetingId
         }, {
@@ -61,5 +77,15 @@ module.exports = {
                 return true;
             }
         });
+        
+          // DB에 추가하기
+        if (!flag){
+            const filter = {_id: meetingId};
+            const update = {user : {name, email, abroad, health}};
+        
+            await meetingModel.findOneAndUpdate(filter, {$push : update});
+        
+            res.status(200).send(util.success(200, "제출에 성공하였습니다."));
+        }
     }
 }
