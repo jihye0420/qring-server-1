@@ -5,7 +5,9 @@ const statusCode = require('../modules/statusCode');
 const resMessage = require('../modules/responseMessage');
 
 module.exports = {
-    // router.post('/create',meetingController.create);
+    /**
+     * 첫 모임 생성 
+     */
     createNewGroup: async (req, res) => {
         const {
             admin,
@@ -22,10 +24,10 @@ module.exports = {
 
         var newMeeting = new meetingModel();
         newMeeting.name = req.body.name,
-        newMeeting.date = req.body.date,
-        newMeeting.startTime = req.body.startTime,
-        newMeeting.endTime = req.body.endTime,
-        newMeeting.headCount = req.body.headCount
+            newMeeting.date = req.body.date,
+            newMeeting.startTime = req.body.startTime,
+            newMeeting.endTime = req.body.endTime,
+            newMeeting.headCount = req.body.headCount
 
         const image = req.file.location;
         // data check - undefined
@@ -50,6 +52,10 @@ module.exports = {
         res.status(200).send(util.success(200, '새 모임 생성 성공'));
 
     },
+
+    /**
+     * 이어서 모임 생성
+     */
     createNewMeeting: async (req, res) => {
         const adminId = req.params.id;
         const {
@@ -60,16 +66,16 @@ module.exports = {
             headCount,
         } = req.body;
 
-        if ( !name || !date || !startTime || !endTime || !headCount) {
+        if (!name || !date || !startTime || !endTime || !headCount) {
             res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
         var newMeeting = new meetingModel();
         newMeeting.name = req.body.name,
-        newMeeting.date = req.body.date,
-        newMeeting.startTime = req.body.startTime,
-        newMeeting.endTime = req.body.endTime,
-        newMeeting.headCount = req.body.headCount
+            newMeeting.date = req.body.date,
+            newMeeting.startTime = req.body.startTime,
+            newMeeting.endTime = req.body.endTime,
+            newMeeting.headCount = req.body.headCount
 
         const image = req.file.location;
         // data check - undefined
@@ -95,7 +101,10 @@ module.exports = {
         res.status(200).send(util.success(200, '새 모임 생성 성공'));
 
     },
-    // router.get('/info',meetingController.getInfo);
+
+    /**
+     * 이어서 모임 생성할 때, default값으로 띄어줄때 사용하는 API
+     */
     getInfo: async (req, res) => {
         const meetingId = req.params.id
         const meetingObject = await meetingModel.findOne({
@@ -112,7 +121,10 @@ module.exports = {
             image: meetingObject.image
         })
     },
-    // router.put('/list',meetingController.putInfo);
+
+    /**
+     * 모임 편집 및 피드백 질문 편집 기능
+     */
     putInfo: async (req, res) => {
         const meetingId = req.params.id
         let meeting = await meetingModel.findOne({
@@ -125,7 +137,10 @@ module.exports = {
             startTime,
             endTime,
             headCount,
-            feedBack
+            title,
+            content,
+            choice,
+            form
         } = req.body;
 
         if (!name || !date || !startTime || !endTime || !headCount) {
@@ -162,32 +177,35 @@ module.exports = {
         await res.status(200).send(util.success(200, '모임 정보 수정 성공', meeting));
 
     },
-    // router.get('/list/:id',meetingController.list);
-    list : async (req, res)=>{
+
+    /**
+     * 이어서 모임 생성할 때, default값으로 띄어줄때 사용하는 API
+     */
+    list: async (req, res) => {
         const adminId = req.params.id;
-        
+
         const group = await groupModel.findOne({
-            admin : adminId
+            admin: adminId
         })
 
         const meetingArray = [];
-        const meetings= group.meetings;
-        for(let item of meetings){
+        const meetings = group.meetings;
+        for (let item of meetings) {
             let meeting = await meetingModel.findOne({
                 _id: item
             })
             meetingArray.push({
-                name : meeting.name,
-                date : meeting.date,
-                startTime : meeting.startTime,
-                endTime : meeting.endTime,
-                headCount : meeting.headCount,
-                image : meeting.image
+                name: meeting.name,
+                date: meeting.date,
+                startTime: meeting.startTime,
+                endTime: meeting.endTime,
+                headCount: meeting.headCount,
+                image: meeting.image
             })
         }
-        
+
         res.status(200).json({
-            meetings : meetingArray
+            meetings: meetingArray
         })
     },
     // router.get('/result',meetingController.result);

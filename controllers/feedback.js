@@ -14,16 +14,6 @@ module.exports = {
         // 모든 피드백 정보들 가져옴
         const meeting = await MeetingModel.findOne({
             _id: meetingId
-        }, {
-            _id: 1,
-            name: 1,
-            date: 1,
-            startTime: 1,
-            endTime: 1,
-            headCount: 1,
-            image: 1,
-            user: 1,
-            feedBack: 1
         });
 
 
