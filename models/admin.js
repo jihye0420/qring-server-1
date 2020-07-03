@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const moment = require('moment');
 
 const AdminSchema = new Schema({
     email: {
@@ -12,13 +13,12 @@ const AdminSchema = new Schema({
     authToken : String,
     name: {
         type: String,
-        //required: true,
+        required: true,
     },
-    phone: String,
     birth: {
-        type: Date,
-        //required: true,
-    }
+        type: String,
+        required: true,
+    },
 }, {
     versionKey: false
 });
