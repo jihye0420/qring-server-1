@@ -3,9 +3,15 @@
 
 
 
-### 라이브러리
+### 모듈
 
-* mongoose
+- nodemailer : 회원 가입 시 이메일 인증을 위한 이메일 전송
+- jsonwebtoken
+- rand-token
+- pbkdf2
+- mongoose
+- qrcode-with-logos
+- aws-sdk
 
 
 
@@ -20,25 +26,16 @@
 
 ## Code Convention
 
-> 네이밍
+> 👅 네이밍 규칙
 
-* camel case: 단어가 합쳐진 부분마다 맨 처음 글자를 대문자로 표기하는 방법!
-ex) startTime
+1. **변수명** : 카멜케이스  (`inputBox`)
+2. **폴더명, 파일명** : 소문자 (`inputbox`)
+3. **클래스명** : 첫글자 대문자 (`InputBox`)
 
-<br>
+> ➕ more...
 
-> 프로그래밍
-* 변수는 const
-* 함수 위에 아래 예시처럼 써주기!  <br>
-/*  <br>
-    ✔️ update profile <br>
-    METHOD : POST <br>
-    URI : localhost:3000/user/profile <br>
-    REQUEST HEADER : JWT  <br>
-    REQUEST BODY : ⭐️image file ⭐️  <br>
-    RESPONSE DATA : user profile   <br>
-*/
-
+- `var` 지양 / `let, const` 지향
+- 비동기는 promise의 `then`보다 `async/await` 사용
 
 
 
@@ -78,25 +75,9 @@ ex) `[UPDATE] 구현내용`
 
 ## 요구사항
 
-* 회원가입  -> 현주
+![image](https://user-images.githubusercontent.com/37949197/86433606-297a8380-bd36-11ea-9e78-fd7675928dbc.png)
 
-  * 이메일인증
-    * 이메일인증 -> 메일웹으로
-  * 인증여부확인
-  
-
-![KakaoTalk_20200630_145441181](https://user-images.githubusercontent.com/37949197/86088691-c7294500-bae1-11ea-9016-664c332b7331.png)
-
-* 모임만들기  -> 지윤
-
-  * 모임 데이터값 받아서 저장
-  
-* 이어서만들기
-  * 각 모임 최신것 하나씩 보여줄 데이터 가져옴
-  * 모임 데이터값 받아서 저장
-
-* 피드백 만들기  -> 민지
-    * 단답/객관/평점 질문 받아오기(단답, 객관식, 평점)
+![image](https://user-images.githubusercontent.com/37949197/86433612-2f706480-bd36-11ea-9d88-e8cd414fe5b9.png)
 
  
 
