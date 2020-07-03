@@ -9,6 +9,7 @@ const AdminSchema = new Schema({
     password: String,
     salt: String,
     auth: Boolean,
+    authToken : String,
     name: {
         type: String,
         //required: true,
@@ -18,6 +19,8 @@ const AdminSchema = new Schema({
         type: Date,
         //required: true,
     }
+}, {
+    versionKey: false
 });
 
 module.exports = mongoose.model("admin", AdminSchema);
