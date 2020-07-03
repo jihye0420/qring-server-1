@@ -24,5 +24,9 @@ router.post("/signin", userController.signIn);
  */
 router.post("/profile", auth.checkToken, userController.editProfile);
 
+/**
+ * 프로필 읽기
+ */
+router.get("/profile", auth.checkToken, userController.readProfile);
 
 module.exports = router;
