@@ -1,9 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const util = require('../modules/util');
-const jwt = require('../modules/jwt');
 const userController = require('../controllers/user');
-const adminModel = require('../models/admin');
 const auth = require('../middleware/auth');
 
 /**
@@ -20,6 +17,12 @@ router.get("/auth", userController.authenticate);
  * 로그인
  */
 router.post("/signin", userController.signIn);
+
+
+/**
+ * 프로필 수정
+ */
+router.post("/profile", auth.checkToken, userController.editProfile);
 
 
 module.exports = router;

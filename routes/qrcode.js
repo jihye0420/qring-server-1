@@ -2,9 +2,6 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const qrcodeController = require('../controllers/qrcode');
-const meetingModel = require('../models/meeting');
-const moment = require('moment');
-const { success } = require('../modules/util');
 
 /**
  * QR 코드 생성

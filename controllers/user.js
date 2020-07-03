@@ -6,16 +6,20 @@ const adminModel = require('../models/admin');
 const util = require('../modules/util');
 
 const userController = {
-    // 회원 가입
-    signUp: async(req, res) => {
+    /**
+     * 회원 가입
+     */
+    signUp : async(req, res) => {
         const {
             email,
             pw,
-            pwCheck
+            pwCheck,
+            name,
+            birth
         } = req.body;
     
         // 파라미터 확인
-        if (!email || !pw || !pwCheck) {
+        if (!email || !pw || !pwCheck || !name || !birth) {
             res.status(400).send(util.fail(400, "필수 정보를 입력하세요."));
             return;
         }
@@ -58,16 +62,17 @@ const userController = {
             }
         }
     
-        // 이메일 전송
-        const token = userController.sendEmail(email);
+        const token = await userController.sendEmail(email);    // 이메일 전송
     
-        await userController.saveUserInfo(email, pw, token);
+        await userController.saveUserInfo(email, pw, token, name, birth);    // 회원 정보 저장
     
         res.status(200).send(util.success(200, "이메일 전송 완료"));
     },
 
-    // 이메일 전송
-    sendEmail: async (email) => {
+    /**
+     * 이메일 전송
+     */
+    sendEmail : async (email) => {
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
@@ -100,8 +105,10 @@ const userController = {
         return token;
     },
 
-    // 회원 정보 저장
-    saveUserInfo: async (email, password, token) => {
+    /**
+     * 회원 정보 저장
+     */
+    saveUserInfo : async (email, password, token, name, birth) => {
         const {
             salt,
             hashed
@@ -111,27 +118,32 @@ const userController = {
         admin.email = email;
         admin.password = hashed;
         admin.salt = salt;
+        admin.name = name;
+        admin.birth = birth;
         admin.auth = false;
         admin.authToken = token;
         await admin.save();
     },
 
-    // 이메일 인증 토큰 변경
-    changeAuthToken: async(email, token) => {
+    /**
+     * 이메일 인증 토큰 변경
+     */
+    changeAuthToken : async(email, token) => {
         const filter = {email : email};
         const update = {authToken : token};
         await adminModel.findOneAndUpdate(filter, update, {new: true});
     },
 
-    // 이메일 인증
-    authenticate: async(req, res) => {
+    /**
+     * 이메일 인증
+     */
+    authenticate : async(req, res) => {
         const email = req.query.email;
         const token = req.query.token;
 
         // token 일치 시 auth를 true로 변경
         const filter = {
-            email: email,
-            authToken : token,
+            email: email
         };
         const update = {
             auth: true
@@ -140,15 +152,20 @@ const userController = {
             new: true
         })
         
-        if (result === null){
-            res.status(400).send(util.fail(400, "이메일 인증에 실패하였습니다."));
-        }else{
+        if (result.authToken === undefined){
+            res.status(400).send(util.fail(400, "이미 인증된 회원입니다."));
+        }
+        if (result.authToken === token){
             await adminModel.update(filter, {$unset : {authToken : 1}});    // authToken 필드 삭제
             res.status(200).send(util.success(200, "이메일 인증에 성공하였습니다."));
+        } else {
+            res.status(400).send(util.fail(400, "이메일 인증에 실패하였습니다."));
         }
     },
 
-    // 로그인
+    /**
+     * 로그인
+     */
     signIn : async(req, res) => {
         const {
             email,
@@ -184,6 +201,26 @@ const userController = {
             return res.status(400).send(util.fail(400, "로그인 실패"));
         }
     },
+
+    /**
+     * 프로필 수정
+     */
+    editProfile : async (req, res) => {
+        const userEmail = req.email;
+        const {name, birth} = req.body;
+
+        // 파라미터 확인
+        if (!name || !birth) {
+            res.status(400).send(util.fail(400, "필수 정보를 입력하세요."));
+            return;
+        }
+
+        const filter = {email : userEmail};
+        const update =  {name : name, birth : birth};
+        await adminModel.findOneAndUpdate(filter, update, {new : true});
+        
+        return res.status(200).send(util.success(200, "프로필 수정 성공"));
+    }
 }
 
 module.exports = userController;
