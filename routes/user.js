@@ -56,9 +56,9 @@ router.post('/signup', async (req, res) => {
     }
 
     // 이메일 전송
-    user.sendEmail(email);
+    const token = user.sendEmail(email);
 
-    await user.signUp(email, pw);
+    await user.signUp(email, pw, token);
 
     res.status(200).send(util.success(200, "이메일 전송 완료"));
 });
@@ -71,13 +71,10 @@ router.get("/auth", async (req, res) => {
     const email = req.query.email;
     const token = req.query.token;
 
-    if (token !== 'aqswdefr') {
-        return res.status(400).send(util.fail(400, "이메일 인증을 받지 않았습니다."));
-    }
-
     // token 일치 시 auth를 true로 변경
     const filter = {
-        email: email
+        email: email,
+        authToken : token,
     };
     const update = {
         auth: true
@@ -85,8 +82,13 @@ router.get("/auth", async (req, res) => {
     const result = await adminModel.findOneAndUpdate(filter, update, {
         new: true
     })
-
-    res.status(200).send(util.success(200, "이메일 인증에 성공하였습니다."));
+    
+    if (result === null){
+        res.status(400).send(util.fail(400, "이메일 인증에 실패하였습니다."));
+    }else{
+        await adminModel.update(filter, {$unset : {authToken : 1}});    // authToken 필드 삭제
+        res.status(200).send(util.success(200, "이메일 인증에 성공하였습니다."));
+    }
 });
 
 /**
