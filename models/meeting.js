@@ -37,7 +37,7 @@ const MeetingSchema = new schema({
             type: String,
             required: true,
         },
-        abroad:{
+        abroad: {
             type: Boolean,
         },
         health: {
@@ -65,6 +65,8 @@ const MeetingSchema = new schema({
             type: String,
         }]
     }]
+}, {
+    versionKey: false
 });
 
 module.exports = mongoose.model("meeting", MeetingSchema);

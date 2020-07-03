@@ -10,6 +10,8 @@ const GroupSchema = new schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'meeting'
     }],
+}, {
+    versionKey: false
 });
 
 module.exports = mongoose.model("group", GroupSchema);

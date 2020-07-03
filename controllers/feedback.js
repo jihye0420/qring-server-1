@@ -70,7 +70,9 @@ module.exports = {
         // 데이터베이스에 저장
         await newResult.save();
 
-        res.status(200).send(util.success(200, "피드백 질문 추가 완료", newResult));
+        res.status(200).send(util.success(200, "피드백 질문 추가 완료", {
+            data: newResult
+        }));
         //res.status(200).send(util.success(200, "_id는", result));
 
     },
