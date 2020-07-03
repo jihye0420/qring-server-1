@@ -1,7 +1,7 @@
 const randToken = require('rand-token');
 const jwt = require('jsonwebtoken');
-const secretKey = require('../config/secretKey').secretKey;
-const options = require('../config/secretKey').options;
+const secretKey = require('../config/secretKey.json').secretKey;
+const options = require('../config/secretKey.json').options;
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 
