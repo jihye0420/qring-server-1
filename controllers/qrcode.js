@@ -46,4 +46,20 @@ module.exports = {
                 });
         });
     }, 
+    checkSubmission: async (meetingId, email) => {
+        const result = await meetingModel.findById({
+            _id: meetingId
+        }, {
+            _id : 0,
+            user : 1,
+        });
+
+          // 중복 제출 방지 : 똑같은 이메일로 제출한 경우
+        const flag = await result.user.some(element => {
+            if (email === element.email){
+                res.status(400).send(util.fail(400, "이미 제출하셨습니다."));
+                return true;
+            }
+        });
+    }
 }
