@@ -244,8 +244,22 @@ module.exports = {
             return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
         }
     },
-    // router.get('/result',meetingController.result);
-    result: async (req, res) => {
+    
+    /**
+     * 전체 참석자 정보 받아오기
+     */
+    readPeopleInfo: async(req, res) =>{
+        const meetingId = req.params.meetingId;
+        const filter = {_id : meetingId};
+    
+        let result = {};
+        try{
+            result = await meetingModel.findById(filter, {_id: 0, user: 1});
+        } catch (e){
+            return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
+        }
+        console.log(result);
 
+        return res.status(200).send(util.success(200, "전체 참석자 정보 불러오기 성공", result));
     }
 }
