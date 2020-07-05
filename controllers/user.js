@@ -89,7 +89,7 @@ const userController = {
             to: email, // 수신 메일 주소
             subject: "안녕하세요, 큐링입니다. 이메일 인증을 해주세요.",
             html: "<p>아래의 링크를 클릭해주세요 !</p>" +
-                "<a href='http://localhost:3001/user/auth?email=" +
+                "<a href='http://qring-server-dev.ap-northeast-2.elasticbeanstalk.com/user/auth?email=" +
                 email +
                 "&token="+token+"'>인증하기</a>",
         };
@@ -221,6 +221,9 @@ const userController = {
         return res.status(200).send(util.success(200, "프로필 수정 성공"));
     },
 
+    /**
+     * 프로필 읽기
+     */
     readProfile : async(req, res) => {
         const userEmail = req.email;
 

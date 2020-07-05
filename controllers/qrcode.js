@@ -13,13 +13,17 @@ const s3 = new AWS.S3({
 })
 
 module.exports = {
-    // QR 코드 생성
+    /**
+     * QR 코드 생성
+     */
     makeQrcode: async (req, res) => {
         const userEmail = req.email;
         const meetingId = req.params.meetingId;
 
         const qrInformation = `https://github.com/bokdoll`;
         
+        qrCode
+
         qrCode.toFile(path.join(__dirname, `../public/qrcode/${userEmail}and${meetingId}.png`), qrInformation,
             (err, string) => {
                 if (err) {
@@ -54,7 +58,9 @@ module.exports = {
         res.status(200).send(util.success(200, "QR코드 생성 성공"));
     }, 
 
-    // 웹 출석 폼 제출
+    /** 
+     * 웹 출석 폼 제출
+    */ 
     submitForm: async (req, res) => {
         const meetingId = req.params.meetingId;
         const {name, email, abroad, health} = req.body;
