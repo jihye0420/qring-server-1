@@ -4,9 +4,6 @@ const AdminModel = require('../models/admin.js');
 const MeetingModel = require('../models/meeting.js');
 const async = require('pbkdf2/lib/async');
 const util = require('../modules/util');
-const {
-    array
-} = require('../modules/multer.js');
 
 
 module.exports = {
@@ -64,6 +61,36 @@ module.exports = {
 
         res.status(200).send(util.success(200, "피드백 질문 목록 완료", meeting));
 
+    },
+
+    result: async (req, res) => {
+
+
+        let feedBack = [];
+        cnt = 1;
+        for (let item of meeting.feedBack) {
+            if (cnt > 3) break;
+            feedBack.push(item);
+            cnt++;
+        }
+
+        const data = {
+            meeting: {
+                user: user,
+                feedBack: feedBack,
+                name: meeting.name,
+                date: meeting.date,
+                startTime: meeting.startTime,
+                endTime: meeting.endTime,
+                headCount: meeting.headCount,
+                image: meeting.image,
+                qrImg: meeting.qrImg
+            }
+        }
+
+        return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
+
+        res.status(200).send(util.success(200, "피드백 결과 조회 완료", meeting));
     }
 
 }
