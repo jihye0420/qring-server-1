@@ -21,6 +21,8 @@ router.put('/info/:id',auth.checkToken, upload.single('image'), meetingControlle
 
 //모임 회차 정보 조회
 router.get('/list/:round',auth.checkToken, meetingController.round);
-// router.get('/result',meetingController.result);
+
+// 전체 참석자 정보
+router.get('/result/people/:meetingId', auth.checkToken, meetingController.readPeopleInfo);
 
 module.exports = router;

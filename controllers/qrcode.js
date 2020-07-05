@@ -95,15 +95,4 @@ module.exports = {
         }
     },
 
-    /**
-     * 전체 참석자 정보
-     */
-    readPeopleInfo: async(req, res) =>{
-        const email = req.email;
-        const meetingId = req.params.meetingId;
-        const filter = {_id : meetingId};
-        
-        const result = await meetingModel.findOne(filter, {user : 1});
-        return res.status(200).send(util.success(200, "전체 참석자 정보 불러오기 성공", result));
-    }
 }
