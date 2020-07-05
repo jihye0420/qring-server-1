@@ -20,7 +20,7 @@ router.put('/info/:id',auth.checkToken, upload.single('image'), meetingControlle
 //router.get('/list/:id',auth.checkToken,meetingController.list);
 
 //모임 회차 정보 조회
-router.get('/list/:round',auth.checkToken, meetingController.round);
+router.get('/list/:id/:round',auth.checkToken, meetingController.round);
 // router.get('/result',meetingController.result);
 
 module.exports = router;

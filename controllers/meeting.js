@@ -176,15 +176,11 @@ module.exports = {
      * 모임 리스트에서 각 회차의 정보 조회 round가 -1일때 마지막 회차와 회차 수 반환, 다른 수 일때는 해당 회차 정보 반환
      */
     round: async (req, res) => {
-        const adminEmail = req.email;
-        const admin = await adminModel.findOne({
-            email: adminEmail
-        })
-        const adminId = admin._id;
+        const groupId = req.params.id;
         const round = req.params.round;
 
         const group = await groupModel.findOne({
-            admin: adminId
+            _id: groupId
         })
 
         const meetings = group.meetings;
@@ -196,25 +192,17 @@ module.exports = {
 
             let user = [];
             let cnt = 1;
-            for (let item of meeting.user) {
-                if (cnt > 3) break;
-                user.push(item);
+            for (let i =meeting.user.length-1; i>=0; i--) {
+                if (cnt > 4) break;
+                user.push(meeting.user[i]);
                 cnt++;
             }
 
-            let feedBack = [];
-            cnt = 1;
-            for (let item of meeting.feedBack) {
-                if (cnt > 3) break;
-                feedBack.push(item);
-                cnt++;
-            }
 
             const data = {
                 meeting: {
                     _id : meeting._id,
                     user: user,
-                    feedBack: feedBack,
                     name: meeting.name,
                     date: meeting.date,
                     startTime: meeting.startTime,
@@ -234,16 +222,8 @@ module.exports = {
             let user = [];
             let cnt = 1;
             for (let item of meeting.user) {
-                if (cnt > 3) break;
+                if (cnt > 4) break;
                 user.push(item);
-                cnt++;
-            }
-
-            let feedBack = [];
-            cnt = 1;
-            for (let item of meeting.feedBack) {
-                if (cnt > 3) break;
-                feedBack.push(item);
                 cnt++;
             }
 
@@ -251,7 +231,6 @@ module.exports = {
                 meeting: {
                     _id : meeting._id,
                     user: user,
-                    feedBack: feedBack,
                     name: meeting.name,
                     date: meeting.date,
                     startTime: meeting.startTime,
