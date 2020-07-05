@@ -200,6 +200,7 @@ module.exports = {
 
 
             const data = {
+                meetingSum : meetings.length,
                 meeting: {
                     _id : meeting._id,
                     user: user,
