@@ -13,9 +13,4 @@ router.get('/:meetingId', auth.checkToken, qrcodeController.makeQrcode);
  */
 router.post('/:meetingId', qrcodeController.submitForm);
 
-/**
- * 전체 참석자 정보
- */
-router.get('/people/:meetingId', auth.checkToken, qrcodeController.readPeopleInfo);
-
 module.exports = router;
