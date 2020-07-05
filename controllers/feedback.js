@@ -6,7 +6,7 @@ const async = require('pbkdf2/lib/async');
 const util = require('../modules/util');
 const {
     array
-} = require('../modules/multer.js');
+} = require('../middleware/multer.js');
 
 
 module.exports = {
