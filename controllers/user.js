@@ -183,12 +183,12 @@ const userController = {
         });
     
         if (result === null){
-            return res.status(400).send(util.fail(400, "가입 정보가 없습니다."));
+            return res.status(200).send(util.fail(400, "가입 정보가 없습니다."));
         }
     
         // auth가 true인지 확인하기
         if (!result.auth) {
-            return res.status(400).send(util.fail(400, "이메일 인증을 받지 않았습니다."));
+            return res.status(200).send(util.fail(400, "이메일 인증을 받지 않았습니다."));
         }
     
         const salt = result.salt;
@@ -198,7 +198,7 @@ const userController = {
             const {token, _} = await jwt.sign(result)
             return res.status(200).send(util.success(200, "로그인 성공", {accessToken : token}));
         } else{
-            return res.status(400).send(util.fail(400, "로그인 실패"));
+            return res.status(200).send(util.fail(400, "로그인 실패"));
         }
     },
 
