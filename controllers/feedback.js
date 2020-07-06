@@ -11,6 +11,10 @@ module.exports = {
     create: async (req, res) => {
         const meetingId = req.params.id;
 
+        if (!meetingId) {
+            res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
+        }
+
         // 모든 피드백 정보들 가져옴
         const meeting = await MeetingModel.findOne({
             _id: meetingId
@@ -54,6 +58,10 @@ module.exports = {
     readAll: async (req, res) => {
         const meetingId = req.params.id;
 
+        if (!meetingId) {
+            res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
+        }
+
         // 모든 피드백 정보들 가져옴
         const meeting = await MeetingModel.findOne({
             _id: meetingId
@@ -66,6 +74,10 @@ module.exports = {
     result: async (req, res) => {
         //0이 단답형, 1이 객관식, 2는 평점
         const meetingId = req.params.id;
+
+        if (!meetingId) {
+            res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
+        }
 
         // 총 피드백 현황(피드백 전체 갯수도 보내야함), 타이틀, 내용 리스트도 보내야함
 
