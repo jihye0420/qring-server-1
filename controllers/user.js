@@ -20,7 +20,7 @@ const userController = {
     
         // 파라미터 확인
         if (!email || !pw || !pwCheck || !name || !birth) {
-            res.status(400).send(util.fail(400, "필수 정보를 입력하세요."));
+            res.status(402).send(util.fail(402, "필수 정보를 입력하세요."));
             return;
         }
     
@@ -44,14 +44,14 @@ const userController = {
             if (result) {
                 // 이메일 인증을 한 경우
                 if (result.auth) {
-                    res.status(400).send(util.fail(400, "이미 존재하는 email입니다."));
+                    res.status(401).send(util.fail(401, "이미 존재하는 email입니다."));
                     return;
                 }
                 // 이메일 인증을 하지 않은 경우
                 else{
-                    const token = await userController.sendEmail(email);
+                    const token = await userController.sendEmail(email);ㅋㅋㅋㅋ
                     await userController.changeAuthToken(email, token);
-                    res.status(200).send(util.success(200, "이미 회원가입을 하셨습니다. 이메일 인증을 해주세요."));
+                    res.status(201).send(util.success(201, "이미 회원가입을 하셨습니다. 이메일 인증을 해주세요."));
                     return;
                 }
             }
@@ -64,9 +64,9 @@ const userController = {
     
         const token = await userController.sendEmail(email);    // 이메일 전송
     
-        await userController.saveUserInfo(email, pw, token, name, birth);    // 회원 정보 저장
+        userController.saveUserInfo(email, pw, token, name, birth);    // 회원 정보 저장
     
-        res.status(200).send(util.success(200, "이메일 전송 완료"));
+        return res.status(200).send(util.success(200, "이메일 전송 완료"));
     },
 
     /**
@@ -183,12 +183,12 @@ const userController = {
         });
     
         if (result === null){
-            return res.status(200).send(util.fail(400, "가입 정보가 없습니다."));
+            return res.status(401).send(util.fail(401, "이메일을 확인해주세요."));
         }
     
         // auth가 true인지 확인하기
         if (!result.auth) {
-            return res.status(200).send(util.fail(400, "이메일 인증을 받지 않았습니다."));
+            return res.status(402).send(util.fail(402, "이메일 인증을 받지 않았습니다."));
         }
     
         const salt = result.salt;
@@ -198,7 +198,7 @@ const userController = {
             const {token, _} = await jwt.sign(result)
             return res.status(200).send(util.success(200, "로그인 성공", {accessToken : token}));
         } else{
-            return res.status(200).send(util.fail(400, "로그인 실패"));
+            return res.status(400).send(util.fail(400, "비밀번호가 일치하지 않습니다."));
         }
     },
 
