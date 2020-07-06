@@ -11,6 +11,6 @@ router.post('/question/:id', auth.checkToken, feedbackController.create);
 router.get('/question/:id', auth.checkToken, feedbackController.readAll);
 
 // 피드백 결과 목록
-router.get('/feedback/result/:id/:round', auth.checkToken, feedbackController.result);
+router.get('/result/:id/:round', auth.checkToken, feedbackController.result);
 
 module.exports = router;

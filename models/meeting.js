@@ -9,7 +9,7 @@ const MeetingSchema = new schema({
         required: true,
     },
     date: {
-        type: Date,
+        type: String,
         required: true,
     },
     startTime: {
