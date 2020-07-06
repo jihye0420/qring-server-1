@@ -19,8 +19,41 @@
 <body>
   <div id="wrap">
     <img src="https://qring.s3.ap-northeast-2.amazonaws.com/qring_logo.png" style="width: 80px;" />
-    <form class="formform" action="/qrcode/feedback/5f02cde923aa7292ac990ce6" method="POST" autocomplete="off">
+    <form class="formform" action="/qrcode/1" method="POST" autocomplete="off">
+      <% feedBack.forEach(n =>{ %>
+      <% if(n.form == 0){ %>
       <div class="form-input">
+        <div class="wrap_bold" style="margin-top: 20px;"><%= n.title %></div>
+        <div class="wrap_sub" style="margin-top: 5px;"><%= n.content %></div>
+        <label>
+          <input class="input_name" name="name" required>
+          <span class="placeholder"></span>
+        </label>
+      </div>
+      <% } else if(n.form == 1){ %>
+      <div class="wrap_bold" style="margin-top: 20px;"><%= n.title %></div>
+      <div class="wrap_sub" style="margin-top: 5px;"><%= n.content %></div>
+      <div class="radio_wrap" style="text-align:left;">
+        <% n.choice.forEach(t=>{ %>
+        <label class="container"><%= t %>
+          <input type="radio" value="true" name="oversea">
+          <span class="checkmark"></span>
+        </label><br>
+        <% }) %>
+      </div>
+      <% } else if(n.form == 2){ %>
+      <div class="wrap_bold" style="margin-top: 20px;"><%= n.title %></div>
+      <div class="wrap_sub" style="margin-top: 5px;"><%= n.content %></div>
+      <div class="starRev">
+        <span class="starR on">별1</span>
+        <span class="starR">별2</span>
+        <span class="starR">별3</span>
+        <span class="starR">별4</span>
+        <span class="starR">별5</span>
+      </div>
+      <% } %>
+      <% }) %>
+      <!-- <div class="form-input">
         <label>
           <input class="input_name" name="name" required>
           <span class="placeholder">이름</span>
@@ -31,7 +64,7 @@
           <input class="input_phone" type="text" maxlength="13" autocomplete="off" name="phone" required>
           <span class="placeholder">전화번호</span>
         </label>
-      </div>
+      </div> -->
       <!-- <div class="form-input">
         <label>
           <input class="input_address" name="address" required>
@@ -61,7 +94,7 @@
           <span class="checkmark"></span>
         </label>
       </div> -->
-      <div class="wrap_bold" style="margin-top: 20px;">최근 14일내 해외여행을<br> 다녀온 적이 있나요?</div>
+      <!-- <div class="wrap_bold" style="margin-top: 20px;">최근 14일내 해외여행을<br> 다녀온 적이 있나요?</div>
       <div class="radio_wrap" style="text-align:left;">
         <label class="container">예
           <input type="radio" value="true" name="oversea">
@@ -71,22 +104,9 @@
           <input type="radio" value="false" checked="checked" name="oversea">
           <span class="checkmark"></span>
         </label>
-      </div>
+      </div> -->
 
-      <div class="wrap_bold" style="margin-top: 20px;">아래 문항중 하나라도 해당되는 사항이 있나요?</div>
-      <div class="wrap_sub" style="margin-top: 5px;margin-bottom:10px;">1. 기침/발열 등 나타나는 증상이 있습니다.<br>
-        2. 자가격리자에 해당합니다.<br>
-        3. 최근 2주간 감염자 동선과 겹치는 곳이 있습니다.</div>
-      <div class="radio_wrap" style="text-align:left;">
-        <label class="container">예
-          <input type="radio" value="true" name="health">
-          <span class="checkmark"></span>
-        </label><br>
-        <label class="container">아니요
-          <input type="radio" value="false" checked="checked" name="health">
-          <span class="checkmark"></span>
-        </label>
-      </div>
+
       <div style="margin-top:12px;font-weight: 100;font-size:12px;color:grey;">※ 입력받은 정보는 역학조사를 할 경우에만 제공될
         예정이며,<br>수집일로부터
         2주뒤에 파기될 예정입니다.
@@ -108,6 +128,12 @@
         )
         .replace("--", "-")
       );
+    });
+
+    $('.starRev span').click(function () {
+      $(this).parent().children('span').removeClass('on');
+      $(this).addClass('on').prevAll('span').addClass('on');
+      return false;
     });
 
     $(document).ready(function () {
