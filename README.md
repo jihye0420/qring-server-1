@@ -2,6 +2,7 @@
 
 <img style="border: 1px solid black !important; border-radius:20px;" src="https://user-images.githubusercontent.com/37949197/86798642-f6c0ea00-c0ab-11ea-92ee-56c7f83518be.png" width="200px" />
 
+
 ![node_badge](https://img.shields.io/badge/node-%3E%3D%2012.13.0-green)
 ![npm_bedge](https://img.shields.io/badge/npm-v6.14.2-blue)
 
@@ -21,6 +22,10 @@
 QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 피드백을 통해 모임이 더 성숙해지고, 구성원은 함께 성장하게 됩니다.
 
 <br>
+
+## :bookmark_tabs: 기능 명세서
+* [기능 명세서 노션 링크](https://www.notion.so/caa0852754f44797a3ecf35168023d06)</b>
+
 
 ## :earth_americas: Team Role 
 
