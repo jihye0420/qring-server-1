@@ -9,7 +9,7 @@ const util = require('../modules/util');
 module.exports = {
     //피드백 질문 생성
     create: async (req, res) => {
-        const meetingId = req.params.id;
+        const meetingId = req.params.meetingId;
 
         if (!meetingId) {
             res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
@@ -55,20 +55,53 @@ module.exports = {
 
     },
 
-    readAll: async (req, res) => {
-        const meetingId = req.params.id;
+    newReadAll: async (req, res) => {
+        const meetingId = req.params.nowId;
 
         if (!meetingId) {
             res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
         }
 
-        // 모든 피드백 정보들 가져옴
+        // 모든 피드백 질문들 가져옴
         const meeting = await MeetingModel.findOne({
             _id: meetingId
         });
 
         res.status(200).send(util.success(200, "피드백 질문 목록 완료", meeting));
 
+    },
+
+    // 이어서 모임 생성 시, 이전 회차에서 만들어져있던 피드백 목록 가져옴
+    beforeReadAll: async (req, res) => {
+        const nowMeetingId = req.params.nowId;
+        const beforeMeetingId = req.params.beforeId;
+
+        if (!nowMeetingId || !beforeMeetingId) {
+            res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
+        }
+
+        // 이전 미팅 가져옴
+        const beforeMeeting = await MeetingModel.findOne({
+            _id: beforeMeetingId
+        });
+
+        var array = [];
+
+        for (var item of beforeMeeting.feedBack) {
+            array.push(item);
+        }
+
+        // 지금 미팅 가져옴
+        const nowMeeting = await MeetingModel.findOne({
+            _id: nowMeetingId
+        });
+
+        nowMeeting.feedBack = array;
+
+        // 데이터베이스에 저장
+        await nowMeeting.save();
+
+        res.status(200).send(util.success(200, "피드백 질문 목록 완료", nowMeeting));
     },
 
     result: async (req, res) => {
