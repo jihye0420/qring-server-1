@@ -136,7 +136,6 @@ module.exports = {
     });
 
     // DB에 추가하기
-    // flag가 false면
     if (!flag) {
       // 지각 여부 체크
       let attendance = 1;
