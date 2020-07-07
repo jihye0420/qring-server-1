@@ -1,16 +1,19 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const auth = require('../middleware/auth');
-const qrcodeController = require('../controllers/qrcode');
+const auth = require("../middleware/auth");
+const qrcodeController = require("../controllers/qrcode");
 
 /**
  * QR 코드 생성
  */
-router.get('/:meetingId', auth.checkToken, qrcodeController.makeQrcode);
+router.get("/:meetingId", auth.checkToken, qrcodeController.makeQrcode);
 
 /**
  * 웹 출석 폼 제출
  */
-router.post('/:meetingId', qrcodeController.submitForm);
+
+router.post("/:meetingId", qrcodeController.submitForm);
+router.get("/check/:meetingId", qrcodeController.userCheck);
+router.post("/feedback/:meetingId", qrcodeController.feedbackCheck);
 
 module.exports = router;

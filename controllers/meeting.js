@@ -17,10 +17,11 @@ module.exports = {
             date,
             startTime,
             endTime,
+            late,
             headCount,
         } = req.body;
 
-        if (!name || !date || !startTime || !endTime || !headCount) {
+        if (!name || !date || !startTime || !endTime || !late || !headCount) {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
@@ -29,6 +30,7 @@ module.exports = {
             newMeeting.date = req.body.date,
             newMeeting.startTime = req.body.startTime,
             newMeeting.endTime = req.body.endTime,
+            newMeeting.late = req.body.late,
             newMeeting.headCount = req.body.headCount
 
         const image = req.file.location;
@@ -69,10 +71,11 @@ module.exports = {
             date,
             startTime,
             endTime,
+            late,
             headCount,
         } = req.body;
 
-        if (!name || !date || !startTime || !endTime || !headCount) {
+        if (!name || !date || !startTime || !endTime || !late || !headCount) {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
@@ -81,6 +84,7 @@ module.exports = {
             newMeeting.date = req.body.date,
             newMeeting.startTime = req.body.startTime,
             newMeeting.endTime = req.body.endTime,
+            newMeeting.late = req.body.late,
             newMeeting.headCount = req.body.headCount
 
         const image = req.file.location;
@@ -105,6 +109,48 @@ module.exports = {
         await group.save();
 
         return res.status(200).send(util.success(200, '이어서 모임 생성 성공', group));
+
+    },
+    /**
+     * 모임 생성시 시간 중복 확인
+     */
+    time: async(req, res) =>{
+        const adminEmail = req.email;
+        const admin = await adminModel.findOne({
+            email: adminEmail
+        })
+        const allGroup = await groupModel.find({
+            admin: admin._id
+        });
+
+        const {
+            date,
+            startTime,
+            endTime,
+        } = req.body;
+
+
+        for (let groupItem of allGroup){
+            for (let meetingId of groupItem.meetings){
+                let meetingItem = await meetingModel.findOne({
+                    _id: meetingId
+                })
+
+                if (meetingItem.date == date){
+                    if (meetingItem.endTime <= startTime) {
+                        continue;
+                    }
+                    else if (meetingItem.startTime >= endTime) {
+                        continue;
+                    }
+                    else {
+                        return res.status(400).send(util.fail(400, '모임 시간이 중복됩니다.'));
+                    }
+                }
+            }
+        }
+        
+        return res.status(200).send(util.success(200, '모임 생성이 가능한 시간입니다.'))
 
     },
 
@@ -167,11 +213,11 @@ module.exports = {
     /**
      * 모임 리스트 (각 그룹에서 최신 모임반환) 진행중 / 완료 & 예정 나눠서 반환
      */
-    list : async(req,res)=>{
-        const adminId = req.params.id;
+    // list : async(req,res)=>{
+    //     const adminId = req.params.id;
 
 
-    },
+    // },
     /**
      * 모임 리스트에서 각 회차의 정보 조회 round가 -1일때 마지막 회차와 회차 수 반환, 다른 수 일때는 해당 회차 정보 반환
      */
@@ -208,6 +254,7 @@ module.exports = {
                     date: meeting.date,
                     startTime: meeting.startTime,
                     endTime: meeting.endTime,
+                    late : meeting.late,
                     headCount: meeting.headCount,
                     image: meeting.image,
                     qrImg: meeting.qrImg
@@ -236,6 +283,7 @@ module.exports = {
                     date: meeting.date,
                     startTime: meeting.startTime,
                     endTime: meeting.endTime,
+                    late: meeting.late,
                     headCount: meeting.headCount,
                     image: meeting.image,
                     qrImg: meeting.qrImg
@@ -259,7 +307,6 @@ module.exports = {
         } catch (e){
             return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
         }
-        console.log(result);
 
         return res.status(200).send(util.success(200, "전체 참석자 정보 불러오기 성공", result));
     }

@@ -1,8 +1,258 @@
+@font-face {
+  font-family: "YiSunShinDotumM";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/YiSunShinDotumM.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'CookieRun-Regular';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/CookieRun-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+html,
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  width: 100% !important;
+  height: 100% !important;
+  /* font: 14px "BMJUA" !important; */
+  /* font-family: YiSunShinDotumM !important; */
+}
+
+.title {
+  font-size: 30px;
+  font-weight: bolder;
+  color: rgb(22, 22, 22);
+}
+
+#wrap {
+  padding: 40px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#result_wrap {
+  width: 100%;
+  height: 100%;
+  padding: 40px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.wrap_sub {
+  font-size: 13px;
+  color: gray;
+}
+
+.wrap_bold {
+  font-size: 16px;
+  font-weight: bolder;
+}
+
+.wrap_input {
+  color: black;
+  font-weight: normal;
+  width: 200px;
+  height: 30px;
+  font-size: 20px;
+  border: 1px solid black;
+  border-radius: 10px;
+}
+
+.wrap_button {
+  color: white;
+  width: 100%;
+  height: 40px;
+  margin-top: 7px;
+  font-size: 214x;
+  border: 1px solid black;
+  border-radius: 10px;
+  background: rgb(22, 22, 22);
 }
 
 a {
-  color: #00B7FF;
+  color: #00b7ff;
+}
+
+.radio_wrap {
+  margin-top: 15px;
+}
+
+.container {
+  position: relative;
+  padding-left: 35px !important;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-family: NotoSansCJKkr;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-align: left;
+  color: #707070;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default radio button */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Create a custom radio button */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: #eee;
+  border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input~.checkmark {
+  background-color: #ccc;
+}
+
+/* When the radio button is checked, add a blue background */
+.container input:checked~.checkmark {
+  background-color: rgb(22, 22, 22);
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.container input:checked~.checkmark:after {
+  display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.container .checkmark:after {
+  top: 6px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+}
+
+body {
+  margin: 15%;
+}
+
+body {
+  margin: 15%;
+}
+
+.form-input {
+  margin: 10px 0;
+  width: 100%;
+}
+
+.form-input label {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 45px;
+}
+
+.form-input .placeholder {
+  position: absolute;
+  display: block;
+  top: 23px;
+  z-index: 2;
+  font-size: 16px;
+  transition: all 200ms ease-in-out;
+  width: 100%;
+  cursor: text;
+}
+
+.form-input input,
+.form-input textarea {
+  position: absolute;
+  top: 15px;
+  z-index: 1;
+  width: 100%;
+  font-size: 16px;
+  border: 0;
+  border-bottom: 1px solid grey;
+  transition: border-color 200ms ease-in-out;
+  outline: none;
+  padding: 0;
+  margin: 0;
+}
+
+.form-input textarea {
+  min-height: 30px;
+  padding: 8px 0;
+}
+
+.form-input input {
+  height: 30px;
+}
+
+.form-input input:focus,
+.form-input input:valid,
+.form-input textarea:focus,
+.form-input textarea:valid {
+  border-bottom: 2px solid rgb(22, 22, 22);
+}
+
+.form-input input:focus+.placeholder,
+.form-input input:valid+.placeholder,
+.form-input textarea:focus+.placeholder,
+.form-input textarea:valid+.placeholder {
+  top: 0;
+  cursor: inherit;
+  font-size: 14px;
+  color: rgb(22, 22, 22);
+}
+
+.foot {
+  padding: 0 40px;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  height: 80px;
+  font-size: 12px;
+  color: white;
+  background: #79cbd8;
+  display: flex;
+  font-weight: 100;
+  justify-content: center;
+  flex-direction: column;
+  font-family: CookieRun-Regular;
+}
+
+.starR {
+  background: url('http://miuu227.godohosting.com/images/icon/ico_review.png') no-repeat right 0;
+  background-size: auto 100%;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  text-indent: -9999px;
+  cursor: pointer;
+}
+
+.starR.on {
+  background-position: 0 0;
 }
