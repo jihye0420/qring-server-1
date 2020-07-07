@@ -76,7 +76,6 @@ module.exports = {
   /**
    * 웹 출석 폼 제출
    */
-
   submitForm: async (req, res) => {
     const meetingId = req.params.meetingId;
     const { name, email, abroad, health } = req.body;
@@ -116,11 +115,9 @@ module.exports = {
     }
 
     const late = result.date.concat(" ", lateLimit_hour, ":", lateLimit_min, " ");
-    const now = moment().format('YYYY-MM-DD HH:mm');
-    const start = result.date.concat(" ", result.startTime);
-    const end = result.date.concat(" ", result.endTime);
-
-    console.log(now);
+    const now = moment().format('YYYY-MM-DD HH:mm:ss');
+    const start = result.date.concat(" ", result.startTime+":00");
+    const end = result.date.concat(" ", result.endTime+":00");
 
     // 중복 제출 방지 : 똑같은 이메일로 제출한 경우
     const flag = await result.user.some((element) => {
@@ -143,14 +140,45 @@ module.exports = {
         }
       }
 
-      const isNew = false;
-
+      const isAdded = false;
       const filter = { _id: meetingId };
-      const update = { user: { name, email, abroad, health, attendance, isNew }};
+      const update = { user: { name, email, abroad, health, attendance, isAdded }};
 
       await meetingModel.findOneAndUpdate(filter, { $push: update });
-
       res.status(200).send(util.success(200, "제출에 성공하였습니다."));
+    }
+  },
+
+  /**
+   * 관리자가 사용자 직접 추가
+   */
+  addUser: async(req, res) => {
+    const meetingId = req.params.meetingId;
+    const { name, email, abroad, health } = req.body;
+
+    if (!meetingId) {
+      res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
+    }
+
+    const result = await meetingModel.findById({ _id: meetingId }, {_id: 0, user: 1 });
+
+    // 중복 제출 방지 : 똑같은 이메일로 제출한 경우
+    const flag = await result.user.some((element) => {
+      if (email === element.email) {
+        res.status(400).send(util.fail(400, "이미 제출하셨습니다."));
+        return true;
+      }
+    });
+
+    if (!flag){
+      const attendance = "결석";
+      const isAdded = true;
+      
+      const filter = { _id: meetingId };
+      const update = { user: { name, email, abroad, health, attendance, isAdded }};
+      await meetingModel.findOneAndUpdate(filter, { $push: update });
+
+      res.status(200).send(util.success(200, "사용자 추가에 성공하였습니다."));
     }
   },
 
