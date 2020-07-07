@@ -1,6 +1,6 @@
 # 🐬 26기 솝트 앱잼: "Qring - QR코드로 만들어가는 우리의 모임" 🐬
 
-<img style="border: 1px solid black !important; border-radius:20px;" src="https://user-images.githubusercontent.com/37949197/86798386-afd2f480-c0ab-11ea-8cd9-31c8fc9fdc9e.png" width="200px" />
+<img style="border: 1px solid black !important; border-radius:20px;" src="https://user-images.githubusercontent.com/37949197/86798642-f6c0ea00-c0ab-11ea-92ee-56c7f83518be.png" width="200px" />
 
 ![node_badge](https://img.shields.io/badge/node-%3E%3D%2012.13.0-green)
 ![npm_bedge](https://img.shields.io/badge/npm-v6.14.2-blue)
