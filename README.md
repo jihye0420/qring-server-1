@@ -3,7 +3,7 @@
 <img style="border: 1px solid black !important; border-radius:20px;" src="https://flood-master.s3.ap-northeast-2.amazonaws.com/KakaoTalk_Photo_2020-01-02-03-54-55-1.png" width="200px" />
 
 ![node_badge](https://img.shields.io/badge/node-%3E%3D%208.0.0-green)
-![npm_bedge](https://img.shields.io/badge/npm-v6.10.1-blue)
+![npm_bedge](https://img.shields.io/badge/npm-v6.14.2-blue)
 
 * <b> SOPT 26th APPJAM
     
@@ -16,9 +16,8 @@
 
 ## :bookmark_tabs: 프로젝트 설명
 
-<b>정보를 공유하는 가장 쉬운 방법, Flood입니다. :ocean:</b>
-회사내에 분산된, 정보 공유를 더 빠르고 쉽게 공유하는 플랫폼으로  정보의 홍수 속에서 
-각각 회사들이 공유하고 있는 정보를 필터링하여 일반 유저들에게 제공하는 서비스입니다.
+<b>모임의 시작과 끝을 함께하는, QRing입니다. 🐬</b>
+QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 피드백을 통해 모임이 더 성숙해지고, 구성원은 함께 성장하게 됩니다.
 
 <br>
 
@@ -32,10 +31,12 @@
 - 게시물 업로드, 수정 기능 구현
 - 댓글 및 대댓글 기능 구현
 - 프록시 서버 및 메인 서버 설정, 배포
-- Docker build 및 이미지 관리
+- 테스팅 자동화 환경 구축
 
 #### :surfing_woman: 이현주
 
+- 회원가입 기능 구현
+- 로그인 기능 구현
 - 마이페이지 프로필 설정 변경 기능 구현
 - 이미지 및 비밀번호 변경 기능 구현
 - 조직설정, 계정관리 기능 구현
@@ -104,12 +105,6 @@
 
 <br>
 
-## :green_book: Architecture
-
-![architecture](https://flood-master.s3.ap-northeast-2.amazonaws.com/Untitled+Diagram+(1)+(2).png)  
-
-<br>
-
 ## :orange_book: DB ERD
 
 ![ERD](https://flood-master.s3.ap-northeast-2.amazonaws.com/Untitled+Diagram.png)
@@ -121,8 +116,6 @@
 * AWS EC2 - 클라우드 컴퓨팅 시스템
 * AWS elastic beanstlak - 서버 배포및 관리 프로비저닝 서비스
 * AWS S3 - 클라우드 데이터 저장소
-* Atlas - MongoDB 클라우드 호스팅 서비스
-* Docker - 컨테이너 기반 가상화 소프트웨어 플랫폼
 * Nginx - 프록시 서버 (보안 향상 및 캐시를 활용한 전송 속도 향상)
 
 <br>
@@ -134,7 +127,6 @@
 * [NPM](https://rometools.github.io/rome/) - 자바 스크립트 패키지 관리자
 * [PM2](http://pm2.keymetrics.io/) - 프로세스 관리자
 * [MongoDB](https://www.mongodb.com/) - NoSQL DB
-* [Docker](https://www.docker.com/) - 컨테이너 기반 가상화 플랫폼
 * [Nginx](https://www.nginx.com/) - 웹 서버 소프트웨어(프록시 서버용)
 
 <br>
