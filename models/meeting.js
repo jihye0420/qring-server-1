@@ -20,6 +20,10 @@ const MeetingSchema = new schema({
         type: String,
         required: true,
     },
+    late : {
+        type: Number,
+        required:true,
+    },
     headCount: {
         type: Number,
         required: true,

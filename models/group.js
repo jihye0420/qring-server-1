@@ -3,7 +3,7 @@ const schema = mongoose.Schema;
 
 const GroupSchema = new schema({
     admin: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
     meetings: [{
