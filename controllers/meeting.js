@@ -236,11 +236,10 @@ module.exports = {
             const lastMeeting = await meetingModel.findOne({
                 _id : group.meetings[group.meetings.length-1]
             }) 
-            console.log(lastMeeting);
             const userCount = lastMeeting.user.length;
             var feedBackCount;
             if (lastMeeting.feedBack.length > 0){
-                feedBackCount = lastMeeting.feedBack.result.length;
+                feedBackCount = lastMeeting.feedBack[0].result.length;
             }
             else feedBackCount = 0;
             let Item ={
@@ -251,7 +250,6 @@ module.exports = {
                 userCount : userCount,
                 feedBackCount: feedBackCount
             }
-
             if (lastMeeting.date < today){ //종료된 모임
                 end.push(Item);
             }
