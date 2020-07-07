@@ -5,7 +5,7 @@ const fs = require("fs");
 const s3Info = require("../config/s3info.json");
 const util = require("../modules/util");
 const meetingModel = require("../models/meeting");
-const async = require("pbkdf2/lib/async");
+const moment = require('moment');
 
 const s3 = new AWS.S3({
   accessKeyId: s3Info.accessKeyId,
@@ -91,9 +91,36 @@ module.exports = {
       },
       {
         _id: 0,
+        date: 1,
+        startTime: 1,
+        endTime:1, 
+        late: 1,
         user: 1,
       }
     );
+
+    // 시작 시간 시, 분
+    const startTime_hour = parseInt(result.startTime.substring(0, 2));
+    const startTime_min = parseInt(result.startTime.substring(3, 5));
+
+    // 지각 시, 분으로 쪼개기
+    const late_hour = parseInt(result.late / 60);
+    const late_min = result.late % 60;
+
+    // 지각 마감 시간
+    const lateLimit_hour = startTime_hour + late_hour;
+    const lateLimit_min = startTime_min + late_min;
+    if (lateLimit_min >= 60){
+      lateLimit_hour += 1;
+      lateLimit_min -= 60;
+    }
+
+    const late = result.date.concat(" ", lateLimit_hour, ":", lateLimit_min, " ");
+    const now = moment().format('YYYY-MM-DD HH:mm');
+    const start = result.date.concat(" ", result.startTime);
+    const end = result.date.concat(" ", result.endTime);
+
+    console.log(now);
 
     // 중복 제출 방지 : 똑같은 이메일로 제출한 경우
     const flag = await result.user.some((element) => {
@@ -105,8 +132,21 @@ module.exports = {
 
     // DB에 추가하기
     if (!flag) {
+      // 지각 여부 체크
+      let attendance = "출석";
+      if (now < start || now > end ){
+        res.status(401).send(util.fail(401, "출석 가능 시간이 아닙니다."));
+        return;
+      } else {
+        if (now > late){
+          attendance = "지각";
+        }
+      }
+
+      const isNew = false;
+
       const filter = { _id: meetingId };
-      const update = { user: { name, email, abroad, health } };
+      const update = { user: { name, email, abroad, health, attendance, isNew }};
 
       await meetingModel.findOneAndUpdate(filter, { $push: update });
 
