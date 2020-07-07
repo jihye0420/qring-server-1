@@ -254,6 +254,7 @@ module.exports = {
                     date: meeting.date,
                     startTime: meeting.startTime,
                     endTime: meeting.endTime,
+                    late : meeting.late,
                     headCount: meeting.headCount,
                     image: meeting.image,
                     qrImg: meeting.qrImg
@@ -282,6 +283,7 @@ module.exports = {
                     date: meeting.date,
                     startTime: meeting.startTime,
                     endTime: meeting.endTime,
+                    late: meeting.late,
                     headCount: meeting.headCount,
                     image: meeting.image,
                     qrImg: meeting.qrImg
