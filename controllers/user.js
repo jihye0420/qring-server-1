@@ -19,7 +19,7 @@ const userController = {
 
         // 파라미터 확인
         if (!email || !pw || !name || !birth) {
-            res.status(402).send(util.fail(402, "필수 정보를 입력하세요."));
+            res.status(401).send(util.fail(401, "필수 정보를 입력하세요."));
             return;
         }
 
@@ -37,7 +37,7 @@ const userController = {
             if (result) {
                 // 이메일 인증을 한 경우
                 if (result.auth) {
-                    res.status(401).send(util.fail(401, "이미 등록된 이메일입니다."));
+                    res.status(400).send(util.fail(400, "이미 등록된 이메일입니다."));
                     return;
                 }
                 // 이메일 인증을 하지 않은 경우
