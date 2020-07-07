@@ -13,20 +13,13 @@ const userController = {
         const {
             email,
             pw,
-            pwCheck,
             name,
             birth
         } = req.body;
 
         // 파라미터 확인
-        if (!email || !pw || !pwCheck || !name || !birth) {
+        if (!email || !pw || !name || !birth) {
             res.status(402).send(util.fail(402, "필수 정보를 입력하세요."));
-            return;
-        }
-
-        // 비밀번호와 비밀번호 확인이 같지 않을 때
-        if (pw !== pwCheck) {
-            res.status(400).send(util.fail(400, "비밀번호가 일치하지 않습니다."));
             return;
         }
 
