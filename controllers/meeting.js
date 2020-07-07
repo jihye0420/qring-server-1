@@ -163,6 +163,10 @@ module.exports = {
         const meetingObject = await meetingModel.findOne({
             _id: meetingId
         })
+        for (let userItem of meetingObject.user){
+            userItem.attendance = '결석';
+        }
+
         const data = {
             meeting : meetingObject
         }
@@ -224,7 +228,7 @@ module.exports = {
         const allGroup = await groupModel.find({
             admin: admin._id
         });
-        console.log(allGroup);
+
         const today = moment().format('YYYY-MM-DD');
         const end = [];
         const proceed = [];
@@ -241,6 +245,7 @@ module.exports = {
             else feedBackCount = 0;
             let Item ={
                 group_id : group._id,
+                meeting_id : lastMeeting._id,
                 name: lastMeeting.name,
                 date: lastMeeting.date,
                 userCount : userCount,
