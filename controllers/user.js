@@ -26,7 +26,7 @@ const userController = {
     
         // 비밀번호와 비밀번호 확인이 같지 않을 때
         if (pw !== pwCheck) {
-            res.status(400).send(util.fail(400, "비밀번호가 맞지 않습니다."));
+            res.status(400).send(util.fail(400, "비밀번호가 일치하지 않습니다."));
             return;
         }
     
@@ -44,12 +44,12 @@ const userController = {
             if (result) {
                 // 이메일 인증을 한 경우
                 if (result.auth) {
-                    res.status(401).send(util.fail(401, "이미 존재하는 email입니다."));
+                    res.status(401).send(util.fail(401, "이미 등록된 이메일입니다."));
                     return;
                 }
                 // 이메일 인증을 하지 않은 경우
                 else{
-                    const token = await userController.sendEmail(email);ㅋㅋㅋㅋ
+                    const token = await userController.sendEmail(email);
                     await userController.changeAuthToken(email, token);
                     res.status(201).send(util.success(201, "이미 회원가입을 하셨습니다. 이메일 인증을 해주세요."));
                     return;
