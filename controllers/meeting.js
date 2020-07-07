@@ -82,11 +82,11 @@ module.exports = {
 
         var newMeeting = new meetingModel();
         newMeeting.name = req.body.name,
-        newMeeting.date = req.body.date,
-        newMeeting.startTime = req.body.startTime,
-        newMeeting.endTime = req.body.endTime,
-        newMeeting.late = req.body.late,
-        newMeeting.headCount = req.body.headCount
+            newMeeting.date = req.body.date,
+            newMeeting.startTime = req.body.startTime,
+            newMeeting.endTime = req.body.endTime,
+            newMeeting.late = req.body.late,
+            newMeeting.headCount = req.body.headCount
 
         const image = req.file.location;
         // data check - undefined
@@ -161,7 +161,7 @@ module.exports = {
         const meetingObject = await meetingModel.findOne({
             _id: meetingId
         })
-        for (let userItem of meetingObject.user){
+        for (let userItem of meetingObject.user) {
             userItem.attendance = -1;
         }
 
@@ -232,41 +232,22 @@ module.exports = {
         const proceed = [];
         for (let group of allGroup) {
             const lastMeeting = await meetingModel.findOne({
-<<<<<<< HEAD
                 _id: group.meetings[group.meetings.length - 1]
             })
-            console.log(lastMeeting);
             const userCount = lastMeeting.user.length;
             var feedBackCount;
             if (lastMeeting.feedBack.length > 0) {
-                feedBackCount = lastMeeting.feedBack.result.length;
+                feedBackCount = lastMeeting.feedBack[0].result.length;
             } else feedBackCount = 0;
             let Item = {
                 group_id: group._id,
-=======
-                _id : group.meetings[group.meetings.length-1]
-            }) 
-            const userCount = lastMeeting.user.length;
-            var feedBackCount;
-            if (lastMeeting.feedBack.length > 0){
-                feedBackCount = lastMeeting.feedBack[0].result.length;
-            }
-            else feedBackCount = 0;
-            let Item ={
-                group_id : group._id,
-                meeting_id : lastMeeting._id,
->>>>>>> 04f76baab51aef0d611719f7ffdea5030965f1d1
+                meeting_id: lastMeeting._id,
                 name: lastMeeting.name,
                 date: lastMeeting.date,
                 userCount: userCount,
                 feedBackCount: feedBackCount
             }
-<<<<<<< HEAD
-
             if (lastMeeting.date < today) { //종료된 모임
-=======
-            if (lastMeeting.date < today){ //종료된 모임
->>>>>>> 04f76baab51aef0d611719f7ffdea5030965f1d1
                 end.push(Item);
             } else { //진행중이거나 예정된 모임
                 proceed.push(Item);
@@ -290,7 +271,7 @@ module.exports = {
 
         return res.status(200).send(util.success(200, "모임 리스트 조회", meetingList));
     },
-    
+
     /**
      * 모임 리스트에서 각 회차의 정보 조회 round가 -1일때 마지막 회차와 회차 수 반환, 다른 수 일때는 해당 회차 정보 반환
      */
@@ -318,12 +299,8 @@ module.exports = {
             }
 
             const data = {
-<<<<<<< HEAD
+                groupId: group._id,
                 meetingSum: meetings.length,
-=======
-                groupId : group._id,
-                meetingSum : meetings.length,
->>>>>>> 04f76baab51aef0d611719f7ffdea5030965f1d1
                 meeting: {
                     _id: meeting._id,
                     user: user,
@@ -353,11 +330,7 @@ module.exports = {
             }
 
             const data = {
-<<<<<<< HEAD
-
-=======
-                groupId : group._id,
->>>>>>> 04f76baab51aef0d611719f7ffdea5030965f1d1
+                groupId: group._id,
                 meeting: {
                     _id: meeting._id,
                     user: user,
