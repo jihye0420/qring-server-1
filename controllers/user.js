@@ -4,22 +4,16 @@ const encrypt = require('../modules/crypto');
 const jwt = require('../modules/jwt');
 const adminModel = require('../models/admin');
 const util = require('../modules/util');
+const async = require('pbkdf2/lib/async');
 
 const userController = {
     /**
-     * 회원 가입
+     * 이메일 중복 확인
      */
-    signUp: async (req, res) => {
-        const {
-            email,
-            pw,
-            name,
-            birth
-        } = req.body;
-
-        // 파라미터 확인
-        if (!email || !pw || !name || !birth) {
-            res.status(402).send(util.fail(402, "필수 정보를 입력하세요."));
+    checkEmail: async(req, res) => {
+        const email = req.body.email;
+        if (!email){
+            res.status(401).send(util.fail(401, "필수 정보를 입력하세요."));
             return;
         }
 
@@ -37,7 +31,7 @@ const userController = {
             if (result) {
                 // 이메일 인증을 한 경우
                 if (result.auth) {
-                    res.status(401).send(util.fail(401, "이미 등록된 이메일입니다."));
+                    res.status(400).send(util.fail(400, "이미 등록된 이메일입니다."));
                     return;
                 }
                 // 이메일 인증을 하지 않은 경우
@@ -53,6 +47,24 @@ const userController = {
                 res.status(500).send(util.fail(500, "이메일 서버 에러"));
                 return;
             }
+        }
+        res.status(200).send(util.success(200, "중복된 이메일이 없습니다."));
+    },
+    /**
+     * 회원 가입
+     */
+    signUp: async (req, res) => {
+        const {
+            email,
+            pw,
+            name,
+            birth
+        } = req.body;
+
+        // 파라미터 확인
+        if (!email || !pw || !name || !birth) {
+            res.status(400).send(util.fail(400, "필수 정보를 입력하세요."));
+            return;
         }
 
         const token = await userController.sendEmail(email); // 이메일 전송
