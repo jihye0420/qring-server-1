@@ -7,7 +7,7 @@
 
 * <b> SOPT 26th APPJAM
     
-* 프로젝트 기간: 2019.06.27 ~ 2019.07.18
+* 프로젝트 기간: 2020.06.27 ~ 2020.07.18
 
 * [API 문서](https://github.com/qring-sopt/qring-server/wiki)</b>
 
