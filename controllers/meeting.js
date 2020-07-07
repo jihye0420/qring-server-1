@@ -164,7 +164,7 @@ module.exports = {
             _id: meetingId
         })
         for (let userItem of meetingObject.user){
-            userItem.attendance = '결석';
+            userItem.attendance = -1;
         }
 
         const data = {
@@ -281,7 +281,7 @@ module.exports = {
      * 모임 리스트에서 각 회차의 정보 조회 round가 -1일때 마지막 회차와 회차 수 반환, 다른 수 일때는 해당 회차 정보 반환
      */
     round: async (req, res) => {
-        const groupId = req.paramsy.id;
+        const groupId = req.params.id;
         const round = req.params.round;
 
         const group = await groupModel.findOne({
@@ -303,8 +303,8 @@ module.exports = {
                 cnt++;
             }
 
-
             const data = {
+                groupId : group._id,
                 meetingSum : meetings.length,
                 meeting: {
                     _id : meeting._id,
@@ -335,6 +335,7 @@ module.exports = {
             }
 
             const data = {
+                groupId : group._id,
                 meeting: {
                     _id : meeting._id,
                     user: user,
