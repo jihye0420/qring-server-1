@@ -2,6 +2,7 @@ const adminModel = require('../models/admin');
 const groupModel = require('../models/group');
 const meetingModel = require('../models/meeting');
 const util = require('../modules/util');
+const moment = require('moment');
 const statusCode = require('../modules/statusCode');
 const resMessage = require('../modules/responseMessage');
 const async = require('pbkdf2/lib/async');
@@ -213,11 +214,62 @@ module.exports = {
     /**
      * 모임 리스트 (각 그룹에서 최신 모임반환) 진행중 / 완료 & 예정 나눠서 반환
      */
-    // list : async(req,res)=>{
-    //     const adminId = req.params.id;
+    list : async(req,res)=>{
+        const adminEmail = req.email;
+        const admin = await adminModel.findOne({
+            email: adminEmail
+        })
+        const allGroup = await groupModel.find({
+            admin: admin._id
+        });
+        console.log(allGroup);
+        const today = moment().format('YYYY-MM-DD');
+        const end = [];
+        const proceed = [];
+        for (let group of allGroup){
+            const lastMeeting = await meetingModel.findOne({
+                _id : group.meetings[group.meetings.length-1]
+            }) 
+            console.log(lastMeeting);
+            const userCount = lastMeeting.user.length;
+            var feedBackCount;
+            if (lastMeeting.feedBack.length > 0){
+                feedBackCount = lastMeeting.feedBack.result.length;
+            }
+            else feedBackCount = 0;
+            let Item ={
+                group_id : group._id,
+                name: lastMeeting.name,
+                date: lastMeeting.date,
+                userCount : userCount,
+                feedBackCount: feedBackCount
+            }
 
+            if (lastMeeting.date < today){ //종료된 모임
+                end.push(Item);
+            }
+            else { //진행중이거나 예정된 모임
+                proceed.push(Item);
+            }
+        }
 
-    // },
+        end.sort(function(a,b){
+            if (a.date === b.date){ //오름차순
+                return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
+            }
+            return a.date > b.date ? -1 : a.date < b.date ? 1 : 0; //내림차순 
+        })
+        proceed.sort(function(a, b){
+            if (a.date === b.date){ //오름차순
+                return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
+            }
+            return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
+        })
+
+        const meetingList = proceed.concat(end);
+
+        return res.status(200).send(util.success(200, "모임 리스트 조회",meetingList));
+    },
     /**
      * 모임 리스트에서 각 회차의 정보 조회 round가 -1일때 마지막 회차와 회차 수 반환, 다른 수 일때는 해당 회차 정보 반환
      */
