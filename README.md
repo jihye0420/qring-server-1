@@ -107,7 +107,6 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 
 ## :orange_book: DB ERD
 
-![ERD](https://flood-master.s3.ap-northeast-2.amazonaws.com/Untitled+Diagram.png)
 
 <br>
 
