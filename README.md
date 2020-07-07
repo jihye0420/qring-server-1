@@ -1,8 +1,8 @@
-# qring-server
-🐬 26기 솝트 앱잼: "Qring - QR코드로 만들어가는 우리의 모임" 🐬
+# 🐬 26기 솝트 앱잼: "Qring - QR코드로 만들어가는 우리의 모임" 🐬
+
 <img style="border: 1px solid black !important; border-radius:20px;" src="https://flood-master.s3.ap-northeast-2.amazonaws.com/KakaoTalk_Photo_2020-01-02-03-54-55-1.png" width="200px" />
 
-![node_badge](https://img.shields.io/badge/node-%3E%3D%208.0.0-green)
+![node_badge](https://img.shields.io/badge/node-%3E%3D%2012.13.0-green)
 ![npm_bedge](https://img.shields.io/badge/npm-v6.14.2-blue)
 
 * <b> SOPT 26th APPJAM
