@@ -68,15 +68,15 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 
 사용 패키지(모듈)은 다음과 같습니다.
 
-- ** nodemailer ** : 회원 가입 시 이메일 인증을 위한 이메일 전송
-- ** jsonwebtoken **
-- ** rand-token **
-- ** pbkdf2 **
-- ** mongoose **
-- ** qrcode-with-logos **
-- ** aws-sdk **
-- ** multer-s3 **
-- ** multer **
+- **nodemailer** : 회원 가입 시 이메일 인증을 위한 이메일 전송
+- **jsonwebtoken**
+- **rand-token**
+- **pbkdf2**
+- **mongoose**
+- **qrcode-with-logos**
+- **aws-sdk**
+- **multer-s3**
+- **multer**
 
 ```json
 "dependencies": {
