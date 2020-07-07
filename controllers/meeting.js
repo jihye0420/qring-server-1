@@ -82,11 +82,11 @@ module.exports = {
 
         var newMeeting = new meetingModel();
         newMeeting.name = req.body.name,
-            newMeeting.date = req.body.date,
-            newMeeting.startTime = req.body.startTime,
-            newMeeting.endTime = req.body.endTime,
-            newMeeting.late = req.body.late,
-            newMeeting.headCount = req.body.headCount
+        newMeeting.date = req.body.date,
+        newMeeting.startTime = req.body.startTime,
+        newMeeting.endTime = req.body.endTime,
+        newMeeting.late = req.body.late,
+        newMeeting.headCount = req.body.headCount
 
         const image = req.file.location;
         // data check - undefined
@@ -275,6 +275,7 @@ module.exports = {
 
         return res.status(200).send(util.success(200, "모임 리스트 조회",meetingList));
     },
+    
     /**
      * 모임 리스트에서 각 회차의 정보 조회 round가 -1일때 마지막 회차와 회차 수 반환, 다른 수 일때는 해당 회차 정보 반환
      */
