@@ -13,4 +13,6 @@ router.get('/question/:id', auth.checkToken, feedbackController.readAll);
 // 피드백 결과 목록
 router.get('/result/:id/:round', auth.checkToken, feedbackController.result);
 
+// 단답형만 결과 목록
+
 module.exports = router;
