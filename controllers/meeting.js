@@ -163,6 +163,10 @@ module.exports = {
         const meetingObject = await meetingModel.findOne({
             _id: meetingId
         })
+        for (let userItem of meetingObject.user){
+            userItem.attendance = '결석';
+        }
+
         const data = {
             meeting : meetingObject
         }
@@ -183,10 +187,11 @@ module.exports = {
             date,
             startTime,
             endTime,
+            late,
             headCount,
         } = req.body;
 
-        if (!name || !date || !startTime || !endTime || !headCount) {
+        if (!name || !date || !startTime || !endTime || !late || !headCount) {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
@@ -194,6 +199,7 @@ module.exports = {
         meeting.date = req.body.date;
         meeting.startTime = req.body.startTime;
         meeting.endTime = req.body.endTime;
+        meeting.late = req.body.late;
         meeting.headCount = req.body.headCount;
 
         const image = req.file.location;
@@ -222,7 +228,7 @@ module.exports = {
         const allGroup = await groupModel.find({
             admin: admin._id
         });
-        console.log(allGroup);
+
         const today = moment().format('YYYY-MM-DD');
         const end = [];
         const proceed = [];
@@ -239,6 +245,7 @@ module.exports = {
             else feedBackCount = 0;
             let Item ={
                 group_id : group._id,
+                meeting_id : lastMeeting._id,
                 name: lastMeeting.name,
                 date: lastMeeting.date,
                 userCount : userCount,
@@ -274,7 +281,7 @@ module.exports = {
      * 모임 리스트에서 각 회차의 정보 조회 round가 -1일때 마지막 회차와 회차 수 반환, 다른 수 일때는 해당 회차 정보 반환
      */
     round: async (req, res) => {
-        const groupId = req.params.id;
+        const groupId = req.paramsy.id;
         const round = req.params.round;
 
         const group = await groupModel.findOne({
