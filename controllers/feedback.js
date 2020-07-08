@@ -59,7 +59,7 @@ module.exports = {
         const meetingId = req.params.nowId;
 
         if (!meetingId) {
-            res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
+            res.status(400).send(util.fail(400, "meetingId가 없습니다."));
         }
 
         // 모든 피드백 질문들 가져옴
@@ -77,7 +77,7 @@ module.exports = {
         const beforeMeetingId = req.params.beforeId;
 
         if (!nowMeetingId || !beforeMeetingId) {
-            res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
+            res.status(400).send(util.fail(400, "meetingId가 없습니다."));
         }
 
         // 이전 미팅 가져옴
@@ -85,10 +85,8 @@ module.exports = {
             _id: beforeMeetingId
         });
 
-        var array = [];
-
-        for (var item of beforeMeeting.feedBack) {
-            array.push(item);
+        if (!beforeMeeting) {
+            res.status(400).send(util.fail(400, "이전 회차 meeting ID를 찾을 수 없습니다."));
         }
 
         // 지금 미팅 가져옴
@@ -96,7 +94,11 @@ module.exports = {
             _id: nowMeetingId
         });
 
-        nowMeeting.feedBack = array;
+        if (!nowMeeting) {
+            res.status(400).send(util.fail(400, "현재 회차 meeting ID를 찾을 수 없습니다."));
+        }
+
+        nowMeeting.feedBack = beforeMeeting.feedBack;
 
         // 데이터베이스에 저장
         await nowMeeting.save();
@@ -106,11 +108,28 @@ module.exports = {
 
     result: async (req, res) => {
         //0이 단답형, 1이 객관식, 2는 평점
-        const meetingId = req.params.id;
+        const meetingId = req.params.meetingId;
 
         if (!meetingId) {
-            res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
+            res.status(400).send(util.fail(400, "meetingId가 없습니다."));
         }
+
+        const feedbacks = await MeetingModel.findOne({
+            _id: meetingId
+        }, {
+            _id: 0,
+            feedBack: 1
+        });
+
+
+        var array = [];
+
+        for (var item of feedbacks) {
+            array.push(item);
+        }
+
+
+
 
         // 총 피드백 현황(피드백 전체 갯수도 보내야함), 타이틀, 내용 리스트도 보내야함
 
