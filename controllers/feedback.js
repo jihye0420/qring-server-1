@@ -85,18 +85,12 @@ module.exports = {
             _id: beforeMeetingId
         });
 
-        var array = [];
-
-        for (var item of beforeMeeting.feedBack) {
-            array.push(item);
-        }
-
         // 지금 미팅 가져옴
         const nowMeeting = await MeetingModel.findOne({
             _id: nowMeetingId
         });
 
-        nowMeeting.feedBack = array;
+        nowMeeting.feedBack = beforeMeeting.feedBack;
 
         // 데이터베이스에 저장
         await nowMeeting.save();
