@@ -16,16 +16,25 @@
       <div style="text-align: center;">
         <% if(result == "fail") { %>
         <img class="check-img" src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-unchecked.png" /><br>
-        <% }else { %>
+        <% } else if(result == "success") { %>
         <img class="check-img" src="https://qring.s3.ap-northeast-2.amazonaws.com/qring_check.png" /><br>
+        <% } else { %>
+        <img class="check-img" src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-x.png" /><br>
         <% } %>
         <% if(result == "fail") { %>
         <span class="qring-main">이미 인증이 완료되었습니다</span><br><br>
-        <% }else { %>
+        <% } else if(result == "success") { %>
         <span class="qring-main">인증이 완료되었습니다</span><br><br>
+        <% } else { %>
+        <span class="qring-main">이메일 인증에 실패했습니다</span><br><br>
         <% } %>
+        <% if(result == "error") { %>
+        <span class="qring-under">이메일 인증을 하는 과정에서 문제가 발생했습니다.<br>
+          잠시 후 다시 시도해 주세요.</span><br>
+        <% } else { %>
         <span class="qring-under">큐링 앱을 실행하면 즐거운 모임 관리를<br>
           시작하실 수 있습니다.</span><br>
+        <% } %>
         <div class="under-title">도움이 필요하신가요? <span style="color:#ff6600;">contact@qring.co</span> 로 연락주세요</div>
       </div>
     </section>

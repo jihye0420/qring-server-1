@@ -183,7 +183,7 @@ const userController = {
       }); // authToken 필드 삭제
       res.render("result", { result: "success" });
     } else {
-      res.status(400).send(util.fail(400, "이메일 인증에 실패하였습니다."));
+      res.render("result", { result: "error" });
     }
   },
 
