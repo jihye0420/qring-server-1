@@ -108,10 +108,12 @@ tmp/
 temp/
 
 # End of https://www.gitignore.io/api/node
-#config/
+
 
 .elasticbeanstalk/
 # Elast0ic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+config/
