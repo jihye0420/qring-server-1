@@ -6,7 +6,7 @@ const auth = require('../middleware/auth');
 /**
  * 이메일 중복 확인
  */
-router.get('/email', userController.checkEmail);
+router.get('/email/:email', userController.checkEmail);
 
 /**
  * 회원 가입
