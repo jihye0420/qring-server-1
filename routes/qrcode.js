@@ -19,6 +19,7 @@ router.post("/:meetingId", qrcodeController.submitForm);
 router.post("/add/:meetingId", qrcodeController.addUser);
 
 router.get("/check/:meetingId", qrcodeController.userCheck);
+
 router.post("/feedback/:meetingId", qrcodeController.feedbackCheck);
 
 module.exports = router;
