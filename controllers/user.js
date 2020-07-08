@@ -11,12 +11,12 @@ const userController = {
   /**
    * 이메일 중복 확인
    */
-  checkEmail: async (req, res) => {
-    const email = req.body.email;
-    if (!email) {
-      res.status(401).send(util.fail(401, "필수 정보를 입력하세요."));
-      return;
-    }
+  checkEmail: async(req, res) => {
+      const email = req.params.email;
+      if (!email){
+          res.status(401).send(util.fail(401, "필수 정보를 입력하세요."));
+          return;
+      }
 
     // id 중복 확인
     try {
@@ -173,7 +173,7 @@ const userController = {
     });
 
     if (result.authToken === undefined) {
-      res.status(400).send(util.fail(400, "이미 인증된 회원입니다."));
+      res.render("result", { result: "fail" });
     }
     if (result.authToken === token) {
       await adminModel.update(filter, {
@@ -181,9 +181,9 @@ const userController = {
           authToken: 1,
         },
       }); // authToken 필드 삭제
-      res.status(200).send(util.success(200, "이메일 인증에 성공하였습니다."));
+      res.render("result", { result: "success" });
     } else {
-      res.status(400).send(util.fail(400, "이메일 인증에 실패하였습니다."));
+      res.render("result", { result: "error" });
     }
   },
 

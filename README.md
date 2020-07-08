@@ -24,9 +24,10 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 <br>
 
 ## :bookmark_tabs: 기능 명세서
-* [기능 명세서 노션 링크](https://www.notion.so/caa0852754f44797a3ecf35168023d06)</b>
-<br>
+<b>* [기능 명세서 노션 링크](https://www.notion.so/caa0852754f44797a3ecf35168023d06) </b>
 
+<br>
+<br>
 
 ## :earth_americas: Team Role 
 
@@ -64,14 +65,17 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 사용 패키지(모듈)은 다음과 같습니다.
 
 - **nodemailer** : 회원 가입 시 이메일 인증을 위한 이메일 전송
-- **jsonwebtoken**
+- **jsonwebtoken** : JWT(Json Web Token) 생성 및 인증
 - **rand-token**
 - **pbkdf2**
 - **mongoose**
-- **qrcode-with-logos**
+- **qrcode**
 - **aws-sdk**
-- **multer-s3**
 - **multer**
+- **multer-s3**
+- **moment** : 출석체크 시, 현재 시간 받아오기
+- **socket.io**
+- **connect**
 
 ```json
 "dependencies": {
@@ -103,6 +107,8 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 <br>
 
 ## :orange_book: DB ERD
+![image](https://user-images.githubusercontent.com/37949197/86893275-5535a900-c13c-11ea-81f8-baf1332b33e7.png)
+
 
 
 <br>
