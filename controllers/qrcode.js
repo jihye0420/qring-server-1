@@ -80,7 +80,12 @@ const qrcodeController = {
   submitForm: async (req, res) => {
     const groupId = req.params.groupId;
     const meetingId = req.params.meetingId;
-    const { name, email, abroad, health } = req.body;
+    const {
+      name,
+      email,
+      abroad,
+      health
+    } = req.body;
 
     if (!meetingId) {
       res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
@@ -102,6 +107,7 @@ const qrcodeController = {
         user: 1,
       }
     );
+
 
     // 출결 확인하기
     const attendanceFlag = 
@@ -246,15 +252,25 @@ const qrcodeController = {
   /**
    * 관리자가 사용자 직접 추가
    */
-  addUser: async(req, res) => {
+  addUser: async (req, res) => {
     const meetingId = req.params.meetingId;
-    const { name, email, abroad, health } = req.body;
+    const {
+      name,
+      email,
+      abroad,
+      health
+    } = req.body;
 
     if (!meetingId) {
       res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
     }
 
-    const result = await meetingModel.findById({ _id: meetingId }, {_id: 0, user: 1 });
+    const result = await meetingModel.findById({
+      _id: meetingId
+    }, {
+      _id: 0,
+      user: 1
+    });
 
     // 중복 제출 방지 : 똑같은 이메일로 제출한 경우
     const flag = await result.user.some((element) => {
@@ -264,13 +280,26 @@ const qrcodeController = {
       }
     });
 
-    if (!flag){
+    if (!flag) {
       const attendance = -1;
       const isAdded = true;
-      
-      const filter = { _id: meetingId };
-      const update = { user: { name, email, abroad, health, attendance, isAdded }};
-      await meetingModel.findOneAndUpdate(filter, { $push: update });
+
+      const filter = {
+        _id: meetingId
+      };
+      const update = {
+        user: {
+          name,
+          email,
+          abroad,
+          health,
+          attendance,
+          isAdded
+        }
+      };
+      await meetingModel.findOneAndUpdate(filter, {
+        $push: update
+      });
 
       res.status(200).send(util.success(200, "사용자 추가에 성공하였습니다."));
     }
@@ -283,9 +312,13 @@ const qrcodeController = {
   feedbackCheck: async (req, res) => {
     const meetingId = req.params.meetingId;
     console.log(meetingId);
-    const result = await meetingModel.findOne({ _id: meetingId });
+    const result = await meetingModel.findOne({
+      _id: meetingId
+    });
     const feedBack = result.feedBack;
-    res.render("feedback", { feedBack: feedBack });
+    res.render("feedback", {
+      feedBack: feedBack
+    });
   },
 };
 

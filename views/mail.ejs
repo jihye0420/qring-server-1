@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<body>
+  <div class="wrap" style="text-align:center;padding:40px 32px;
+  width:574px;height:980px;border:1px solid black;">
+    <img src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-banner.png" width="137px;" />
+    <div class="hrhr" style="margin-top: 40px;
+    width: 574px;
+    background-color: rgb(184, 184, 184);
+    height: 1px;
+    border: none;" />
+    <div style="margin-top:80px; width: 404px;
+    height: 108px;
+    font-family: NotoSansCJKkr;
+    font-size: 31px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: -0.72px;
+    text-align: left;
+    color: #202020;">
+      회원가입을 마치려면<br>
+      이메일 인증을 완료해주세요
+    </div>
+    <div style="margin-top:60px; width: 323px;
+    height: 29px;
+    font-family: NotoSansCJKkr;
+    font-size: 15px;
+    font-weight: 300;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.45;
+    letter-spacing: -0.4px;
+    text-align: left;
+    color: #36383b;">
+      큐링 회원가입을 진심으로 축하드립니다.
+    </div>
+    <div style="margin-top:12px;
+    font-family: NotoSansCJKkr;
+    font-size: 15px;
+    font-weight: 300;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.45;
+    letter-spacing: -0.4px;
+    text-align: left;
+    color: #36383b;">
+      아래 버튼을 누르면 <span style="font-weight:bolder;"><%= to %></span> 이메일로 가입한 계정이<br>
+      활성화됩니다.
+    </div>
+    <a href='http://qring-server-dev.ap-northeast-2.elasticbeanstalk.com/user/auth?email=<%=to%>&token=<%=token%>'
+      style="
+      margin-top:72px;
+    border-radius: 11px;
+    background-color: #ff6600;font-family: NotoSansCJKkr;
+    font-size: 15px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.45;
+    letter-spacing: -0.4px;
+    text-align: left;
+    color: #ffffff;
+    display:flex;
+    text-decoration:none;
+    padding:20px;
+    justify-content:center;
+    align-items:center;cursor:pointer;">
+      이메일 인증 하기
+    </a>
+    <div style="
+    margin-top:80px;
+    width: 576px;
+    text-align:center;
+    height: 24px;
+    font-family: NotoSansCJKkr;
+    font-size: 11px;
+    font-weight: 300;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: -0.32px;
+    text-align: center;
+    color: #36383b;">
+      도움이 필요하신가요? contact@qring.co 로 연락주세요
+    </div>
+    <div class="hrhr" style="margin-top: 60px;
+    width: 574px;
+    background-color: rgb(184, 184, 184);
+    height: 1px;
+    border: none;" />
+    <div style="
+    margin-top:40px;
+    width: 576px;
+    text-align:center;
+    font-family: NotoSansCJKkr;
+    font-size: 9px;
+    font-weight: 300;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: -0.28px;
+    text-align: center;
+    color: #36383b;">
+      14-14, Yanghwa-ro 16-gil, Mapo-gu, Seoul, Republic of Korea
+    </div>
+    <img style="margin-top: 50px;" src="https://qring.s3.ap-northeast-2.amazonaws.com/qring_logo.png" width="70px" />
+  </div>
+</body>
+
+</html>
