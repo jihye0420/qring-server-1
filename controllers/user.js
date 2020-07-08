@@ -11,12 +11,12 @@ const userController = {
   /**
    * 이메일 중복 확인
    */
-  checkEmail: async (req, res) => {
-    const email = req.body.email;
-    if (!email) {
-      res.status(401).send(util.fail(401, "필수 정보를 입력하세요."));
-      return;
-    }
+  checkEmail: async(req, res) => {
+      const email = req.params.email;
+      if (!email){
+          res.status(401).send(util.fail(401, "필수 정보를 입력하세요."));
+          return;
+      }
 
     // id 중복 확인
     try {
