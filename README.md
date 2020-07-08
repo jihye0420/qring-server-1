@@ -103,6 +103,8 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 <br>
 
 ## :orange_book: DB ERD
+![image](https://user-images.githubusercontent.com/37949197/86893275-5535a900-c13c-11ea-81f8-baf1332b33e7.png)
+
 
 
 <br>
