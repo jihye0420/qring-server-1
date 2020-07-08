@@ -82,11 +82,11 @@ module.exports = {
 
         var newMeeting = new meetingModel();
         newMeeting.name = req.body.name,
-        newMeeting.date = req.body.date,
-        newMeeting.startTime = req.body.startTime,
-        newMeeting.endTime = req.body.endTime,
-        newMeeting.late = req.body.late,
-        newMeeting.headCount = req.body.headCount
+            newMeeting.date = req.body.date,
+            newMeeting.startTime = req.body.startTime,
+            newMeeting.endTime = req.body.endTime,
+            newMeeting.late = req.body.late,
+            newMeeting.headCount = req.body.headCount
 
         const image = req.file.location;
         // data check - undefined
@@ -115,7 +115,7 @@ module.exports = {
     /**
      * 모임 생성시 시간 중복 확인
      */
-    time: async(req, res) =>{
+    time: async (req, res) => {
         const adminEmail = req.email;
         const admin = await adminModel.findOne({
             email: adminEmail
@@ -131,26 +131,24 @@ module.exports = {
         } = req.body;
 
 
-        for (let groupItem of allGroup){
-            for (let meetingId of groupItem.meetings){
+        for (let groupItem of allGroup) {
+            for (let meetingId of groupItem.meetings) {
                 let meetingItem = await meetingModel.findOne({
                     _id: meetingId
                 })
 
-                if (meetingItem.date == date){
+                if (meetingItem.date == date) {
                     if (meetingItem.endTime <= startTime) {
                         continue;
-                    }
-                    else if (meetingItem.startTime >= endTime) {
+                    } else if (meetingItem.startTime >= endTime) {
                         continue;
-                    }
-                    else {
+                    } else {
                         return res.status(400).send(util.fail(400, '모임 시간이 중복됩니다.'));
                     }
                 }
             }
         }
-        
+
         return res.status(200).send(util.success(200, '모임 생성이 가능한 시간입니다.'))
 
     },
@@ -163,12 +161,12 @@ module.exports = {
         const meetingObject = await meetingModel.findOne({
             _id: meetingId
         })
-        for (let userItem of meetingObject.user){
+        for (let userItem of meetingObject.user) {
             userItem.attendance = -1;
         }
 
         const data = {
-            meeting : meetingObject
+            meeting: meetingObject
         }
         return res.status(200).send(util.success(200, '모임 정보 조회 성공', data));
     },
@@ -220,7 +218,7 @@ module.exports = {
     /**
      * 모임 리스트 (각 그룹에서 최신 모임반환) 진행중 / 완료 & 예정 나눠서 반환
      */
-    list : async(req,res)=>{
+    list: async (req, res) => {
         const adminEmail = req.email;
         const admin = await adminModel.findOne({
             email: adminEmail
@@ -232,40 +230,38 @@ module.exports = {
         const today = moment().format('YYYY-MM-DD');
         const end = [];
         const proceed = [];
-        for (let group of allGroup){
+        for (let group of allGroup) {
             const lastMeeting = await meetingModel.findOne({
-                _id : group.meetings[group.meetings.length-1]
-            }) 
+                _id: group.meetings[group.meetings.length - 1]
+            })
             const userCount = lastMeeting.user.length;
             var feedBackCount;
-            if (lastMeeting.feedBack.length > 0){
+            if (lastMeeting.feedBack.length > 0) {
                 feedBackCount = lastMeeting.feedBack[0].result.length;
-            }
-            else feedBackCount = 0;
-            let Item ={
-                group_id : group._id,
-                meeting_id : lastMeeting._id,
+            } else feedBackCount = 0;
+            let Item = {
+                group_id: group._id,
+                meeting_id: lastMeeting._id,
                 name: lastMeeting.name,
                 date: lastMeeting.date,
-                userCount : userCount,
+                userCount: userCount,
                 feedBackCount: feedBackCount
             }
-            if (lastMeeting.date < today){ //종료된 모임
+            if (lastMeeting.date < today) { //종료된 모임
                 end.push(Item);
-            }
-            else { //진행중이거나 예정된 모임
+            } else { //진행중이거나 예정된 모임
                 proceed.push(Item);
             }
         }
 
-        end.sort(function(a,b){
-            if (a.date === b.date){ //오름차순
+        end.sort(function (a, b) {
+            if (a.date === b.date) { //오름차순
                 return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
             }
             return a.date > b.date ? -1 : a.date < b.date ? 1 : 0; //내림차순 
         })
-        proceed.sort(function(a, b){
-            if (a.date === b.date){ //오름차순
+        proceed.sort(function (a, b) {
+            if (a.date === b.date) { //오름차순
                 return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
             }
             return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
@@ -273,9 +269,9 @@ module.exports = {
 
         const meetingList = proceed.concat(end);
 
-        return res.status(200).send(util.success(200, "모임 리스트 조회",meetingList));
+        return res.status(200).send(util.success(200, "모임 리스트 조회", meetingList));
     },
-    
+
     /**
      * 모임 리스트에서 각 회차의 정보 조회 round가 -1일때 마지막 회차와 회차 수 반환, 다른 수 일때는 해당 회차 정보 반환
      */
@@ -296,23 +292,23 @@ module.exports = {
 
             let user = [];
             let cnt = 1;
-            for (let i =meeting.user.length-1; i>=0; i--) {
+            for (let i = meeting.user.length - 1; i >= 0; i--) {
                 if (cnt > 4) break;
                 user.push(meeting.user[i]);
                 cnt++;
             }
 
             const data = {
-                groupId : group._id,
-                meetingSum : meetings.length,
+                groupId: group._id,
+                meetingSum: meetings.length,
                 meeting: {
-                    _id : meeting._id,
+                    _id: meeting._id,
                     user: user,
                     name: meeting.name,
                     date: meeting.date,
                     startTime: meeting.startTime,
                     endTime: meeting.endTime,
-                    late : meeting.late,
+                    late: meeting.late,
                     headCount: meeting.headCount,
                     image: meeting.image,
                     qrImg: meeting.qrImg
@@ -334,9 +330,9 @@ module.exports = {
             }
 
             const data = {
-                groupId : group._id,
+                groupId: group._id,
                 meeting: {
-                    _id : meeting._id,
+                    _id: meeting._id,
                     user: user,
                     name: meeting.name,
                     date: meeting.date,
@@ -352,18 +348,23 @@ module.exports = {
             return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
         }
     },
-    
+
     /**
      * 전체 참석자 정보 받아오기
      */
-    readPeopleInfo: async(req, res) =>{
+    readPeopleInfo: async (req, res) => {
         const meetingId = req.params.meetingId;
-        const filter = {_id : meetingId};
-    
+        const filter = {
+            _id: meetingId
+        };
+
         let result = {};
-        try{
-            result = await meetingModel.findById(filter, {_id: 0, user: 1});
-        } catch (e){
+        try {
+            result = await meetingModel.findById(filter, {
+                _id: 0,
+                user: 1
+            });
+        } catch (e) {
             return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
         }
 
