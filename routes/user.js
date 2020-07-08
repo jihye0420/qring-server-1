@@ -4,6 +4,11 @@ const userController = require("../controllers/user");
 const auth = require("../middleware/auth");
 
 /**
+ * 이메일 중복 확인
+ */
+router.get('/email', userController.checkEmail);
+
+/**
  * 회원 가입
  */
 router.post("/signup", userController.signUp);

@@ -130,13 +130,14 @@ module.exports = {
     // DB에 추가하기
     if (!flag) {
       // 지각 여부 체크
-      let attendance = "출석";
+      let attendance = 1;
       if (now < start || now > end ){
         res.status(401).send(util.fail(401, "출석 가능 시간이 아닙니다."));
         return;
       } else {
         if (now > late){
-          attendance = "지각";
+          attendance = 0;
+          isAdded = false;
         }
       }
 
@@ -171,7 +172,7 @@ module.exports = {
     });
 
     if (!flag){
-      const attendance = "결석";
+      const attendance = -1;
       const isAdded = true;
       
       const filter = { _id: meetingId };
