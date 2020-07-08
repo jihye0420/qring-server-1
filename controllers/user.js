@@ -173,7 +173,7 @@ const userController = {
     });
 
     if (result.authToken === undefined) {
-      res.status(400).send(util.fail(400, "이미 인증된 회원입니다."));
+      res.render("result", { result: "fail" });
     }
     if (result.authToken === token) {
       await adminModel.update(filter, {
@@ -181,9 +181,9 @@ const userController = {
           authToken: 1,
         },
       }); // authToken 필드 삭제
-      res.status(200).send(util.success(200, "이메일 인증에 성공하였습니다."));
+      res.render("result", { result: "success" });
     } else {
-      res.status(400).send(util.fail(400, "이메일 인증에 실패하였습니다."));
+      res.render("result", { result: "error" });
     }
   },
 
