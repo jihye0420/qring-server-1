@@ -144,7 +144,7 @@ const qrcodeController = {
           attendance = 0;
         }
 
-        let now = moment().format('YYYY-MM-DD HH:mm:ss');
+        let createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
         const filter = {
           _id: meetingId
         };
@@ -156,7 +156,7 @@ const qrcodeController = {
             health,
             attendance,
             isAdded,
-            now
+            createdAt
           }
         };
 
@@ -166,6 +166,7 @@ const qrcodeController = {
       }
     } else { //------이어서 만들기 또는 2회차 이상인 경우-------//
       console.log("이어서 만들기");
+
       // 출석 확인하기
       let attendance = 1;
       if (attendanceFlag === -1) {
@@ -203,7 +204,7 @@ const qrcodeController = {
               'user.$.health': health,
               'user.$.attendance': attendance,
               'user.$.isAdded': isAdded,
-              'user.$.createdAt': new moment().format('YYYY-MM-DD HH:mm:ss')
+              'user.$.createdAt': moment().format('YYYY-MM-DD HH:mm:ss')
             };
             await meetingModel.findOneAndUpdate(filter, {
               $set: update
@@ -223,7 +224,8 @@ const qrcodeController = {
         // result가 false면 없는 이메일 === 새로 추가되는 참석자
         isAdded = true;
 
-        let now = moment().format('YYYY-MM-DD HH:mm:ss');
+        const createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+        
         const filter = {
           _id: meetingId
         };
@@ -235,7 +237,7 @@ const qrcodeController = {
             health,
             attendance,
             isAdded,
-            now
+            createdAt
           }
         };
         await meetingModel.findOneAndUpdate(filter, {
@@ -246,6 +248,25 @@ const qrcodeController = {
       res.status(200).send(util.success(200, "제출에 성공하였습니다."));
     }
   },
+  // /**
+  //  * 현재 시간 예쁘게 구하기 - moment 이슈 => Date로 해결
+  //  */
+  // makeDate: async(date) =>{
+  //   const year = date.getFullYear();
+  //   let month = date.getMonth() + 1;
+  //   month = month >= 10 ? month : '0' + month;  // 두자리로 저장
+  //   let day = date.getDate();
+  //   day = day >= 10 ? day : '0' + day;
+
+  //   let hour = date.getHours();
+  //   hour = hour >= 10 ? hour : '0' + hour;
+  //   let min = date.getMinutes();
+  //   min = min >= 10 ? min : '0' + min;
+  //   let sec = date.getSeconds();
+  //   sec = sec >= 10 ? sec : '0' + sec;
+
+  //   return year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec + " ";
+  // },
 
   /**
    *  출결 확인하기
@@ -273,15 +294,16 @@ const qrcodeController = {
       lateLimit_min = "0" + lateLimit_min.toString();
     }
 
-    let now = moment().format('YYYY-MM-DD HH:mm:ss');
+    let createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
     const start = date.concat(" ", startTime + ":00");
     const end = date.concat(" ", endTime + ":00");
     const late = date.concat(" ", lateLimit_hour, ":", lateLimit_min, ":00");
 
-    if (now < start || now > end) {
+    console.log("출결 관리 ", createdAt);
+    if (createdAt < start || createdAt > end) {
       return -1; // 출석 체크 아예 불가능
     } else {
-      if (now > late) {
+      if (createdAt > late) {
         return 0; // 지각
       }
     }
