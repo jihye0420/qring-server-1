@@ -51,10 +51,7 @@ const MeetingSchema = new schema({
         },
         attendance: Number,
         isAdded : Boolean,
-        createdAt: {
-            type: String, 
-            default: moment().format('YYYY-MM-DD HH:mm:ss')
-        }
+        createdAt: String
     }],
     feedBack: [{
         title: {
