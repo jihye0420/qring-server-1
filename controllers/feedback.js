@@ -53,7 +53,6 @@ module.exports = {
 
         const data = {
             meetingId: meetingId,
-            user: meeting.user,
             name: meeting.name,
             data: meeting.date,
             startTime: meeting.startTime,
