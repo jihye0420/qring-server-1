@@ -51,7 +51,19 @@ module.exports = {
         // 데이터베이스에 저장
         await meeting.save();
 
-        res.status(200).send(util.success(200, "피드백 질문 추가 완료", meeting));
+        const data = {
+            meetingId: meetingId,
+            name: meeting.name,
+            data: meeting.date,
+            startTime: meeting.startTime,
+            endTime: meeting.endTime,
+            late: meeting.late,
+            headCount: meeting.headCount,
+            image: meeting.image,
+            qrImg: meeting.qrImg
+        }
+
+        res.status(200).send(util.success(200, "피드백 질문 추가 완료", data));
 
     },
 
