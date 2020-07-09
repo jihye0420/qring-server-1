@@ -250,11 +250,11 @@ module.exports = {
             }
 
             await meeting.save();
+
+            return res.status(200).send(util.success(200, '모임 정보 수정 성공', meeting));
         } catch(e){
             return res.status(402).send(util.fail(402, "해당하는 meeting이 없습니다."));
         }
-
-        return res.status(200).send(util.success(200, '모임 정보 수정 성공', meeting));
     },
     /**
      * 모임 삭제
@@ -286,7 +286,7 @@ module.exports = {
                 })
            }
         } catch(e){
-            return res.status(400).send(util.fail(400, "해당하는 groupId가 없습니다."));
+            return res.status(400).send(util.fail(400, "해당하는 group이 없습니다."));
         }
         
         await meetingModel.deleteOne({
