@@ -11,21 +11,21 @@ module.exports = {
     checkToken: async (req, res, next) => {
         const token = req.headers.jwt;
         if (!token) {
-            return res.json(util.fail(400, "토큰이 없습니다."));
+            return res.json(util.fail(405, "토큰이 없습니다."));
         }
 
         const user = await jwt.verify(token);
         if (user === TOKEN_EXPIRED) {
-            return res.json(util.fail(401, "만료된 토큰입니다."));
+            return res.json(util.fail(406, "만료된 토큰입니다."));
         }
         if (user === TOKEN_INVALID) {
-            return res.json(util.fail(401, "유효하지 않은 토큰입니다."));
+            return res.json(util.fail(407, "유효하지 않은 토큰입니다."));
         }
 
 
         const userEmail = user.email;
         if (!userEmail) {
-            return res.status(401).json({
+            return res.status(407).json({
                 message: "유효하지 않은 토큰입니다."
             });
         } else {

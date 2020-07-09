@@ -93,7 +93,7 @@ const qrcodeController = {
     } = req.body;
 
     if (!meetingId) {
-      res.status(400).send(util.fail(400, "meetingId가 없습니다."));
+      res.status(402).send(util.fail(402, "meetingId가 없습니다."));
     }
 
     const groupInfo = await groupModel.findById({
@@ -244,9 +244,8 @@ const qrcodeController = {
           $push: update
         });
       }
-
-      res.status(200).send(util.success(200, "제출에 성공하였습니다."));
     }
+    res.status(200).send(util.success(200, "제출에 성공하였습니다."));
   },
   // /**
   //  * 현재 시간 예쁘게 구하기 - moment 이슈 => Date로 해결
@@ -299,7 +298,6 @@ const qrcodeController = {
     const end = date.concat(" ", endTime + ":00");
     const late = date.concat(" ", lateLimit_hour, ":", lateLimit_min, ":00");
 
-    console.log("출결 관리 ", createdAt);
     if (createdAt < start || createdAt > end) {
       return -1; // 출석 체크 아예 불가능
     } else {
