@@ -20,7 +20,18 @@ module.exports = {
             endTime,
             late,
             headCount,
+            feedBack
         } = req.body;
+
+
+        const parsedFeedbacks = feedBack.map((fb) => {
+            let parsedFb;
+            if (typeof fb === 'string') {
+                parsedFb = JSON.parse(fb);
+            }
+            return parsedFb;
+        })
+        console.log(parsedFeedbacks)
 
         if (!name || !date || !startTime || !endTime || !late || !headCount) {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
@@ -33,6 +44,8 @@ module.exports = {
         newMeeting.endTime = req.body.endTime
         newMeeting.late = req.body.late
         newMeeting.headCount = req.body.headCount
+        //newMeeting.feedBack = parsedFeedbacks
+        newMeeting.feedBack = req.body.feedBack
 
         const image = req.file.location;
         // data check - undefined
@@ -60,7 +73,7 @@ module.exports = {
 
         const data = {
             "groupid": newGroup._id,
-            "meetings" : newGroup.meetings
+            "meetings": newGroup.meetings
         }
 
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
@@ -80,7 +93,11 @@ module.exports = {
             endTime,
             late,
             headCount,
+            feedBack
         } = req.body;
+
+
+        console.log(feedBack);
 
         if (!name || !date || !startTime || !endTime || !late || !headCount) {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
@@ -93,6 +110,8 @@ module.exports = {
         newMeeting.endTime = req.body.endTime
         newMeeting.late = req.body.late
         newMeeting.headCount = req.body.headCount
+        newMeeting.feedBack = req.body.feedBack
+
 
         const image = req.file.location;
         // data check - undefined
@@ -108,7 +127,7 @@ module.exports = {
 
         let fin_meeting = await newMeeting.save();
 
-        try{
+        try {
             const group = await groupModel.findOne({
                 _id: groupId
             })
@@ -117,12 +136,12 @@ module.exports = {
             await group.save();
 
             const data = {
-                "groupid" : group._id,
-                "meetings" : group.meetings
+                "groupid": group._id,
+                "meetings": group.meetings
             }
-            
+
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
-        } catch(e){
+        } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 group이 없습니다."));
         }
 
@@ -146,25 +165,23 @@ module.exports = {
         } = req.body;
 
 
-        for (let groupItem of allGroup){
-            for (let meetingId of groupItem.meetings){
-                try{
+        for (let groupItem of allGroup) {
+            for (let meetingId of groupItem.meetings) {
+                try {
                     let meetingItem = await meetingModel.findOne({
                         _id: meetingId
                     })
 
-                    if (meetingItem.date == date){
+                    if (meetingItem.date == date) {
                         if (meetingItem.endTime <= startTime) {
                             continue;
-                        }
-                        else if (meetingItem.startTime >= endTime) {
+                        } else if (meetingItem.startTime >= endTime) {
                             continue;
-                        }
-                        else {
+                        } else {
                             return res.status(400).send(util.fail(400, '모임 시간이 중복됩니다.'));
                         }
                     }
-                }catch(e){
+                } catch (e) {
                     return res.status(401).send(util.fail(401, "meeting 데이터 오류"));
                 }
             }
@@ -182,29 +199,29 @@ module.exports = {
         try {
             const meetingObject = await meetingModel.findOne({
                 _id: meetingId
-            })      
+            })
 
-            for (let userItem of meetingObject.user){
+            for (let userItem of meetingObject.user) {
                 userItem.attendance = '결석';
             }
 
             const data = {
-                "groupId" : groupId,
-                "meeting" : {
-                    "_id" : meetingObject._id,
-                    "user" : meetingObject.user,
-                    "name" : meetingObject.name,
-                    "date" : meetingObject.date,
-                    "startTime" : meetingObject.startTime,
-                    "endTime" : meetingObject.endTime,
-                    "late" : meetingObject.late,
-                    "headCount" : meetingObject.headCount,
-                    "image" : meetingObject.image
+                "groupId": groupId,
+                "meeting": {
+                    "_id": meetingObject._id,
+                    "user": meetingObject.user,
+                    "name": meetingObject.name,
+                    "date": meetingObject.date,
+                    "startTime": meetingObject.startTime,
+                    "endTime": meetingObject.endTime,
+                    "late": meetingObject.late,
+                    "headCount": meetingObject.headCount,
+                    "image": meetingObject.image
                 }
             }
 
             return res.status(200).send(util.success(200, '모임 정보 조회 성공', data));
-        } catch(e) {
+        } catch (e) {
             return res.status(400).send(util.fail(400, "해당하는 meeting이 없습니다."));
         }
     },
@@ -252,45 +269,44 @@ module.exports = {
             await meeting.save();
 
             return res.status(200).send(util.success(200, '모임 정보 수정 성공', meeting));
-        } catch(e){
+        } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 meeting이 없습니다."));
         }
     },
     /**
      * 모임 삭제
      */
-    deleteMeeting : async(req, res)=>{
+    deleteMeeting: async (req, res) => {
         const groupId = req.params.groupid;
         const meetingId = req.params.meetingid;
         try {
             const group = await groupModel.findOne({
                 _id: groupId
             });
-        
+
             console.log(meetingId);
-            if (group.meetings.length>1){
+            if (group.meetings.length > 1) {
                 const newMeetings = [];
-                for (let Item of group.meetings){
+                for (let Item of group.meetings) {
                     console.log(Item);
-                    if (Item != meetingId){
+                    if (Item != meetingId) {
                         newMeetings.push(Item);
                     }
                 }
                 group.meetings = newMeetings;
                 console.log(newMeetings);
                 await group.save();
-            }
-            else {
+            } else {
                 await groupModel.deleteOne({
-                    _id : groupId
+                    _id: groupId
                 })
-           }
-        } catch(e){
+            }
+        } catch (e) {
             return res.status(400).send(util.fail(400, "해당하는 group이 없습니다."));
         }
-        
+
         await meetingModel.deleteOne({
-            _id : meetingId
+            _id: meetingId
         });
 
         return res.status(200).send(util.success(200, '모임 삭제 성공'));
@@ -310,33 +326,31 @@ module.exports = {
         const today = moment().format('YYYY-MM-DD');
         const end = [];
         const proceed = [];
-        for (let group of allGroup){
+        for (let group of allGroup) {
             try {
                 const lastMeeting = await meetingModel.findOne({
-                    _id : group.meetings[group.meetings.length-1]
-                }) 
+                    _id: group.meetings[group.meetings.length - 1]
+                })
                 const userCount = lastMeeting.user.length;
                 var feedBackCount;
-                if (lastMeeting.feedBack.length > 0){
+                if (lastMeeting.feedBack.length > 0) {
                     feedBackCount = lastMeeting.feedBack[0].result.length;
-                }
-                else feedBackCount = 0;
-                let Item ={
-                    groupId : group._id,
-                    meetingId : lastMeeting._id,
+                } else feedBackCount = 0;
+                let Item = {
+                    groupId: group._id,
+                    meetingId: lastMeeting._id,
                     image: lastMeeting.image,
                     name: lastMeeting.name,
                     date: lastMeeting.date,
-                    userCount : userCount,
+                    userCount: userCount,
                     feedBackCount: feedBackCount
                 }
-                if (lastMeeting.date < today){ //종료된 모임
+                if (lastMeeting.date < today) { //종료된 모임
                     end.push(Item);
-                }
-                else { //진행중이거나 예정된 모임
+                } else { //진행중이거나 예정된 모임
                     proceed.push(Item);
                 }
-            } catch (e){
+            } catch (e) {
                 return res.status(400).send(util.fail(400, "meeting 데이터 오류"));
             }
         }
@@ -381,23 +395,23 @@ module.exports = {
 
                     let user = [];
                     let cnt = 1;
-                    for (let i =meeting.user.length-1; i>=0; i--) {
+                    for (let i = meeting.user.length - 1; i >= 0; i--) {
                         if (cnt > 4) break;
                         user.push(meeting.user[i]);
                         cnt++;
                     }
 
                     const data = {
-                        "groupId" : groupId,
-                        "meetingCount" : meetings.length,
+                        "groupId": groupId,
+                        "meetingCount": meetings.length,
                         "meeting": {
-                            "_id" : meeting._id,
+                            "_id": meeting._id,
                             "user": user,
                             "name": meeting.name,
                             "date": meeting.date,
                             "startTime": meeting.startTime,
                             "endTime": meeting.endTime,
-                            "late" : meeting.late,
+                            "late": meeting.late,
                             "headCount": meeting.headCount,
                             "image": meeting.image,
                             "qrImg": meeting.qrImg
@@ -406,9 +420,9 @@ module.exports = {
 
                     return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
 
-                } catch(e){
+                } catch (e) {
                     return res.status(401).send(util.fail(401, "해당하는 meeting이 없습니다."));
-                } 
+                }
             } else {
                 try {
                     let meeting = await meetingModel.findOne({
@@ -424,9 +438,9 @@ module.exports = {
                     }
 
                     const data = {
-                        "groupId" : groupId,
+                        "groupId": groupId,
                         "meeting": {
-                            "_id" : meeting._id,
+                            "_id": meeting._id,
                             "user": user,
                             "name": meeting.name,
                             "date": meeting.date,
@@ -440,12 +454,12 @@ module.exports = {
                     }
 
                     return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
-                
-                } catch(e){
+
+                } catch (e) {
                     return res.status(401).send(util.fail(401, "해당하는 meeting이 없습니다."));
                 }
             }
-        } catch (e){
+        } catch (e) {
             return res.status(400).send(util.fail(400, "해당하는 group이 없습니다."));
         }
     },
