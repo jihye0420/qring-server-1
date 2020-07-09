@@ -114,30 +114,29 @@ module.exports = {
             res.status(400).send(util.fail(400, "meetingId가 없습니다."));
         }
 
-        const feedbacks = await MeetingModel.findOne({
+        const meeting = await MeetingModel.findOne({
             _id: meetingId
-        }, {
-            _id: 0,
-            feedBack: 1
         });
 
+        // 피드백 결과 배열
+        const {
+            list
+        } = req.body;
 
-        var array = [];
-
-        for (var feedback of feedbacks) {
-            array.push(feedback);
+        if (!list) {
+            res.status(400).send(util.fail(400, "결과 누락"));
+            return;
         }
 
-        for (var i of array) {
-            feedbacks[i].result.push(i);
+        // 피드백 배열 중, 한 피드백 문항씩 꺼내 array에 넣는다.
+        for (var i in meeting.feedBack) {
+            meeting.feedBack[i].result.push(list[i]);
         }
-
-        feedbacks = beforeMeeting.feedBack;
 
         // 데이터베이스에 저장
-        await nowMeeting.save();
+        await meeting.save();
 
-        res.status(200).send(util.success(200, "피드백 질문 목록 완료", nowMeeting));
+        res.status(200).send(util.success(200, "피드백 결과 목록 완료", meeting));
 
 
         // 총 피드백 현황(피드백 전체 갯수도 보내야함), 타이틀, 내용 리스트도 보내야함
