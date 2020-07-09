@@ -2,6 +2,7 @@
 
 <img style="border: 1px solid black !important; border-radius:20px;" src="https://user-images.githubusercontent.com/37949197/86798642-f6c0ea00-c0ab-11ea-92ee-56c7f83518be.png" width="200px" />
 
+
 ![node_badge](https://img.shields.io/badge/node-%3E%3D%2012.13.0-green)
 ![npm_bedge](https://img.shields.io/badge/npm-v6.14.2-blue)
 
@@ -20,6 +21,12 @@
 <br />
 QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 피드백을 통해 모임이 더 성숙해지고, 구성원은 함께 성장하게 됩니다.
 
+<br>
+
+## :bookmark_tabs: 기능 명세서
+<b>* [기능 명세서 노션 링크](https://www.notion.so/caa0852754f44797a3ecf35168023d06) </b>
+
+<br>
 <br>
 
 ## :earth_americas: Team Role 
@@ -50,12 +57,6 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 - 모임 편집 기능 구현
 - 현재 진행중/예정된 모임 List/종료된 모임 리스트 기능 구현
 
-<br>
-
-## :heavy_check_mark: Features
-
-- qr코드를 통한 모임의 쉬운 출석체크 및 건강 체크.
-- 
 
 <br>
 
@@ -64,14 +65,17 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 사용 패키지(모듈)은 다음과 같습니다.
 
 - **nodemailer** : 회원 가입 시 이메일 인증을 위한 이메일 전송
-- **jsonwebtoken**
+- **jsonwebtoken** : JWT(Json Web Token) 생성 및 인증
 - **rand-token**
 - **pbkdf2**
 - **mongoose**
-- **qrcode-with-logos**
+- **qrcode**
 - **aws-sdk**
-- **multer-s3**
 - **multer**
+- **multer-s3**
+- **moment** : 출석체크 시, 현재 시간 받아오기
+- **socket.io**
+- **connect**
 
 ```json
 "dependencies": {
@@ -103,6 +107,8 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 <br>
 
 ## :orange_book: DB ERD
+![image](https://user-images.githubusercontent.com/37949197/86893275-5535a900-c13c-11ea-81f8-baf1332b33e7.png)
+
 
 
 <br>

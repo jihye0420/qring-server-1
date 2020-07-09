@@ -1,11 +1,63 @@
-const nodemailer = require('nodemailer');
-const emailInfo = require('../config/emailinfo.json');
-const encrypt = require('../modules/crypto');
-const jwt = require('../modules/jwt');
-const adminModel = require('../models/admin');
-const util = require('../modules/util');
+const nodemailer = require("nodemailer");
+const emailInfo = require("../config/emailinfo.json");
+const encrypt = require("../modules/crypto");
+const jwt = require("../modules/jwt");
+const adminModel = require("../models/admin");
+const util = require("../modules/util");
+const async = require("pbkdf2/lib/async");
+const ejs = require("ejs");
 
 const userController = {
+    /**
+     * 이메일 중복 확인
+     */
+    checkEmail: async (req, res) => {
+        const email = req.body.email;
+        if (!email) {
+            res.status(401).send(util.fail(401, "필수 정보를 입력하세요."));
+            return;
+        }
+
+        // id 중복 확인
+        try {
+            const result = await adminModel.findOne({
+                email: email,
+            }, {
+                _id: 0,
+                email: 1,
+                auth: 1,
+            });
+
+            // email이 존재하면
+            if (result) {
+                // 이메일 인증을 한 경우
+                if (result.auth) {
+                    res.status(400).send(util.fail(400, "이미 등록된 이메일입니다."));
+                    return;
+                }
+                // 이메일 인증을 하지 않은 경우
+                else {
+                    const token = await userController.sendEmail(email);
+                    await userController.changeAuthToken(email, token);
+                    res
+                        .status(201)
+                        .send(
+                            util.success(
+                                201,
+                                "이미 회원가입을 하셨습니다. 이메일 인증을 해주세요."
+                            )
+                        );
+                    return;
+                }
+            }
+        } catch (err) {
+            if (err) {
+                res.status(500).send(util.fail(500, "이메일 서버 에러"));
+                return;
+            }
+        }
+        res.status(200).send(util.success(200, "중복된 이메일이 없습니다."));
+    },
     /**
      * 회원 가입
      */
@@ -19,40 +71,8 @@ const userController = {
 
         // 파라미터 확인
         if (!email || !pw || !name || !birth) {
-            res.status(402).send(util.fail(402, "필수 정보를 입력하세요."));
+            res.status(400).send(util.fail(400, "필수 정보를 입력하세요."));
             return;
-        }
-
-        // id 중복 확인
-        try {
-            const result = await adminModel.findOne({
-                email: email
-            }, {
-                _id: 0,
-                email: 1,
-                auth: 1
-            })
-
-            // email이 존재하면
-            if (result) {
-                // 이메일 인증을 한 경우
-                if (result.auth) {
-                    res.status(401).send(util.fail(401, "이미 등록된 이메일입니다."));
-                    return;
-                }
-                // 이메일 인증을 하지 않은 경우
-                else {
-                    const token = await userController.sendEmail(email);
-                    await userController.changeAuthToken(email, token);
-                    res.status(201).send(util.success(201, "이미 회원가입을 하셨습니다. 이메일 인증을 해주세요."));
-                    return;
-                }
-            }
-        } catch (err) {
-            if (err) {
-                res.status(500).send(util.fail(500, "이메일 서버 에러"));
-                return;
-            }
         }
 
         const token = await userController.sendEmail(email); // 이메일 전송
@@ -70,30 +90,38 @@ const userController = {
             service: "gmail",
             auth: {
                 user: emailInfo.id, // gmail 계정 아이디
-                pass: emailInfo.pw // gmail 계정 비밀번호
-            }
+                pass: emailInfo.pw, // gmail 계정 비밀번호
+            },
         });
 
         // 난수 문자열 생성
         const token = Math.random().toString(36).substr(2, 11);
 
-        const mailOptions = {
-            from: "", // 발송 메일 주소
-            to: email, // 수신 메일 주소
-            subject: "안녕하세요, 큐링입니다. 이메일 인증을 해주세요.",
-            html: "<p>아래의 링크를 클릭해주세요 !</p>" +
-                "<a href='http://qring-server-dev.ap-northeast-2.elasticbeanstalk.com/user/auth?email=" +
-                email +
-                "&token=" + token + "'>인증하기</a>",
-        };
-
-        transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-                console.log(error);
-            } else {
-                console.log("Email Test : " + info.response);
+        ejs.renderFile(
+            __dirname + "/../views/mail.ejs", {
+                to: email,
+                token: token
+            },
+            function (err, data) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    let mailOptions = {
+                        from: "", // 발송 메일 주소
+                        to: email, // 수신 메일 주소
+                        subject: "안녕하세요, 큐링입니다. 이메일 인증을 해주세요.",
+                        html: data,
+                    };
+                    transporter.sendMail(mailOptions, function (err, info) {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.log("Message sent: " + info.response);
+                        }
+                    });
+                }
             }
-        });
+        );
 
         return token;
     },
@@ -123,13 +151,13 @@ const userController = {
      */
     changeAuthToken: async (email, token) => {
         const filter = {
-            email: email
+            email: email,
         };
         const update = {
-            authToken: token
+            authToken: token,
         };
         await adminModel.findOneAndUpdate(filter, update, {
-            new: true
+            new: true,
         });
     },
 
@@ -142,27 +170,33 @@ const userController = {
 
         // token 일치 시 auth를 true로 변경
         const filter = {
-            email: email
+            email: email,
         };
         const update = {
-            auth: true
+            auth: true,
         };
         const result = await adminModel.findOneAndUpdate(filter, update, {
-            new: true
-        })
+            new: true,
+        });
 
         if (result.authToken === undefined) {
-            res.status(400).send(util.fail(400, "이미 인증된 회원입니다."));
+            res.render("result", {
+                result: "fail"
+            });
         }
         if (result.authToken === token) {
             await adminModel.update(filter, {
                 $unset: {
-                    authToken: 1
-                }
+                    authToken: 1,
+                },
             }); // authToken 필드 삭제
-            res.status(200).send(util.success(200, "이메일 인증에 성공하였습니다."));
+            res.render("result", {
+                result: "success"
+            });
         } else {
-            res.status(400).send(util.fail(400, "이메일 인증에 실패하였습니다."));
+            res.render("result", {
+                result: "error"
+            });
         }
     },
 
@@ -176,13 +210,13 @@ const userController = {
         } = req.body;
 
         const result = await adminModel.findOne({
-            email: email
+            email: email,
         }, {
             _id: 0,
             email: 1,
             auth: 1,
             salt: 1,
-            password: 1
+            password: 1,
         });
 
         if (result === null) {
@@ -191,7 +225,9 @@ const userController = {
 
         // auth가 true인지 확인하기
         if (!result.auth) {
-            return res.status(402).send(util.fail(402, "이메일 인증을 받지 않았습니다."));
+            return res
+                .status(402)
+                .send(util.fail(402, "이메일 인증을 받지 않았습니다."));
         }
 
         const salt = result.salt;
@@ -201,12 +237,16 @@ const userController = {
             const {
                 token,
                 _
-            } = await jwt.sign(result)
-            return res.status(200).send(util.success(200, "로그인 성공", {
-                accessToken: token
-            }));
+            } = await jwt.sign(result);
+            return res.status(200).send(
+                util.success(200, "로그인 성공", {
+                    accessToken: token,
+                })
+            );
         } else {
-            return res.status(400).send(util.fail(400, "비밀번호가 일치하지 않습니다."));
+            return res
+                .status(400)
+                .send(util.fail(400, "비밀번호가 일치하지 않습니다."));
         }
     },
 
@@ -226,14 +266,14 @@ const userController = {
         }
 
         const filter = {
-            email: userEmail
+            email: userEmail,
         };
         const update = {
             name: name,
-            birth: birth
+            birth: birth,
         };
         await adminModel.findOneAndUpdate(filter, update, {
-            new: true
+            new: true,
         });
 
         return res.status(200).send(util.success(200, "프로필 수정 성공"));
@@ -246,17 +286,19 @@ const userController = {
         const userEmail = req.email;
 
         const filter = {
-            email: userEmail
+            email: userEmail,
         };
         const result = await adminModel.find(filter, {
             _id: 0,
             email: 1,
             name: 1,
-            birth: 1
+            birth: 1,
         });
 
-        return res.status(200).send(util.success(200, "프로필 불러오기 성공", result));
-    }
-}
+        return res
+            .status(200)
+            .send(util.success(200, "프로필 불러오기 성공", result));
+    },
+};
 
 module.exports = userController;
