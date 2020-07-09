@@ -5,10 +5,10 @@ const upload = require('../middleware/multer');
 const auth = require('../middleware/auth');
 
 //첫 모임 생성
-router.post('/create',auth.checkToken, upload.single('image'), meetingController.createNewGroup);
+router.post('/',auth.checkToken, upload.single('image'), meetingController.createNewGroup);
 
 //이어서 모임 생성 groupId
-router.post('/create/:id',auth.checkToken, upload.single('image'), meetingController.createNewMeeting);
+router.post('/:id',auth.checkToken, upload.single('image'), meetingController.createNewMeeting);
 
 //모임 시간 확인
 router.get('/time',auth.checkToken, meetingController.time);

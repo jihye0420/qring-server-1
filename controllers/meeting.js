@@ -66,7 +66,7 @@ module.exports = {
      * 이어서 모임 생성
      */
     createNewMeeting: async (req, res) => {
-        const groupId = req.params.id;
+        const groupId = req.params.groupid;
         const {
             name,
             date,
@@ -191,7 +191,7 @@ module.exports = {
      * 모임 편집 기능
      */
     putInfo: async (req, res) => {
-        const meetingId = req.params.id
+        const meetingId = req.params.meetingid
         try {
             let meeting = await meetingModel.findOne({
                 _id: meetingId
@@ -341,7 +341,7 @@ module.exports = {
      * 모임 리스트에서 각 회차의 정보 조회 round가 -1일때 마지막 회차와 회차 수 반환, 다른 수 일때는 해당 회차 정보 반환
      */
     round: async (req, res) => {
-        const groupId = req.params.id;
+        const groupId = req.params.groupid;
         const round = req.params.round;
 
         try {
