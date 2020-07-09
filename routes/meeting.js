@@ -14,10 +14,13 @@ router.post('/create/:id',auth.checkToken, upload.single('image'), meetingContro
 router.get('/time',auth.checkToken, meetingController.time);
 
 //이어서 생성시 모임 정보 조회 meetingId
-router.get('/info/:id',auth.checkToken, meetingController.getInfo);
+router.get('/info/:groupid/:meetingid',auth.checkToken, meetingController.getInfo);
 
 //모임 정보 수정 meetingId
 router.put('/info/:id',auth.checkToken, upload.single('image'), meetingController.putInfo);
+
+// 모임삭제 meetingId
+router.delete('/:groupid/:meetingid', auth.checkToken,meetingController.deleteMeeting);
 
 //모임 리스트, 내 모임, 이어서 생성시
 router.get('/list',auth.checkToken,meetingController.list);
