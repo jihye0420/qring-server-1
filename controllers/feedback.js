@@ -136,7 +136,7 @@ module.exports = {
         } = req.body;
 
         if (!list) {
-            res.status(400).send(util.fail(400, "결과 누락"));
+            res.status(400).send(util.fail(400, "피드백 결과 누락"));
             return;
         }
 
