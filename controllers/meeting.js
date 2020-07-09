@@ -39,7 +39,7 @@ module.exports = {
         if (image !== undefined) {
             const type = req.file.mimetype.split('/')[1];
             if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
-                return res.status(400).send(util.fail(400, '유효하지 않은 형식입니다.'));
+                return res.status(401).send(util.fail(401, '유효하지 않은 형식입니다.'));
             }
             newMeeting.image = image;
         }
@@ -58,7 +58,12 @@ module.exports = {
 
         await newGroup.save();
 
-        return res.status(200).send(util.success(200, '새 모임 생성 성공', newGroup));
+        const data = {
+            "groupid": newGroup._id,
+            "meetings" : newGroup.meetings
+        }
+
+        return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
 
     },
 
@@ -67,6 +72,7 @@ module.exports = {
      */
     createNewMeeting: async (req, res) => {
         const groupId = req.params.groupid;
+        console.log(groupId);
         const {
             name,
             date,
@@ -93,7 +99,7 @@ module.exports = {
         if (image !== undefined) {
             const type = req.file.mimetype.split('/')[1];
             if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
-                return res.status(400).send(util.fail(400, '유효하지 않은 형식입니다.'))
+                return res.status(401).send(util.fail(401, '유효하지 않은 형식입니다.'))
             }
             newMeeting.image = image;
         }
@@ -109,11 +115,16 @@ module.exports = {
             group.meetings.push(fin_meeting._id);
 
             await group.save();
-        } catch(e){
-            return res.status(400).send(util.fail(400, "해당하는 groupId가 없습니다."));
-        }
 
-        return res.status(200).send(util.success(200, '이어서 모임 생성 성공', group));
+            const data = {
+                "groupid" : group._id,
+                "meetings" : group.meetings
+            }
+            
+            return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
+        } catch(e){
+            return res.status(402).send(util.fail(402, "해당하는 group이 없습니다."));
+        }
 
     },
     /**
@@ -154,7 +165,7 @@ module.exports = {
                         }
                     }
                 }catch(e){
-                    return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
+                    return res.status(401).send(util.fail(401, "meeting 데이터 오류"));
                 }
             }
         }
@@ -178,13 +189,24 @@ module.exports = {
             }
 
             const data = {
-                groupId : groupId,
-                meeting : meetingObject
+                "groupId" : groupId,
+                "meeting" : {
+                    "_id" : meetingObject._id,
+                    "user" : meetingObject.user,
+                    "name" : meetingObject.name,
+                    "date" : meetingObject.date,
+                    "startTime" : meetingObject.startTime,
+                    "endTime" : meetingObject.endTime,
+                    "late" : meetingObject.late,
+                    "headCount" : meetingObject.headCount,
+                    "image" : meetingObject.image
+                }
             }
+
+            return res.status(200).send(util.success(200, '모임 정보 조회 성공', data));
         } catch(e) {
-            return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
+            return res.status(400).send(util.fail(400, "해당하는 meeting이 없습니다."));
         }
-        return res.status(200).send(util.success(200, '모임 정보 조회 성공', data));
     },
 
     /**
@@ -222,14 +244,14 @@ module.exports = {
             if (image !== undefined) {
                 const type = req.file.mimetype.split('/')[1];
                 if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
-                    return res.status(400).send(util.fail(400, '유효하지 않은 형식입니다.'));
+                    return res.status(401).send(util.fail(401, '유효하지 않은 형식입니다.'));
                 }
                 meeting.image = image;
             }
 
             await meeting.save();
         } catch(e){
-            return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
+            return res.status(402).send(util.fail(402, "해당하는 meeting이 없습니다."));
         }
 
         return res.status(200).send(util.success(200, '모임 정보 수정 성공', meeting));
@@ -315,7 +337,7 @@ module.exports = {
                     proceed.push(Item);
                 }
             } catch (e){
-                return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
+                return res.status(400).send(util.fail(400, "meeting 데이터 오류"));
             }
         }
 
@@ -366,25 +388,26 @@ module.exports = {
                     }
 
                     const data = {
-                        meetingSum : meetings.length,
-                        meeting: {
-                            _id : meeting._id,
-                            user: user,
-                            name: meeting.name,
-                            date: meeting.date,
-                            startTime: meeting.startTime,
-                            endTime: meeting.endTime,
-                            late : meeting.late,
-                            headCount: meeting.headCount,
-                            image: meeting.image,
-                            qrImg: meeting.qrImg
+                        "groupId" : groupId,
+                        "meetingSum" : meetings.length,
+                        "meeting": {
+                            "_id" : meeting._id,
+                            "user": user,
+                            "name": meeting.name,
+                            "date": meeting.date,
+                            "startTime": meeting.startTime,
+                            "endTime": meeting.endTime,
+                            "late" : meeting.late,
+                            "headCount": meeting.headCount,
+                            "image": meeting.image,
+                            "qrImg": meeting.qrImg
                         }
                     }
 
                     return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
 
                 } catch(e){
-                    return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
+                    return res.status(401).send(util.fail(401, "해당하는 meeting이 없습니다."));
                 } 
             } else {
                 try {
@@ -401,28 +424,29 @@ module.exports = {
                     }
 
                     const data = {
-                        meeting: {
-                            _id : meeting._id,
-                            user: user,
-                            name: meeting.name,
-                            date: meeting.date,
-                            startTime: meeting.startTime,
-                            endTime: meeting.endTime,
-                            late: meeting.late,
-                            headCount: meeting.headCount,
-                            image: meeting.image,
-                            qrImg: meeting.qrImg
+                        "groupId" : groupId,
+                        "meeting": {
+                            "_id" : meeting._id,
+                            "user": user,
+                            "name": meeting.name,
+                            "date": meeting.date,
+                            "startTime": meeting.startTime,
+                            "endTime": meeting.endTime,
+                            "late": meeting.late,
+                            "headCount": meeting.headCount,
+                            "image": meeting.image,
+                            "qrImg": meeting.qrImg
                         }
                     }
 
                     return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
                 
                 } catch(e){
-                    return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
+                    return res.status(401).send(util.fail(401, "해당하는 meeting이 없습니다."));
                 }
             }
         } catch (e){
-            return res.status(400).send(util.fail(400, "해당하는 groupId가 없습니다."));
+            return res.status(400).send(util.fail(400, "해당하는 group이 없습니다."));
         }
     },
 
