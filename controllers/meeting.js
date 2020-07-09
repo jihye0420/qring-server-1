@@ -73,7 +73,7 @@ module.exports = {
 
         const data = {
             "groupid": newGroup._id,
-            "meetings": newGroup.meetings
+            "meetingid" : newGroup.meetings[0]
         }
 
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
@@ -136,8 +136,8 @@ module.exports = {
             await group.save();
 
             const data = {
-                "groupid": group._id,
-                "meetings": group.meetings
+                "groupid" : group._id,
+                "meetingid" : group.meetings[group.meetings.length-1]
             }
 
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
@@ -385,7 +385,7 @@ module.exports = {
                 _id: groupId
             })
 
-            const meetings = group.meetings;
+            const meetings = group.meetings
 
             if (round == -1) {
                 try {
