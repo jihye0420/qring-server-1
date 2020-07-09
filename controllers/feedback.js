@@ -124,11 +124,20 @@ module.exports = {
 
         var array = [];
 
-        for (var item of feedbacks) {
-            array.push(item);
+        for (var feedback of feedbacks) {
+            array.push(feedback);
         }
 
+        for (var i of array) {
+            feedbacks[i].result.push(i);
+        }
 
+        feedbacks = beforeMeeting.feedBack;
+
+        // 데이터베이스에 저장
+        await nowMeeting.save();
+
+        res.status(200).send(util.success(200, "피드백 질문 목록 완료", nowMeeting));
 
 
         // 총 피드백 현황(피드백 전체 갯수도 보내야함), 타이틀, 내용 리스트도 보내야함
