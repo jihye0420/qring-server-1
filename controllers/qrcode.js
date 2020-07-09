@@ -93,7 +93,7 @@ const qrcodeController = {
     } = req.body;
 
     if (!meetingId) {
-      res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
+      res.status(400).send(util.fail(400, "meetingId가 없습니다."));
     }
 
     const groupInfo = await groupModel.findById({
@@ -292,16 +292,16 @@ const qrcodeController = {
    * 관리자가 사용자 직접 추가
    */
   addUser: async (req, res) => {
-      const meetingId = req.params.meetingId;
-      const {
-        name,
-        email,
-        abroad,
-        health
-      } = req.body;
+    const meetingId = req.params.meetingId;
+    const {
+      name,
+      email,
+      abroad,
+      health
+    } = req.body;
 
-      if (!meetingId) {
-        res.status(400).send(util.fail(400, "meetingId가 없습니다."));
+    if (!meetingId) {
+      res.status(400).send(util.fail(400, "meetingId가 없습니다."));
     }
 
     const result = await meetingModel.findById({
