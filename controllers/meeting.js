@@ -23,19 +23,11 @@ module.exports = {
             feedBack
         } = req.body;
 
-
-        // const parsedFeedbacks = feedBack.map((fb) => {
-        //     let parsedFb;
-        //     if (typeof fb === 'string') {
-        //         parsedFb = JSON.parse(fb);
-        //     }
-        //     return parsedFb;
-        // })
-        // console.log("피드백 질문 생성" + parsedFeedbacks);
-
         if (!name || !date || !startTime || !endTime || !late || !headCount) {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
+
+        console.log("피드백" + feedBack);
 
         var newMeeting = new meetingModel();
         newMeeting.name = req.body.name
@@ -44,7 +36,6 @@ module.exports = {
         newMeeting.endTime = req.body.endTime
         newMeeting.late = req.body.late
         newMeeting.headCount = req.body.headCount
-        //newMeeting.feedBack = parsedFeedbacks
         newMeeting.feedBack = req.body.feedBack
 
         const image = req.file.location;
