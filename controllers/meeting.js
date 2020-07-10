@@ -31,7 +31,7 @@ module.exports = {
             }
             return parsedFb;
         })
-        console.log(parsedFeedbacks)
+        console.log("피드백 질문 생성" + parsedFeedbacks);
 
         if (!name || !date || !startTime || !endTime || !late || !headCount) {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
@@ -73,18 +73,16 @@ module.exports = {
 
         const data = {
             "groupid": newGroup._id,
-            "meeting" : [
-                {
-                    "name" : newMeeting.name,
-                    "date" : newMeeting.date,
-                    "startTime" : newMeeting.startTime,
-                    "endTime" : newMeeting.endTime,
-                    "image" : newMeeting.image,
-                    "qrImg" : newMeeting.qrImg,
-                    "late" : newMeeting.late,
-                    "headCount" : newMeeting.headCount
-                }
-            ]
+            "meeting": [{
+                "name": newMeeting.name,
+                "date": newMeeting.date,
+                "startTime": newMeeting.startTime,
+                "endTime": newMeeting.endTime,
+                "image": newMeeting.image,
+                "qrImg": newMeeting.qrImg,
+                "late": newMeeting.late,
+                "headCount": newMeeting.headCount
+            }]
         }
 
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
@@ -148,18 +146,16 @@ module.exports = {
 
             const data = {
                 "groupid": group._id,
-                "meeting" : [
-                    {
-                        "name" : newMeeting.name,
-                        "date" : newMeeting.date,
-                        "startTime" : newMeeting.startTime,
-                        "endTime" : newMeeting.endTime,
-                        "image" : newMeeting.image,
-                        "qrImg" : newMeeting.qrImg,
-                        "late" : newMeeting.late,
-                        "headCount" : newMeeting.headCount
-                    }
-                ]
+                "meeting": [{
+                    "name": newMeeting.name,
+                    "date": newMeeting.date,
+                    "startTime": newMeeting.startTime,
+                    "endTime": newMeeting.endTime,
+                    "image": newMeeting.image,
+                    "qrImg": newMeeting.qrImg,
+                    "late": newMeeting.late,
+                    "headCount": newMeeting.headCount
+                }]
             }
 
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
@@ -288,15 +284,15 @@ module.exports = {
                 meeting.image = image;
             }
 
-            const data ={
-                "name" : meeting.name,
-                "data" : meeting.date,
-                "startTime" : meeting.startTime,
-                "endTime" : meeting.endTime,
-                "late" : meeting.late,
-                "headCount" : meeting.headCount,
-                "image" : meeting.image,
-                "qrImg" : meeting.qrImg
+            const data = {
+                "name": meeting.name,
+                "data": meeting.date,
+                "startTime": meeting.startTime,
+                "endTime": meeting.endTime,
+                "late": meeting.late,
+                "headCount": meeting.headCount,
+                "image": meeting.image,
+                "qrImg": meeting.qrImg
             }
 
             await meeting.save();
