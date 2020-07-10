@@ -23,6 +23,11 @@ router.post("/:meetingId", auth.checkToken, qrcodeController.addUser);
  */
 router.put("/:meetingId", auth.checkToken, qrcodeController.updateUser);
 
+/**
+ * 참석자 정보 삭제
+ */
+router.delete("/:meetingId", auth.checkToken, qrcodeController.deleteUser);
+
 router.get("/check/:groupId/:meetingId", qrcodeController.userCheck);
 router.post("/feedback/:meetingId", qrcodeController.feedbackCheck);
 
