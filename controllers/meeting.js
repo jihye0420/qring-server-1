@@ -23,6 +23,7 @@ module.exports = {
             feedBack
         } = req.body;
 
+        console.log("gg", feedBack);
 
         const parsedFeedbacks = await feedBack.map((fb) => {
             let parsedFb;
