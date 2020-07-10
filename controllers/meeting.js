@@ -266,9 +266,20 @@ module.exports = {
                 meeting.image = image;
             }
 
+            const data ={
+                "name" : meeting.name,
+                "data" : meeting.date,
+                "startTime" : meeting.startTime,
+                "endTime" : meeting.endTime,
+                "late" : meeting.late,
+                "headCount" : meeting.headCount,
+                "image" : meeting.image,
+                "qrImg" : meeting.qrImg
+            }
+
             await meeting.save();
 
-            return res.status(200).send(util.success(200, '모임 정보 수정 성공', meeting));
+            return res.status(200).send(util.success(200, '모임 정보 수정 성공', date));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 meeting이 없습니다."));
         }
