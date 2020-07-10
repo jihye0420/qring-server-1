@@ -32,7 +32,7 @@ module.exports = {
             }
             return parsedFb;
         })
-        console.log("피드백 질문 생성" + parsedFeedbacks);
+        console.log("before", parsedFeedbacks);
 
         if (!name || !date || !startTime || !endTime || !late || !headCount) {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
