@@ -44,8 +44,8 @@ module.exports = {
         newMeeting.endTime = req.body.endTime
         newMeeting.late = req.body.late
         newMeeting.headCount = req.body.headCount
-        //newMeeting.feedBack = parsedFeedbacks
-        newMeeting.feedBack = req.body.feedBack
+        newMeeting.feedBack = parsedFeedbacks
+        //newMeeting.feedBack = req.body.feedBack
 
         const image = req.file.location;
         // data check - undefined
