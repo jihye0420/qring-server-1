@@ -24,7 +24,7 @@ module.exports = {
         } = req.body;
 
 
-        const parsedFeedbacks = feedBack.map((fb) => {
+        const parsedFeedbacks = await feedBack.map((fb) => {
             let parsedFb;
             if (typeof fb === 'string') {
                 parsedFb = JSON.parse(fb);
