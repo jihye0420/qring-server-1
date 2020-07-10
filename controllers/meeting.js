@@ -73,7 +73,18 @@ module.exports = {
 
         const data = {
             "groupid": newGroup._id,
-            "meetingid": newGroup.meetings[0]
+            "meeting" : [
+                {
+                    "name" : newMeeting.name,
+                    "date" : newMeeting.date,
+                    "startTime" : newMeeting.startTime,
+                    "endTime" : newMeeting.endTime,
+                    "image" : newMeeting.image,
+                    "qrImg" : newMeeting.qrImg,
+                    "late" : newMeeting.late,
+                    "headCount" : newMeeting.headCount
+                }
+            ]
         }
 
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
@@ -137,7 +148,18 @@ module.exports = {
 
             const data = {
                 "groupid": group._id,
-                "meetingid": group.meetings[group.meetings.length - 1]
+                "meeting" : [
+                    {
+                        "name" : newMeeting.name,
+                        "date" : newMeeting.date,
+                        "startTime" : newMeeting.startTime,
+                        "endTime" : newMeeting.endTime,
+                        "image" : newMeeting.image,
+                        "qrImg" : newMeeting.qrImg,
+                        "late" : newMeeting.late,
+                        "headCount" : newMeeting.headCount
+                    }
+                ]
             }
 
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
@@ -266,9 +288,20 @@ module.exports = {
                 meeting.image = image;
             }
 
+            const data ={
+                "name" : meeting.name,
+                "data" : meeting.date,
+                "startTime" : meeting.startTime,
+                "endTime" : meeting.endTime,
+                "late" : meeting.late,
+                "headCount" : meeting.headCount,
+                "image" : meeting.image,
+                "qrImg" : meeting.qrImg
+            }
+
             await meeting.save();
 
-            return res.status(200).send(util.success(200, '모임 정보 수정 성공', meeting));
+            return res.status(200).send(util.success(200, '모임 정보 수정 성공', date));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 meeting이 없습니다."));
         }
@@ -439,6 +472,7 @@ module.exports = {
 
                     const data = {
                         "groupId": groupId,
+                        "meetingCount": meetings.length,
                         "meeting": {
                             "_id": meeting._id,
                             "user": user,
