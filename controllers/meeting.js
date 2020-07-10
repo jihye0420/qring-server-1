@@ -31,7 +31,6 @@ module.exports = {
             }
             return parsedFb;
         })
-        console.log(parsedFeedbacks)
 
         if (!name || !date || !startTime || !endTime || !late || !headCount) {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
@@ -44,8 +43,8 @@ module.exports = {
         newMeeting.endTime = req.body.endTime
         newMeeting.late = req.body.late
         newMeeting.headCount = req.body.headCount
-        //newMeeting.feedBack = parsedFeedbacks
-        newMeeting.feedBack = req.body.feedBack
+        newMeeting.feedBack = parsedFeedbacks
+        //newMeeting.feedBack = req.body.feedBack
 
         const image = req.file.location;
         // data check - undefined
@@ -65,11 +64,12 @@ module.exports = {
         const admin = await adminModel.findOne({
             email: adminEmail
         })
-
+        
         newGroup.admin = admin._id;
         newGroup.meetings.push(fin_meeting._id)
 
         await newGroup.save();
+        admin.groups.push(newGroup._id);
 
         const data = {
             "groupid": newGroup._id,
@@ -352,9 +352,7 @@ module.exports = {
         const admin = await adminModel.findOne({
             email: adminEmail
         })
-        const allGroup = await groupModel.find({
-            admin: admin._id
-        });
+        const allGroup = admin.groups;
 
         const today = moment().format('YYYY-MM-DD');
         const end = [];
@@ -411,8 +409,8 @@ module.exports = {
      */
     round: async (req, res) => {
         const groupId = req.params.groupid;
-        const round = req.params.round;
 
+        let data = [];
         try {
             const group = await groupModel.findOne({
                 _id: groupId
@@ -420,82 +418,40 @@ module.exports = {
 
             const meetings = group.meetings
 
-            if (round == -1) {
+            
+            for (let Item of meetings){
                 try {
                     let meeting = await meetingModel.findOne({
-                        _id: meetings[meetings.length - 1]
+                        _id: Item
                     })
 
-                    let user = [];
-                    let cnt = 1;
-                    for (let i = meeting.user.length - 1; i >= 0; i--) {
-                        if (cnt > 4) break;
-                        user.push(meeting.user[i]);
-                        cnt++;
+                    const userCount = meeting.user.length;
+                    var feedBackCount;
+                    if (meeting.feedBack.length > 0) {
+                        feedBackCount = meeting.feedBack[0].result.length;
+                    } else feedBackCount = 0;
+                    const meetingdata = {
+                        "meetingid": meeting._id,
+                        "name": meeting.name,
+                        "date": meeting.date,
+                        "userCount" : userCount,
+                        "feedBackCount" : feedBackCount,
+                        "headCount": meeting.headCount,
+                        "image": meeting.image,
+                        "qrImg": meeting.qrImg
                     }
 
-                    const data = {
-                        "groupId": groupId,
-                        "meetingCount": meetings.length,
-                        "meeting": {
-                            "_id": meeting._id,
-                            "user": user,
-                            "name": meeting.name,
-                            "date": meeting.date,
-                            "startTime": meeting.startTime,
-                            "endTime": meeting.endTime,
-                            "late": meeting.late,
-                            "headCount": meeting.headCount,
-                            "image": meeting.image,
-                            "qrImg": meeting.qrImg
-                        }
-                    }
-
-                    return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
-
+                   data.push(meetingdata);
                 } catch (e) {
-                    return res.status(401).send(util.fail(401, "해당하는 meeting이 없습니다."));
-                }
-            } else {
-                try {
-                    let meeting = await meetingModel.findOne({
-                        _id: meetings[round - 1]
-                    })
-
-                    let user = [];
-                    let cnt = 1;
-                    for (let item of meeting.user) {
-                        if (cnt > 4) break;
-                        user.push(item);
-                        cnt++;
-                    }
-
-                    const data = {
-                        "groupId": groupId,
-                        "meetingCount": meetings.length,
-                        "meeting": {
-                            "_id": meeting._id,
-                            "user": user,
-                            "name": meeting.name,
-                            "date": meeting.date,
-                            "startTime": meeting.startTime,
-                            "endTime": meeting.endTime,
-                            "late": meeting.late,
-                            "headCount": meeting.headCount,
-                            "image": meeting.image,
-                            "qrImg": meeting.qrImg
-                        }
-                    }
-
-                    return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
-
-                } catch (e) {
-                    return res.status(401).send(util.fail(401, "해당하는 meeting이 없습니다."));
+                    return res.status(401).send(util.fail(401, "meeting 데이터 오류"));
                 }
             }
-        } catch (e) {
-            return res.status(400).send(util.fail(400, "해당하는 group이 없습니다."));
+        } catch(e){
+            return res.status(401).send(util.fail(401, "해당하는 group이 없습니다."));
         }
+        data = data.reverse();
+        return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
+        
     },
 
     /**
