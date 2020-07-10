@@ -450,6 +450,7 @@ module.exports = {
 
                     const data = {
                         "groupId": groupId,
+                        "meetingCount": meetings.length,
                         "meeting": {
                             "_id": meeting._id,
                             "user": user,
