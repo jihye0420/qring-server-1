@@ -73,7 +73,18 @@ module.exports = {
 
         const data = {
             "groupid": newGroup._id,
-            "meetingid" : newGroup.meetings[0]
+            "meeting" : [
+                {
+                    "name" : newMeeting.name,
+                    "date" : newMeeting.date,
+                    "startTime" : newMeeting.startTime,
+                    "endTime" : newMeeting.endTime,
+                    "image" : newMeeting.image,
+                    "qrImg" : newMeeting.qrImg,
+                    "late" : newMeeting.late,
+                    "headCount" : newMeeting.headCount
+                }
+            ]
         }
 
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
@@ -136,8 +147,19 @@ module.exports = {
             await group.save();
 
             const data = {
-                "groupid" : group._id,
-                "meetingid" : group.meetings[group.meetings.length-1]
+                "groupid": group._id,
+                "meeting" : [
+                    {
+                        "name" : newMeeting.name,
+                        "date" : newMeeting.date,
+                        "startTime" : newMeeting.startTime,
+                        "endTime" : newMeeting.endTime,
+                        "image" : newMeeting.image,
+                        "qrImg" : newMeeting.qrImg,
+                        "late" : newMeeting.late,
+                        "headCount" : newMeeting.headCount
+                    }
+                ]
             }
 
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
