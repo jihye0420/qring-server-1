@@ -19,6 +19,10 @@ const AdminSchema = new Schema({
         type: String,
         required: true,
     },
+    groups: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'group'
+    }],
 }, {
     versionKey: false
 });
