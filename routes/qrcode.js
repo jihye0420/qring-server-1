@@ -18,6 +18,11 @@ router.post("/:groupId/:meetingId", qrcodeController.submitForm);
  */
 router.post("/:meetingId", auth.checkToken, qrcodeController.addUser);
 
+/**
+ * 참석자 정보 수정
+ */
+router.put("/:meetingId", auth.checkToken, qrcodeController.updateUser);
+
 router.get("/check/:groupId/:meetingId", qrcodeController.userCheck);
 router.post("/feedback/:meetingId", qrcodeController.feedbackCheck);
 
