@@ -7,6 +7,7 @@ const util = require("../modules/util");
 const meetingModel = require("../models/meeting");
 const groupModel = require("../models/group");
 const moment = require('moment');
+const { group } = require("console");
 
 const s3 = new AWS.S3({
   accessKeyId: s3Info.accessKeyId,
@@ -103,7 +104,7 @@ const qrcodeController = {
     });
     const rounds = groupInfo.meetings.length;
 
-    const meetingInfo = await meetingModel.findById({
+    let meetingInfo = await meetingModel.findById({
       _id: meetingId,
     }, {
       _id: 0,
@@ -114,6 +115,37 @@ const qrcodeController = {
       user: 1,
     });
 
+    if (meetingInfo === null){
+      res.status(402).send(util.fail(403, "groupId와 meetingId가 일치하지 않습니다."));
+      return;
+    }
+
+    // 바로 전 미팅 유저들 가져오기
+    if (meetingInfo.user.length == 0){
+      const meetingIdx = groupInfo.meetings.indexOf(meetingId);
+      if (meetingIdx === -1){
+        res.status(402).send(util.fail(403, "groupId와 meetingId가 일치하지 않습니다."));
+        return;
+      } else {
+        if (meetingIdx > 0){
+          const preMeetingId = groupInfo.meetings[meetingIdx - 1];
+          const preMeetingInfo = await meetingModel.findById({
+            _id: preMeetingId,
+          }, {
+            _id: 0,
+            user: 1,
+          });
+
+          preMeetingInfo.user.forEach(element => {
+            element.attendance = -1;
+            element.isAdded = false;
+          });
+          const filter = { _id: meetingId };
+          const update = { user : preMeetingInfo.user};
+          meetingInfo = await meetingModel.findByIdAndUpdate(filter, {$set : update}, {new : true});
+        }
+      }
+    }
 
     // 출결 확인하기
     const attendanceFlag =
