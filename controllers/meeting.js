@@ -44,8 +44,8 @@ module.exports = {
         newMeeting.endTime = req.body.endTime
         newMeeting.late = req.body.late
         newMeeting.headCount = req.body.headCount
-        //newMeeting.feedBack = parsedFeedbacks
-        newMeeting.feedBack = req.body.feedBack
+        newMeeting.feedBack = parsedFeedbacks
+        //newMeeting.feedBack = req.body.feedBack
 
         const image = req.file.location;
         // data check - undefined
@@ -73,7 +73,7 @@ module.exports = {
 
         const data = {
             "groupid": newGroup._id,
-            "meetingid" : newGroup.meetings[0]
+            "meetingid": newGroup.meetings[0]
         }
 
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
@@ -136,8 +136,8 @@ module.exports = {
             await group.save();
 
             const data = {
-                "groupid" : group._id,
-                "meetingid" : group.meetings[group.meetings.length-1]
+                "groupid": group._id,
+                "meetingid": group.meetings[group.meetings.length - 1]
             }
 
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
