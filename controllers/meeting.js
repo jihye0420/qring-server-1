@@ -369,7 +369,11 @@ module.exports = {
         const today = moment().format('YYYY-MM-DD');
         const end = [];
         const proceed = [];
-        for (let group of allGroup) {
+
+        for (let groupid of allGroup) {
+            const group = await groupModel.findOne({
+                _id : groupid
+            })
             try {
                 const lastMeeting = await meetingModel.findOne({
                     _id: group.meetings[group.meetings.length - 1]
