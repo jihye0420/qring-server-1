@@ -106,6 +106,7 @@ const qrcodeController = {
       meetings: 1
     });
     const rounds = groupInfo.meetings.length;
+    const meetingIdx = groupInfo.meetings.indexOf(meetingId);
 
     let meetingInfo = await meetingModel.findById({
       _id: meetingId,
@@ -144,7 +145,7 @@ const qrcodeController = {
       return;
     } else { // 출석이 가능한 시간에 폼을 제출한 경우
       //------새로 생성된 경우------//
-      if (rounds == 1) {
+      if (rounds === 1 || meetingIdx === 0) {
         console.log("새로운 모임");
 
         // 중복 제출 방지 : 똑같은 이메일로 제출한 경우
@@ -182,7 +183,7 @@ const qrcodeController = {
 
         // 이전 미팅 유저들 가져오기
         if (meetingInfo.user.length == 0 && now >= limitDate) {
-          meetingInfo = await qrcodeController.getPreUsers(meetingId, groupInfo);
+          meetingInfo = await qrcodeController.getPreUsers(meetingIdx, meetingId, groupInfo);
         }
 
         let createdAt = "";
@@ -259,8 +260,7 @@ const qrcodeController = {
   /**
    * 이전 미팅 참석자 가져오기
    */
-  getPreUsers: async (meetingId, groupInfo) => {
-    const meetingIdx = groupInfo.meetings.indexOf(meetingId);
+  getPreUsers: async (meetingIdx, meetingId, groupInfo) => {
     const preMeetingId = groupInfo.meetings[meetingIdx - 1]; // 이어 만들기인 경우에만 이전 미팅 참석자를 가져오므로 -1 OK
     const preMeetingInfo = await meetingModel.findById({
       _id: preMeetingId,
@@ -328,6 +328,39 @@ const qrcodeController = {
     return 1;
   },
 
+
+  /**
+   * 전체 참석자 정보 받아오기
+   */
+  readUserInfo: async (req, res) => {
+    const meetingId = req.params.meetingId;
+    const userId = req.params.userId;
+
+    let filter = {
+      _id: meetingId
+    };
+
+    const result = await meetingModel.findById(filter, {
+      _id: 0,
+      user: 1
+    });
+    
+    if (result === undefined || result === null) {
+      return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
+    }
+
+    // -1일 땐 전체 참석자 정보 받아오기
+    if (userId === "-1") {
+      return res.status(200).send(util.success(200, "전체 참석자 정보 불러오기 성공", result.user));
+    } else {
+      let data = result.user.find(element => element._id.toString() === userId);
+      if (data === undefined || data === null) {
+        return res.status(401).send(util.fail(401, "해당하는 userId가 없습니다."));
+      }
+      res.status(200).send(util.success(200, "참석자 불러오기 성공", data));
+    }
+  },
+
   /**
    * 관리자가 사용자 직접 추가
    */
@@ -339,7 +372,7 @@ const qrcodeController = {
     } = req.body;
 
     if (!meetingId) {
-      res.status(400).send(util.fail(400, "meetingId가 없습니다."));
+      res.status(401).send(util.fail(401, "meetingId가 없습니다."));
     }
 
     const abroad = false;
@@ -387,9 +420,13 @@ const qrcodeController = {
   /**
    * 참석자 정보 수정
    */
-  updateUser: async(req, res) => {
+  updateUser: async (req, res) => {
     const meetingId = req.params.meetingId;
-    const {email, name, attendance} = req.body;
+    const {
+      email,
+      name,
+      attendance
+    } = req.body;
 
     if (!email || !name || !attendance) {
       return res.status(400).send(util.fail(400, "필요한 파라미터가 없습니다."));
@@ -405,15 +442,17 @@ const qrcodeController = {
     };
     const result = await meetingModel.findOneAndUpdate(filter, {
       $set: update
-    }, {new: true});
-    
-    if (result === null){
+    }, {
+      new: true
+    });
+
+    if (result === null) {
       return res.status(401).send(util.fail(401, "이메일이 맞지 않습니다."));
     }
 
     let data = {};
     result.user.some((element) => {
-      if (element.email === email){
+      if (element.email === email) {
         data = element;
       }
     });
@@ -425,10 +464,12 @@ const qrcodeController = {
    */
   deleteUser: async (req, res) => {
     const meetingId = req.params.meetingId;
-    const {email} = req.body;
+    const {
+      email
+    } = req.body;
 
     if (!email) {
-      return res.status(400).send(util.fail(400, "파라미터 없습니다."));
+      return res.status(400).send(util.fail(400, "파라미터가 없습니다."));
     };
 
     const filter = {
@@ -436,15 +477,26 @@ const qrcodeController = {
       'user.email': email
     };
 
-    const meetingInfo = await meetingModel.findOne(filter, {_id:0, user:1});
-    if (meetingInfo === null){
-      return res.status(400).send(util.fail(400, "해당 미팅에 일치하는 이메일이 없습니다."));
+    const meetingInfo = await meetingModel.findOne(filter, {
+      _id: 0,
+      user: 1
+    });
+    if (meetingInfo === null) {
+      return res.status(401).send(util.fail(401, "해당 미팅에 일치하는 이메일이 없습니다."));
     }
     let users = meetingInfo.user;
-    const idx = users.findIndex(function(user) {return user.email === email});
+    const idx = users.findIndex(function (user) {
+      return user.email === email
+    });
     if (idx > -1) users.splice(idx, 1);
 
-    const result = await meetingModel.findOneAndUpdate({_id: meetingId}, {user: users}, {new:true});
+    const result = await meetingModel.findOneAndUpdate({
+      _id: meetingId
+    }, {
+      user: users
+    }, {
+      new: true
+    });
 
     res.status(200).send(util.success(200, "참석자 삭제에 성공했습니다.", result.user));
   },
