@@ -6,7 +6,6 @@ const moment = require('moment');
 const statusCode = require('../modules/statusCode');
 const resMessage = require('../modules/responseMessage');
 const async = require('pbkdf2/lib/async');
-const qrcodeController = require('./qrcode');
 
 module.exports = {
     /**
@@ -69,9 +68,10 @@ module.exports = {
         
         newGroup.admin = admin._id;
         newGroup.meetings.push(fin_meeting._id)
-
         await newGroup.save();
+
         admin.groups.push(newGroup._id);
+        await admin.save();
 
         const data = {
             "groupid": newGroup._id,
@@ -89,7 +89,6 @@ module.exports = {
             ]
         }
 
-        qrcodeController.makeQrcode(meetingId);
 
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
 
@@ -100,7 +99,6 @@ module.exports = {
      */
     createNewMeeting: async (req, res) => {
         const groupId = req.params.groupid;
-        console.log(groupId);
         const {
             name,
             date,
@@ -154,7 +152,6 @@ module.exports = {
                 _id: groupId
             })
             group.meetings.push(fin_meeting._id);
-
             await group.save();
 
             const data = {
