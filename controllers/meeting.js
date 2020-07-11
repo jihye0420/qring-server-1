@@ -6,6 +6,7 @@ const moment = require('moment');
 const statusCode = require('../modules/statusCode');
 const resMessage = require('../modules/responseMessage');
 const async = require('pbkdf2/lib/async');
+const qrcodeController = require('./qrcode');
 
 module.exports = {
     /**
@@ -75,6 +76,8 @@ module.exports = {
             "groupid": newGroup._id,
             "meetingid" : newGroup.meetings[0]
         }
+
+        qrcodeController.makeQrcode(meetingId);
 
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
 
@@ -463,26 +466,4 @@ module.exports = {
             return res.status(400).send(util.fail(400, "해당하는 group이 없습니다."));
         }
     },
-
-    /**
-     * 전체 참석자 정보 받아오기
-     */
-    readPeopleInfo: async (req, res) => {
-        const meetingId = req.params.meetingId;
-        const filter = {
-            _id: meetingId
-        };
-
-        let result = {};
-        try {
-            result = await meetingModel.findById(filter, {
-                _id: 0,
-                user: 1
-            });
-        } catch (e) {
-            return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
-        }
-
-        return res.status(200).send(util.success(200, "전체 참석자 정보 불러오기 성공", result));
-    }
 }

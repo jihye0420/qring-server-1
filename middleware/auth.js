@@ -10,22 +10,19 @@ module.exports = {
     // 해독한 정보는 req.decoded에 저장하고 있으며 이후 로그인 유무는 decoded가 있는지 없는지를 통해 알 수 있음
     checkToken: async (req, res, next) => {
         const token = req.headers.jwt;
-        if (!token) {
-            return res.json(util.fail(405, "토큰이 없습니다."));
-        }
 
         const user = await jwt.verify(token);
         if (user === TOKEN_EXPIRED) {
-            return res.json(util.fail(406, "만료된 토큰입니다."));
+            return res.json(util.fail(405, "만료된 토큰입니다."));
         }
         if (user === TOKEN_INVALID) {
-            return res.json(util.fail(407, "유효하지 않은 토큰입니다."));
+            return res.json(util.fail(405, "유효하지 않은 토큰입니다."));
         }
 
 
         const userEmail = user.email;
         if (!userEmail) {
-            return res.status(407).json({
+            return res.status(405).json({
                 message: "유효하지 않은 토큰입니다."
             });
         } else {
