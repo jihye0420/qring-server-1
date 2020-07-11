@@ -16,7 +16,7 @@ router.post("/submission/:groupId/:meetingId", qrcodeController.submitForm);
 /**
  * 참석자 정보
  */
-router.get('/info/:meetingId/:userId', auth.checkToken, qrcodeController.readUserInfo);
+router.get('/info/:groupId/:meetingId/:userId', auth.checkToken, qrcodeController.readUserInfo);
 
 /**
  * 관리자가 직접 사용자 추가
