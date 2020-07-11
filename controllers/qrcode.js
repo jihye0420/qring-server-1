@@ -335,15 +335,15 @@ const qrcodeController = {
     const meetingId = req.params.meetingId;
     const {
       name,
-      email,
-      abroad,
-      health
+      email
     } = req.body;
 
     if (!meetingId) {
       res.status(400).send(util.fail(400, "meetingId가 없습니다."));
     }
 
+    const abroad = false;
+    const health = false;
     const result = await meetingModel.findById({
       _id: meetingId
     }, {
@@ -382,6 +382,71 @@ const qrcodeController = {
 
       res.status(200).send(util.success(200, "사용자 추가에 성공하였습니다."));
     }
+  },
+
+  /**
+   * 참석자 정보 수정
+   */
+  updateUser: async(req, res) => {
+    const meetingId = req.params.meetingId;
+    const {email, name, attendance} = req.body;
+
+    if (!email || !name || !attendance) {
+      return res.status(400).send(util.fail(400, "필요한 파라미터가 없습니다."));
+    };
+
+    const filter = {
+      _id: meetingId,
+      'user.email': email
+    };
+    let update = {
+      'user.$.name': name,
+      'user.$.attendance': attendance
+    };
+    const result = await meetingModel.findOneAndUpdate(filter, {
+      $set: update
+    }, {new: true});
+    
+    if (result === null){
+      return res.status(401).send(util.fail(401, "이메일이 맞지 않습니다."));
+    }
+
+    let data = {};
+    result.user.some((element) => {
+      if (element.email === email){
+        data = element;
+      }
+    });
+    res.status(200).send(util.success(200, "참석자 정보 수정에 성공했습니다.", data));
+  },
+
+  /**
+   * 참석자 정보 삭제
+   */
+  deleteUser: async (req, res) => {
+    const meetingId = req.params.meetingId;
+    const {email} = req.body;
+
+    if (!email) {
+      return res.status(400).send(util.fail(400, "파라미터 없습니다."));
+    };
+
+    const filter = {
+      _id: meetingId,
+      'user.email': email
+    };
+
+    const meetingInfo = await meetingModel.findOne(filter, {_id:0, user:1});
+    if (meetingInfo === null){
+      return res.status(400).send(util.fail(400, "해당 미팅에 일치하는 이메일이 없습니다."));
+    }
+    let users = meetingInfo.user;
+    const idx = users.findIndex(function(user) {return user.email === email});
+    if (idx > -1) users.splice(idx, 1);
+
+    const result = await meetingModel.findOneAndUpdate({_id: meetingId}, {user: users}, {new:true});
+
+    res.status(200).send(util.success(200, "참석자 삭제에 성공했습니다.", result.user));
   },
 
   userCheck: async (req, res) => {
