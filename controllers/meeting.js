@@ -8,9 +8,7 @@ const resMessage = require('../modules/responseMessage');
 const async = require('pbkdf2/lib/async');
 
 module.exports = {
-    /**
-     * 첫 모임 생성 
-     */
+    // 첫 모임 생성 & 피드백
     createNewGroup: async (req, res) => {
         const adminEmail = req.email;
         const {
@@ -23,7 +21,7 @@ module.exports = {
             feedBack
         } = req.body;
 
-
+        // 피드백 파싱
         const parsedFeedbacks = feedBack.map((fb) => {
             let parsedFb;
             if (typeof fb === 'string') {
@@ -36,6 +34,7 @@ module.exports = {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
+        //데이터 대입
         var newMeeting = new meetingModel();
         newMeeting.name = req.body.name
         newMeeting.date = req.body.date
@@ -46,8 +45,9 @@ module.exports = {
         newMeeting.feedBack = parsedFeedbacks
         //newMeeting.feedBack = req.body.feedBack
 
+
+        //이미지가 안들어 왔을때 null로 저장, 들어오면 S3 url 저장
         let image = null;
-        // data check - undefined
         if (req.file !== undefined) {
             image = req.file.location;
             const type = req.file.mimetype.split('/')[1];
@@ -61,6 +61,7 @@ module.exports = {
 
         let fin_meeting = await newMeeting.save();
 
+        // 그룹 만들어 meetings 배열에 새 미팅 아이디 저장, admin의 groups 배열에 새그룹 id 저장
         var newGroup = new groupModel();
         const admin = await adminModel.findOne({
             email: adminEmail
@@ -73,6 +74,7 @@ module.exports = {
         admin.groups.push(newGroup._id);
         await admin.save();
 
+        // for res
         const data = {
             "groupid": newGroup._id,
             "meeting" : [
@@ -109,7 +111,7 @@ module.exports = {
             feedBack
         } = req.body;
 
-
+        // 피드백 파싱
         const parsedFeedbacks = feedBack.map((fb) => {
             let parsedFb;
             if (typeof fb === 'string') {
@@ -122,6 +124,7 @@ module.exports = {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
+        //데이터 대입
         var newMeeting = new meetingModel();
         newMeeting.name = req.body.name
         newMeeting.date = req.body.date
@@ -131,9 +134,8 @@ module.exports = {
         newMeeting.headCount = req.body.headCount
         newMeeting.feedBack = parsedFeedbacks
 
-
+        //이미지가 안들어 왔을때 null로 저장, 들어오면 S3 url 저장
         let image = null;
-        // data check - undefined
         if (req.file !== undefined) {
             image = req.file.location;
             const type = req.file.mimetype.split('/')[1];
@@ -147,6 +149,7 @@ module.exports = {
 
         let fin_meeting = await newMeeting.save();
 
+        //그룹 찾아서 meetings 배열에 새 미팅 id 추가
         try {
             const group = await groupModel.findOne({
                 _id: groupId
@@ -418,7 +421,7 @@ module.exports = {
     },
 
     /**
-     * 모임 리스트에서 각 회차의 정보 조회 round가 -1일때 마지막 회차와 회차 수 반환, 다른 수 일때는 해당 회차 정보 반환
+     * groupid에 meetings에 있는 모든 meeting에 대한 정보 넘겨주기
      */
     round: async (req, res) => {
         const groupId = req.params.groupid;
@@ -439,10 +442,12 @@ module.exports = {
                     })
 
                     const userCount = meeting.user.length;
+                    
                     var feedBackCount;
                     if (meeting.feedBack.length > 0) {
                         feedBackCount = meeting.feedBack[0].result.length;
                     } else feedBackCount = 0;
+
                     const meetingdata = {
                         "meetingid": meeting._id,
                         "name": meeting.name,
