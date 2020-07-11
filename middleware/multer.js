@@ -8,11 +8,11 @@ const upload = multer({
     storage: multerS3({
         s3: s3,
         bucket: 'qring',
-        acl: 'public-read',
+        acl: 'public-read-write',
         key: function(req, file, cb){
             cb(null, Date.now() + '.' + file.originalname.split('.').pop()); // 이름 설정
         }
     })
-});
+ });
 
 module.exports = upload;

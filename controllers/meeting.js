@@ -48,18 +48,17 @@ module.exports = {
         newMeeting.feedBack = parsedFeedbacks
         //newMeeting.feedBack = req.body.feedBack
 
-        console.log("parsedFeedbacks");
-        console.log(parsedFeedbacks);
 
-        const image = req.file.location;
+        let image = null;
         // data check - undefined
-        if (image !== undefined) {
+        if (req.file !== undefined) {
+            image = req.file.location;
             const type = req.file.mimetype.split('/')[1];
             if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
                 return res.status(401).send(util.fail(401, '유효하지 않은 형식입니다.'));
-            }
-            newMeeting.image = image;
+            }    
         }
+        newMeeting.image = image;
 
         newMeeting.qrImg = "";
 
@@ -72,9 +71,10 @@ module.exports = {
 
         newGroup.admin = admin._id;
         newGroup.meetings.push(fin_meeting._id)
-
         await newGroup.save();
+
         admin.groups.push(newGroup._id);
+        await admin.save();
 
         const data = {
             "groupid": newGroup._id,
@@ -90,6 +90,7 @@ module.exports = {
             }]
         }
 
+
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
 
     },
@@ -99,7 +100,6 @@ module.exports = {
      */
     createNewMeeting: async (req, res) => {
         const groupId = req.params.groupid;
-        console.log(groupId);
         const {
             name,
             date,
@@ -111,7 +111,13 @@ module.exports = {
         } = req.body;
 
 
-        console.log(feedBack);
+        const parsedFeedbacks = feedBack.map((fb) => {
+            let parsedFb;
+            if (typeof fb === 'string') {
+                parsedFb = JSON.parse(fb);
+            }
+            return parsedFb;
+        })
 
         if (!name || !date || !startTime || !endTime || !late || !headCount) {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
@@ -124,18 +130,19 @@ module.exports = {
         newMeeting.endTime = req.body.endTime
         newMeeting.late = req.body.late
         newMeeting.headCount = req.body.headCount
-        newMeeting.feedBack = req.body.feedBack
+        newMeeting.feedBack = parsedFeedbacks
 
 
-        const image = req.file.location;
+        let image = null;
         // data check - undefined
-        if (image !== undefined) {
+        if (req.file !== undefined) {
+            image = req.file.location;
             const type = req.file.mimetype.split('/')[1];
             if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
-                return res.status(401).send(util.fail(401, '유효하지 않은 형식입니다.'))
-            }
-            newMeeting.image = image;
+                return res.status(401).send(util.fail(401, '유효하지 않은 형식입니다.'));
+            }    
         }
+        newMeeting.image = image;
 
         newMeeting.qrImg = "";
 
@@ -146,7 +153,6 @@ module.exports = {
                 _id: groupId
             })
             group.meetings.push(fin_meeting._id);
-
             await group.save();
 
             const data = {
@@ -279,15 +285,16 @@ module.exports = {
             meeting.late = req.body.late;
             meeting.headCount = req.body.headCount;
 
-            const image = req.file.location;
+            let image = null;
             // data check - undefined
-            if (image !== undefined) {
+            if (req.file !== undefined) {
+                image = req.file.location;
                 const type = req.file.mimetype.split('/')[1];
                 if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
                     return res.status(401).send(util.fail(401, '유효하지 않은 형식입니다.'));
-                }
-                meeting.image = image;
+                }    
             }
+            newMeeting.image = image;
 
             const data = {
                 "name": meeting.name,
@@ -302,7 +309,7 @@ module.exports = {
 
             await meeting.save();
 
-            return res.status(200).send(util.success(200, '모임 정보 수정 성공', date));
+            return res.status(200).send(util.success(200, '모임 정보 수정 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 meeting이 없습니다."));
         }
@@ -358,7 +365,11 @@ module.exports = {
         const today = moment().format('YYYY-MM-DD');
         const end = [];
         const proceed = [];
-        for (let group of allGroup) {
+
+        for (let groupid of allGroup) {
+            const group = await groupModel.findOne({
+                _id : groupid
+            })
             try {
                 const lastMeeting = await meetingModel.findOne({
                     _id: group.meetings[group.meetings.length - 1]
@@ -454,26 +465,4 @@ module.exports = {
         return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
 
     },
-
-    /**
-     * 전체 참석자 정보 받아오기
-     */
-    readPeopleInfo: async (req, res) => {
-        const meetingId = req.params.meetingId;
-        const filter = {
-            _id: meetingId
-        };
-
-        let result = {};
-        try {
-            result = await meetingModel.findById(filter, {
-                _id: 0,
-                user: 1
-            });
-        } catch (e) {
-            return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
-        }
-
-        return res.status(200).send(util.success(200, "전체 참석자 정보 불러오기 성공", result));
-    }
 }
