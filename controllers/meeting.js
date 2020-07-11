@@ -366,11 +366,17 @@ module.exports = {
         const today = moment().format('YYYY-MM-DD');
         const end = [];
         const proceed = [];
-        for (let group of allGroup) {
+
+        console.log(allGroup);
+        for (let groupid of allGroup) {
+            const group = await groupModel.findOne({
+                _id : groupid
+            })
             try {
                 const lastMeeting = await meetingModel.findOne({
                     _id: group.meetings[group.meetings.length - 1]
                 })
+                console.log(lastMeeting);
                 const userCount = lastMeeting.user.length;
                 var feedBackCount;
                 if (lastMeeting.feedBack.length > 0) {
