@@ -24,6 +24,8 @@ const qrcodeController = {
    */
   makeQrcode: async (req, res) => {
     const userEmail = req.email;
+    const userId = req.userId;
+    console.log(userId);
     const groupId = req.params.groupId;
     const meetingId = req.params.meetingId;
 
@@ -333,6 +335,7 @@ const qrcodeController = {
    * 전체 참석자 정보 받아오기
    */
   readUserInfo: async (req, res) => {
+    const groupId = req.params.groupId;
     const meetingId = req.params.meetingId;
     const userId = req.params.userId;
 
@@ -353,11 +356,35 @@ const qrcodeController = {
     if (userId === "-1") {
       return res.status(200).send(util.success(200, "전체 참석자 정보 불러오기 성공", result.user));
     } else {
-      let data = result.user.find(element => element._id.toString() === userId);
-      if (data === undefined || data === null) {
+      let userInfo = result.user.find(element => element._id.toString() === userId);
+      if (userInfo === undefined || userInfo === null) {
         return res.status(401).send(util.fail(401, "해당하는 userId가 없습니다."));
       }
-      res.status(200).send(util.success(200, "참석자 불러오기 성공", data));
+      const groupInfo = await groupModel.findById({
+        _id: groupId
+      }, {
+        _id: 0,
+        meetings: 1
+      });
+      if (groupInfo === undefined || groupInfo === null){
+        return res.status(400).send(util.fail(402, "해당하는 groupId가 없습니다."));
+      }
+      const meetings = groupInfo.meetings;
+
+      let attendance = [0, 0, 0];
+      const email = userInfo.email;
+
+      // 병렬 처리(iterator)를 위해 forEach 대신 for ... of 사용
+      for (const mId of meetings) {
+        const preMeetingInfo = await meetingModel.findById({_id : mId}, {_id: 0, user:1});
+        const preUserInfo = await preMeetingInfo.user.find(element => element.email === email);
+        if (preUserInfo === null || preUserInfo === undefined){
+          //continue
+        } else {
+          attendance[preUserInfo.attendance + 1] += 1
+        }
+      }
+      await res.status(200).send(util.success(200, "참석자 불러오기 성공", {userInfo, attendance}));
     }
   },
 
@@ -469,29 +496,24 @@ const qrcodeController = {
    */
   deleteUser: async (req, res) => {
     const meetingId = req.params.meetingId;
-    const {
-      email
-    } = req.body;
-
-    if (!email) {
-      return res.status(400).send(util.fail(400, "파라미터가 없습니다."));
-    };
+    const userId = req.params.userId;
 
     const filter = {
       _id: meetingId,
-      'user.email': email
+      "user._id": userId
     };
 
     const meetingInfo = await meetingModel.findOne(filter, {
       _id: 0,
       user: 1
     });
+    console.log(meetingInfo);
     if (meetingInfo === null) {
-      return res.status(401).send(util.fail(401, "해당 미팅에 일치하는 이메일이 없습니다."));
+      return res.status(400).send(util.fail(400, "meetingId 또는 userId가 맞지 않습니다."));
     }
     let users = meetingInfo.user;
     const idx = users.findIndex(function (user) {
-      return user.email === email
+      return user._id.toString() === userId
     });
     if (idx > -1) users.splice(idx, 1);
 
