@@ -23,14 +23,16 @@ module.exports = {
             feedBack
         } = req.body;
 
+        console.log("gg", feedBack);
 
-        const parsedFeedbacks = feedBack.map((fb) => {
+        const parsedFeedbacks = await feedBack.map((fb) => {
             let parsedFb;
             if (typeof fb === 'string') {
                 parsedFb = JSON.parse(fb);
             }
             return parsedFb;
         })
+        console.log("before", parsedFeedbacks);
 
         if (!name || !date || !startTime || !endTime || !late || !headCount) {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
@@ -45,6 +47,7 @@ module.exports = {
         newMeeting.headCount = req.body.headCount
         newMeeting.feedBack = parsedFeedbacks
         //newMeeting.feedBack = req.body.feedBack
+
 
         let image = null;
         // data check - undefined
@@ -65,7 +68,7 @@ module.exports = {
         const admin = await adminModel.findOne({
             email: adminEmail
         })
-        
+
         newGroup.admin = admin._id;
         newGroup.meetings.push(fin_meeting._id)
         await newGroup.save();
@@ -75,18 +78,16 @@ module.exports = {
 
         const data = {
             "groupid": newGroup._id,
-            "meeting" : [
-                {
-                    "name" : newMeeting.name,
-                    "date" : newMeeting.date,
-                    "startTime" : newMeeting.startTime,
-                    "endTime" : newMeeting.endTime,
-                    "image" : newMeeting.image,
-                    "qrImg" : newMeeting.qrImg,
-                    "late" : newMeeting.late,
-                    "headCount" : newMeeting.headCount
-                }
-            ]
+            "meeting": [{
+                "name": newMeeting.name,
+                "date": newMeeting.date,
+                "startTime": newMeeting.startTime,
+                "endTime": newMeeting.endTime,
+                "image": newMeeting.image,
+                "qrImg": newMeeting.qrImg,
+                "late": newMeeting.late,
+                "headCount": newMeeting.headCount
+            }]
         }
 
 
@@ -156,18 +157,16 @@ module.exports = {
 
             const data = {
                 "groupid": group._id,
-                "meeting" : [
-                    {
-                        "name" : newMeeting.name,
-                        "date" : newMeeting.date,
-                        "startTime" : newMeeting.startTime,
-                        "endTime" : newMeeting.endTime,
-                        "image" : newMeeting.image,
-                        "qrImg" : newMeeting.qrImg,
-                        "late" : newMeeting.late,
-                        "headCount" : newMeeting.headCount
-                    }
-                ]
+                "meeting": [{
+                    "name": newMeeting.name,
+                    "date": newMeeting.date,
+                    "startTime": newMeeting.startTime,
+                    "endTime": newMeeting.endTime,
+                    "image": newMeeting.image,
+                    "qrImg": newMeeting.qrImg,
+                    "late": newMeeting.late,
+                    "headCount": newMeeting.headCount
+                }]
             }
 
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
@@ -297,15 +296,15 @@ module.exports = {
             }
             newMeeting.image = image;
 
-            const data ={
-                "name" : meeting.name,
-                "data" : meeting.date,
-                "startTime" : meeting.startTime,
-                "endTime" : meeting.endTime,
-                "late" : meeting.late,
-                "headCount" : meeting.headCount,
-                "image" : meeting.image,
-                "qrImg" : meeting.qrImg
+            const data = {
+                "name": meeting.name,
+                "data": meeting.date,
+                "startTime": meeting.startTime,
+                "endTime": meeting.endTime,
+                "late": meeting.late,
+                "headCount": meeting.headCount,
+                "image": meeting.image,
+                "qrImg": meeting.qrImg
             }
 
             await meeting.save();
@@ -431,8 +430,8 @@ module.exports = {
 
             const meetings = group.meetings
 
-            
-            for (let Item of meetings){
+
+            for (let Item of meetings) {
                 try {
                     let meeting = await meetingModel.findOne({
                         _id: Item
@@ -447,23 +446,23 @@ module.exports = {
                         "meetingid": meeting._id,
                         "name": meeting.name,
                         "date": meeting.date,
-                        "userCount" : userCount,
-                        "feedBackCount" : feedBackCount,
+                        "userCount": userCount,
+                        "feedBackCount": feedBackCount,
                         "headCount": meeting.headCount,
                         "image": meeting.image,
                         "qrImg": meeting.qrImg
                     }
 
-                   data.push(meetingdata);
+                    data.push(meetingdata);
                 } catch (e) {
                     return res.status(401).send(util.fail(401, "meeting 데이터 오류"));
                 }
             }
-        } catch(e){
+        } catch (e) {
             return res.status(401).send(util.fail(401, "해당하는 group이 없습니다."));
         }
         data = data.reverse();
         return res.status(200).send(util.success(200, '모임 회차 조회 성공', data));
-        
+
     },
 }
