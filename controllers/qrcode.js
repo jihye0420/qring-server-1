@@ -344,7 +344,7 @@ const qrcodeController = {
       _id: 0,
       user: 1
     });
-    
+
     if (result === undefined || result === null) {
       return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
     }
@@ -362,7 +362,7 @@ const qrcodeController = {
   },
 
   /**
-   * 관리자가 사용자 직접 추가
+   * 사용자 추가
    */
   addUser: async (req, res) => {
     const meetingId = req.params.meetingId;
@@ -384,10 +384,14 @@ const qrcodeController = {
       user: 1
     });
 
+    if (result === null || result === undefined){
+      res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
+    }
+
     // 중복 제출 방지 : 똑같은 이메일로 제출한 경우
     const flag = await result.user.some((element) => {
       if (email === element.email) {
-        res.status(400).send(util.fail(400, "이미 제출하셨습니다."));
+        res.status(401).send(util.fail(401, "이미 제출하셨습니다."));
         return true;
       }
     });
@@ -422,19 +426,19 @@ const qrcodeController = {
    */
   updateUser: async (req, res) => {
     const meetingId = req.params.meetingId;
+    const userId = req.params.userId;
     const {
-      email,
       name,
       attendance
     } = req.body;
 
-    if (!email || !name || !attendance) {
+    if (!name || !attendance) {
       return res.status(400).send(util.fail(400, "필요한 파라미터가 없습니다."));
     };
 
     const filter = {
       _id: meetingId,
-      'user.email': email
+      "user._id": userId
     };
     let update = {
       'user.$.name': name,
@@ -447,13 +451,14 @@ const qrcodeController = {
     });
 
     if (result === null) {
-      return res.status(401).send(util.fail(401, "이메일이 맞지 않습니다."));
+      return res.status(401).send(util.fail(401, "해당하는 meetingId가 없습니다."));
     }
 
     let data = {};
     result.user.some((element) => {
-      if (element.email === email) {
+      if (element._id.toString() === userId) {
         data = element;
+        return true;
       }
     });
     res.status(200).send(util.success(200, "참석자 정보 수정에 성공했습니다.", data));

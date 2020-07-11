@@ -21,17 +21,17 @@ router.get('/info/:meetingId/:userId', auth.checkToken, qrcodeController.readUse
 /**
  * 관리자가 직접 사용자 추가
  */
-router.post("/add/:meetingId", auth.checkToken, qrcodeController.addUser);
+router.post("/info/:meetingId", auth.checkToken, qrcodeController.addUser);
 
 /**
  * 참석자 정보 수정
  */
-router.put("/info/:meetingId", auth.checkToken, qrcodeController.updateUser);
+router.put("/info/:meetingId/:userId", auth.checkToken, qrcodeController.updateUser);
 
 /**
  * 참석자 정보 삭제
  */
-router.delete("/info/:meetingId", auth.checkToken, qrcodeController.deleteUser);
+router.delete("/info/:meetingId/:userId", auth.checkToken, qrcodeController.deleteUser);
 
 router.get("/check/:groupId/:meetingId", qrcodeController.userCheck);
 router.post("/feedback/:meetingId", qrcodeController.feedbackCheck);
