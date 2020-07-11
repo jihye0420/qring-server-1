@@ -23,16 +23,16 @@ module.exports = {
             feedBack
         } = req.body;
 
-        console.log("gg", feedBack);
 
-        const parsedFeedbacks = await feedBack.map((fb) => {
-            let parsedFb;
-            if (typeof fb === 'string') {
-                parsedFb = JSON.parse(fb);
-            }
-            return parsedFb;
-        })
-        console.log("before", parsedFeedbacks);
+        if (feedBack) {
+            const parsedFeedbacks = await feedBack.map((fb) => {
+                let parsedFb;
+                if (typeof fb === 'string') {
+                    parsedFb = JSON.parse(fb);
+                }
+                return parsedFb;
+            })
+        }
 
         if (!name || !date || !startTime || !endTime || !late || !headCount) {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
@@ -45,9 +45,9 @@ module.exports = {
         newMeeting.endTime = req.body.endTime
         newMeeting.late = req.body.late
         newMeeting.headCount = req.body.headCount
-        newMeeting.feedBack = parsedFeedbacks
-        //newMeeting.feedBack = req.body.feedBack
-
+        if (feedBack) {
+            newMeeting.feedBack = parsedFeedbacks
+        }
 
         let image = null;
         // data check - undefined
@@ -56,7 +56,7 @@ module.exports = {
             const type = req.file.mimetype.split('/')[1];
             if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
                 return res.status(401).send(util.fail(401, '유효하지 않은 형식입니다.'));
-            }    
+            }
         }
         newMeeting.image = image;
 
@@ -140,7 +140,7 @@ module.exports = {
             const type = req.file.mimetype.split('/')[1];
             if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
                 return res.status(401).send(util.fail(401, '유효하지 않은 형식입니다.'));
-            }    
+            }
         }
         newMeeting.image = image;
 
@@ -292,7 +292,7 @@ module.exports = {
                 const type = req.file.mimetype.split('/')[1];
                 if (type !== 'jpeg' && type !== 'jpg' && type !== 'png') {
                     return res.status(401).send(util.fail(401, '유효하지 않은 형식입니다.'));
-                }    
+                }
             }
             newMeeting.image = image;
 
@@ -368,7 +368,7 @@ module.exports = {
 
         for (let groupid of allGroup) {
             const group = await groupModel.findOne({
-                _id : groupid
+                _id: groupid
             })
             try {
                 const lastMeeting = await meetingModel.findOne({
