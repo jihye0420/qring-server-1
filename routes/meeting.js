@@ -25,7 +25,7 @@ router.delete('/:groupid/:meetingid', auth.checkToken, meetingController.deleteM
 //모임 리스트, 내 모임, 이어서 생성시
 router.get('/list', auth.checkToken, meetingController.list);
 
-//모임 회차 정보 조회 groupId / 회차
+//모임 회차 정보 조회 groupId 
 router.get('/list/:groupid', auth.checkToken, meetingController.round);
 
 //전체 참석자 정보
