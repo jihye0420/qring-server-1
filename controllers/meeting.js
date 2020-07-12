@@ -219,7 +219,7 @@ module.exports = {
             await group.save();
 
             const data = {
-                "groupid": newGroup._id,
+                "groupid": group._id,
                 "name": newMeeting.name,
                 "date": newMeeting.date,
                 "startTime": newMeeting.startTime,
