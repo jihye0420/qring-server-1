@@ -194,7 +194,6 @@ const qrcodeController = {
     //1시간 전부터 가능
     limitDate.setHours(limitDate.getHours() - 1);
     limitDate = moment(limitDate).format("YYYY.MM.DD HH:mm:ss");
-    console.log(limitDate);
 
     // 출결 확인하기
     const attendanceFlag = await qrcodeController.checkAttendance(
@@ -212,7 +211,7 @@ const qrcodeController = {
       //지각
       attendance = 0;
     }
-    console.log("attendanceFlag", attendanceFlag);
+
     if (attendanceFlag === -1) {
       res.status(401).send(util.fail(401, "출석 가능 시간이 아닙니다."));
       return;
