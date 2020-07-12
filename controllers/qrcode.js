@@ -343,20 +343,40 @@ const qrcodeController = {
       _id: meetingId
     };
 
-    const result = await meetingModel.findById(filter, {
+    const meetingInfo = await meetingModel.findById(filter, {
       _id: 0,
-      user: 1
+      user: 1,
+      date: 1,
+      startTime: 1, 
+      endTime: 1
     });
 
-    if (result === undefined || result === null) {
+    if (meetingInfo === undefined || meetingInfo === null) {
       return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
     }
 
     // -1일 땐 전체 참석자 정보 받아오기
     if (userId === "-1") {
-      return res.status(200).send(util.success(200, "전체 참석자 정보 불러오기 성공", result.user));
-    } else {
-      let userInfo = result.user.find(element => element._id.toString() === userId);
+      const end = meetingInfo.date + " " + meetingInfo.endTime + ":00"
+      const now = moment().format('YYYY-MM-DD HH:mm:ss');
+      
+      let present = meetingInfo.user.filter((data) => data.attendance >= 0);
+      let absent = [];
+
+      // 모임이 진행 중일 때 : 결석자는 제외하고 보여주기
+      if (now < end){
+        return res.status(200).send(util.success(200, "전체 참석자 정보 불러오기 성공", {"present" : present, "absent" : absent}));
+      }
+      // 모임이 끝난 후 : 결석자를 포함하여 보여주기
+      else{
+        absent = meetingInfo.user.filter((data) => data.attendance < 0)
+        return res.status(200).send(util.success(200, "전체 참석자 정보 불러오기 성공", {"present" : present, "absent" : absent}));
+      }
+    } 
+
+    // 특정 참석자 정보 받아오기
+    else {
+      let userInfo = meetingInfo.user.find(element => element._id.toString() === userId);
       if (userInfo === undefined || userInfo === null) {
         return res.status(401).send(util.fail(401, "해당하는 userId가 없습니다."));
       }
