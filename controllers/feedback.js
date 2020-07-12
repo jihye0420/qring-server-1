@@ -12,7 +12,7 @@ module.exports = {
         const meetingId = req.params.meetingId;
 
         if (!meetingId) {
-            res.status(400).send(util(fail(400, "meetingId가 없습니다.")));
+            res.status(400).send(util.fail(400, "meetingId가 없습니다."));
         }
 
         // 모든 피드백 정보들 가져옴
@@ -88,7 +88,7 @@ module.exports = {
     },
 
 
-    result: async (req, res) => {
+    postResult: async (req, res) => {
         //0이 단답형, 1이 객관식, 2는 평점
         const meetingId = req.params.meetingId;
 
@@ -117,6 +117,49 @@ module.exports = {
 
         // 데이터베이스에 저장
         await meeting.save();
+
+        const data = {
+            meetingId: meetingId,
+            name: meeting.name,
+            data: meeting.date,
+            startTime: meeting.startTime,
+            endTime: meeting.endTime,
+            late: meeting.late,
+            headCount: meeting.headCount,
+            image: meeting.image,
+            qrImg: meeting.qrImg
+        }
+
+        res.status(200).send(util.success(200, "피드백 결과 목록 완료", data));
+    },
+    getResult: async (req, res) => {
+        //0이 단답형, 1이 객관식, 2는 평점
+        const groupId = req.params.groupId;
+        const round = req.params.round;
+
+        intRound = parseInt(round);
+
+        if (!groupId || !intRound) {
+            res.status(400).send(util.fail(400, "groupId나 round param이 없습니다."));
+        }
+
+        const group = await GroupModel.findOne({
+            _id: groupId
+        }, {
+            _id: 0,
+            meetings: 1
+        });
+
+        if (group.meetings === undefined || !group.meetings) {
+            res.status(400).send(util.fail(400, "해당 groupId에 해당하는 meeting이 없습니다."));
+        }
+
+        const meeting = await MeetingModel.findOne({
+            _id: group.meetings[intRound - 1]._id
+        }, {
+            _id: 0,
+            feedBack: 1
+        })
 
         res.status(200).send(util.success(200, "피드백 결과 목록 완료", meeting));
 
