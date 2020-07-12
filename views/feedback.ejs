@@ -18,104 +18,72 @@
 
 <body>
   <div id="wrap">
-    <img src="https://qring.s3.ap-northeast-2.amazonaws.com/qring_logo.png" style="width: 80px;" />
-    <form class="formform" action="/qrcode/1" method="POST" autocomplete="off">
-      <% feedBack.forEach(n =>{ %>
-      <% if(n.form == 0){ %>
+    <form class="formform" action="/qrcode/feedback/5f02cde923aa7292ac990ce6" method="POST" autocomplete="off">
+      <div style="text-align: center; margin-top: 32px;">
+        <img src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-banner.png" width="88px;" />
+      </div>
+      <div class="hrhr" style="
+            margin-top: 32px;
+            background-color: rgb(184, 184, 184);
+            height: 1px;
+            border: none;
+          "></div>
+      <div class="title_wrap">
+        <div class="title_bold" style="
+              margin-top: 40px;
+              color: #36383b;
+              font-weight: bolder;
+              font-size: 22px;
+              letter-spacing: -0.48px;
+              font-family: NotoSansCJKkr;
+            ">
+          <%=result.name%>
+        </div>
+        <div class="title_check">
+          더 나은 모임을 위해<br>
+          아래 피드백을 작성해주세요.
+        </div>
+      </div>
+
+      <% result.feedBack.forEach(n =>{ %> <% if(n.form == 0){ %>
       <div class="form-input">
         <div class="wrap_bold" style="margin-top: 20px;"><%= n.title %></div>
         <div class="wrap_sub" style="margin-top: 5px;"><%= n.content %></div>
-        <label>
-          <input class="input_name" name="name" required>
-          <span class="placeholder"></span>
-        </label>
+        <textarea class="form_textarea" placeholder="자유롭게 적어주세요 :)" rows="3" name="name">adw</textarea>
       </div>
       <% } else if(n.form == 1){ %>
       <div class="wrap_bold" style="margin-top: 20px;"><%= n.title %></div>
       <div class="wrap_sub" style="margin-top: 5px;"><%= n.content %></div>
-      <div class="radio_wrap" style="text-align:left;">
+      <div class="radio_wrap" style="text-align: left;">
         <% n.choice.forEach(t=>{ %>
         <label class="container"><%= t %>
-          <input type="radio" value="true" name="oversea">
-          <span class="checkmark"></span>
-        </label><br>
+          <input type="radio" value="true" name="oversea" />
+          <span class="checkmark"></span> </label><br />
         <% }) %>
       </div>
       <% } else if(n.form == 2){ %>
       <div class="wrap_bold" style="margin-top: 20px;"><%= n.title %></div>
       <div class="wrap_sub" style="margin-top: 5px;"><%= n.content %></div>
       <div class="starRev">
-        <span class="starR on">별1</span>
-        <span class="starR">별2</span>
-        <span class="starR">별3</span>
-        <span class="starR">별4</span>
-        <span class="starR">별5</span>
-      </div>
-      <% } %>
-      <% }) %>
-      <!-- <div class="form-input">
-        <label>
-          <input class="input_name" name="name" required>
-          <span class="placeholder">이름</span>
-        </label>
-      </div>
-      <div class="form-input">
-        <label>
-          <input class="input_phone" type="text" maxlength="13" autocomplete="off" name="phone" required>
-          <span class="placeholder">전화번호</span>
-        </label>
-      </div> -->
-      <!-- <div class="form-input">
-        <label>
-          <input class="input_address" name="address" required>
-          <span class="placeholder">주소</span>
-        </label>
-      </div> -->
-      <!-- <div class="wrap_bold" style="margin-top: 31px;">파트</div>
-      <div class="radio_wrap" style="text-align:left;">
-        <label class="container">기획
-          <input type="radio" value="plan" checked="checked" name="part">
-          <span class="checkmark"></span>
-        </label><br>
-        <label class="container">디자인
-          <input type="radio" value="design" name="part">
-          <span class="checkmark"></span>
-        </label><br>
-        <label class="container">안드
-          <input type="radio" value="android" name="part">
-          <span class="checkmark"></span>
-        </label><br>
-        <label class="container">iOS
-          <input type="radio" value="iOS" name="part">
-          <span class="checkmark"></span>
-        </label><br>
-        <label class="container">서버
-          <input type="radio" value="server" name="part">
-          <span class="checkmark"></span>
-        </label>
-      </div> -->
-      <!-- <div class="wrap_bold" style="margin-top: 20px;">최근 14일내 해외여행을<br> 다녀온 적이 있나요?</div>
-      <div class="radio_wrap" style="text-align:left;">
-        <label class="container">예
-          <input type="radio" value="true" name="oversea">
-          <span class="checkmark"></span>
-        </label><br>
-        <label class="container">아니요
-          <input type="radio" value="false" checked="checked" name="oversea">
-          <span class="checkmark"></span>
-        </label>
-      </div> -->
+        <span class="starR1">별1_왼쪽</span>
+        <span class="starR2">별1_오른쪽</span>
+        <span class="starR1">별2_왼쪽</span>
+        <span class="starR2">별2_오른쪽</span>
+        <span class="starR1">별3_왼쪽</span>
+        <span class="starR2">별3_오른쪽</span>
+        <span class="starR1">별4_왼쪽</span>
+        <span class="starR2">별4_오른쪽</span>
+        <span class="starR1">별5_왼쪽</span>
+        <span class="starR2">별5_오른쪽</span>
+      </div><br>
+      <% } %> <% }) %>
 
 
-      <div style="margin-top:12px;font-weight: 100;font-size:12px;color:grey;">※ 입력받은 정보는 역학조사를 할 경우에만 제공될
-        예정이며,<br>수집일로부터
-        2주뒤에 파기될 예정입니다.
-      </div>
-      <button class="wrap_button" style="font-weight: bolder;" type="submit">제출</button>
+      <button class="wrap_button" style="font-weight: bolder;" type="submit">
+        제출
+      </button>
     </form>
   </div>
-  </div>
-
   <script>
     $(document).on("keyup", ".input_phone", function () {
       $(this).val(
@@ -139,34 +107,55 @@
     $(document).ready(function () {
       $(".formform").submit(function (e) {
         //stop submitting the form to see the disabled button effect
-        $(".wrap_button").html("<img style='width:30px;' src='/images/loading.gif'>");
+        $(".wrap_button").html(
+          "<img style='width:30px;' src='/images/loading.gif'>"
+        );
         $(".wrap_button").attr("disabled", true);
-        localStorage.setItem('name', $('.input_name').val());
-        localStorage.setItem('phone', $('.input_phone').val());
-        localStorage.setItem('address', $('.input_address').val());
-        localStorage.setItem('part', $(':radio[name="part"]:checked').val());
+        localStorage.setItem("name", $(".input_name").val());
+        localStorage.setItem("phone", $(".input_phone").val());
+        localStorage.setItem("address", $(".input_address").val());
+        localStorage.setItem("part", $(':radio[name="part"]:checked').val());
         return true;
       });
     });
 
-    if (localStorage.getItem('name') || localStorage.getItem('phone') || localStorage.getItem('address') || localStorage
-      .getItem('part')) {
-      $('.input_name').val(localStorage.getItem('name'))
-      $('.input_phone').val(localStorage.getItem('phone'))
-      $('.input_address').val(localStorage.getItem('address'))
+    if (
+      localStorage.getItem("name") ||
+      localStorage.getItem("phone") ||
+      localStorage.getItem("address") ||
+      localStorage.getItem("part")
+    ) {
+      $(".input_name").val(localStorage.getItem("name"));
+      $(".input_phone").val(localStorage.getItem("phone"));
+      $(".input_address").val(localStorage.getItem("address"));
 
-      var part = localStorage.getItem('part')
+      var part = localStorage.getItem("part");
 
       if (part == "plan") {
-        $("input:radio[name='part']:radio[value='plan']").prop('checked', true); // 선택하기
+        $("input:radio[name='part']:radio[value='plan']").prop(
+          "checked",
+          true
+        ); // 선택하기
       } else if (part == "design") {
-        $("input:radio[name='part']:radio[value='design']").prop('checked', true); // 선택하기
+        $("input:radio[name='part']:radio[value='design']").prop(
+          "checked",
+          true
+        ); // 선택하기
       } else if (part == "android") {
-        $("input:radio[name='part']:radio[value='android']").prop('checked', true); // 선택하기
+        $("input:radio[name='part']:radio[value='android']").prop(
+          "checked",
+          true
+        ); // 선택하기
       } else if (part == "iOS") {
-        $("input:radio[name='part']:radio[value='iOS']").prop('checked', true); // 선택하기
+        $("input:radio[name='part']:radio[value='iOS']").prop(
+          "checked",
+          true
+        ); // 선택하기
       } else if (part == "server") {
-        $("input:radio[name='part']:radio[value='server']").prop('checked', true); // 선택하기
+        $("input:radio[name='part']:radio[value='server']").prop(
+          "checked",
+          true
+        ); // 선택하기
       }
     }
   </script>
