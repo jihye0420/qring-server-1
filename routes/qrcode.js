@@ -6,7 +6,7 @@ const qrcodeController = require("../controllers/qrcode");
 /**
  * QR 코드 생성
  */
-router.get("/qrcode/:groupId/:meetingId", auth.checkToken, qrcodeController.makeQrcode);
+//router.get("/qrcode/:groupId/:meetingId", auth.checkToken, qrcodeController.makeQrcode);
 
 /**
  * 웹 출석 폼 제출
@@ -16,7 +16,7 @@ router.post("/submission/:groupId/:meetingId", qrcodeController.submitForm);
 /**
  * 참석자 정보
  */
-router.get('/info/:meetingId/:userId', auth.checkToken, qrcodeController.readUserInfo);
+router.get('/info/:groupId/:meetingId/:userId', auth.checkToken, qrcodeController.readUserInfo);
 
 /**
  * 관리자가 직접 사용자 추가

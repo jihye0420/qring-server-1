@@ -20,9 +20,9 @@ const MeetingSchema = new schema({
         type: String,
         required: true,
     },
-    late : {
+    late: {
         type: Number,
-        required:true,
+        required: true,
     },
     headCount: {
         type: Number,
@@ -50,28 +50,25 @@ const MeetingSchema = new schema({
             type: Boolean,
         },
         attendance: Number,
-        isAdded : Boolean,
+        isAdded: Boolean,
         createdAt: String
     }],
     feedBack: [{
         title: {
-            type: String,
-            required: true,
+            type: String
         },
         content: {
             type: String,
-            required: true,
         },
         choice: [{
             type: String,
         }],
         //0이 단답형, 1이 객관식, 2는 평점
         form: {
-            type: Number,
-            required: true,
+            type: Number
         },
         result: [{
-            type: String,
+            type: String
         }]
     }]
 }, {
