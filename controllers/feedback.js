@@ -20,7 +20,6 @@ module.exports = {
             _id: meetingId
         });
 
-
         const {
             list
         } = req.body;
