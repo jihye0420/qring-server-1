@@ -18,50 +18,31 @@
 
 <body>
   <div id="wrap">
-    <img src="https://qring.s3.ap-northeast-2.amazonaws.com/qring_logo.png" style="width: 80px;" />
-    <form class="formform" action="/qrcode/feedback/5f02cde923aa7292ac990ce6" method="POST" autocomplete="off">
-      <div class="form-input">
-        <label>
-          <input class="input_name" name="name" required>
-          <span class="placeholder">이름</span>
-        </label>
+    <form class="formform" action="/qrcode/checkresult/<%= result._id %>" method="POST" autocomplete="off">
+      <div style="text-align: center;margin-top:32px;">
+        <img src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-banner.png" width="88px;" />
       </div>
-      <div class="form-input">
-        <label>
-          <input class="input_phone" type="text" maxlength="13" autocomplete="off" name="phone" required>
-          <span class="placeholder">전화번호</span>
-        </label>
+      <div class="hrhr" style="margin-top: 32px;
+        background-color: rgb(184, 184, 184);
+        height: 1px;
+        border: none;"></div>
+      <div class="title_wrap">
+        <div class="title_bold"
+          style="margin-top:40px;color: #36383b;font-weight:bolder;font-size: 22px;letter-spacing: -0.48px; font-family: NotoSansCJKkr;">
+          <%= result.name %></div>
+        <div class="title_check">출석체크를 위해<br>아래 정보를 입력해 주세요.</div>
       </div>
-      <!-- <div class="form-input">
-        <label>
-          <input class="input_address" name="address" required>
-          <span class="placeholder">주소</span>
-        </label>
-      </div> -->
-      <!-- <div class="wrap_bold" style="margin-top: 31px;">파트</div>
-      <div class="radio_wrap" style="text-align:left;">
-        <label class="container">기획
-          <input type="radio" value="plan" checked="checked" name="part">
-          <span class="checkmark"></span>
-        </label><br>
-        <label class="container">디자인
-          <input type="radio" value="design" name="part">
-          <span class="checkmark"></span>
-        </label><br>
-        <label class="container">안드
-          <input type="radio" value="android" name="part">
-          <span class="checkmark"></span>
-        </label><br>
-        <label class="container">iOS
-          <input type="radio" value="iOS" name="part">
-          <span class="checkmark"></span>
-        </label><br>
-        <label class="container">서버
-          <input type="radio" value="server" name="part">
-          <span class="checkmark"></span>
-        </label>
-      </div> -->
-      <div class="wrap_bold" style="margin-top: 20px;">최근 14일내 해외여행을<br> 다녀온 적이 있나요?</div>
+      <div class="input_wrap">
+        <div class="input_title" style="margin-top:36px;">이름</div>
+        <input class="input name" />
+      </div>
+      <div class="input_wrap">
+        <div class="input_title" style="margin-top:14px;">이메일</div>
+        <input class="input name" />
+      </div>
+      <div class="wrap_bold" style="margin-top: 20px;"> 최근 14일 이내 위험 지역(이태원, 대구 등)을 방문하신 적이
+        있으신가요?
+      </div>
       <div class="radio_wrap" style="text-align:left;">
         <label class="container">예
           <input type="radio" value="true" name="oversea">
@@ -73,10 +54,10 @@
         </label>
       </div>
 
-      <div class="wrap_bold" style="margin-top: 20px;">아래 문항중 하나라도 해당되는 사항이 있나요?</div>
-      <div class="wrap_sub" style="margin-top: 5px;margin-bottom:10px;">1. 기침/발열 등 나타나는 증상이 있습니다.<br>
+      <div class="wrap_bold" style="margin-top: 20px;">기침, 재채기, 발열 등의 증상이 나타나고 있나요?</div>
+      <!-- <div class="wrap_sub" style="margin-top: 5px;margin-bottom:10px;">1. 기침/발열 등 나타나는 증상이 있습니다.<br>
         2. 자가격리자에 해당합니다.<br>
-        3. 최근 2주간 감염자 동선과 겹치는 곳이 있습니다.</div>
+        3. 최근 2주간 감염자 동선과 겹치는 곳이 있습니다.</div> -->
       <div class="radio_wrap" style="text-align:left;">
         <label class="container">예
           <input type="radio" value="true" name="health">
@@ -94,8 +75,6 @@
       <button class="wrap_button" style="font-weight: bolder;" type="submit">제출</button>
     </form>
   </div>
-  </div>
-
   <script>
     $(document).on("keyup", ".input_phone", function () {
       $(this).val(
