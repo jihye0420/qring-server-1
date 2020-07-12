@@ -26,7 +26,7 @@ module.exports = {
 
 
         if (feedBack) {
-            const parsedFeedbacks = await feedBack.map((fb) => {
+            var parsedFeedbacks = await feedBack.map((fb) => {
                 let parsedFb;
                 if (typeof fb === 'string') {
                     parsedFb = JSON.parse(fb);
