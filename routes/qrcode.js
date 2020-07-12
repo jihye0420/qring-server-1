@@ -6,7 +6,7 @@ const qrcodeController = require("../controllers/qrcode");
 /**
  * QR 코드 생성
  */
-router.get("/qrcode/:groupId/:meetingId", auth.checkToken, qrcodeController.makeQrcode);
+//router.get("/qrcode/:groupId/:meetingId", auth.checkToken, qrcodeController.makeQrcode);
 
 /**
  * 웹 출석 폼 제출

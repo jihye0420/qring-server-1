@@ -6,6 +6,7 @@ const moment = require('moment');
 const statusCode = require('../modules/statusCode');
 const resMessage = require('../modules/responseMessage');
 const async = require('pbkdf2/lib/async');
+const qrcodeController = require('../controllers/qrcode');
 
 module.exports = {
     /**
@@ -48,7 +49,6 @@ module.exports = {
         newMeeting.feedBack = parsedFeedbacks
         //newMeeting.feedBack = req.body.feedBack
 
-
         let image = null;
         // data check - undefined
         if (req.file !== undefined) {
@@ -59,18 +59,20 @@ module.exports = {
             }    
         }
         newMeeting.image = image;
-
-        newMeeting.qrImg = "";
+        //newMeeting.qrImg = "";
 
         let fin_meeting = await newMeeting.save();
 
         var newGroup = new groupModel();
         const admin = await adminModel.findOne({
             email: adminEmail
-        })
+        });
+
+        const qrKey = await qrcodeController.makeQrcode(adminEmail, newGroup._id, fin_meeting._id);
+        newMeeting.qrImg = qrKey;
 
         newGroup.admin = admin._id;
-        newGroup.meetings.push(fin_meeting._id)
+        newGroup.meetings.push(fin_meeting._id);
         await newGroup.save();
 
         admin.groups.push(newGroup._id);
@@ -89,8 +91,7 @@ module.exports = {
                 "headCount": newMeeting.headCount
             }]
         }
-
-
+        
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
 
     },
@@ -99,6 +100,7 @@ module.exports = {
      * 이어서 모임 생성
      */
     createNewMeeting: async (req, res) => {
+        const adminEmail = req.email;
         const groupId = req.params.groupid;
         const {
             name,
@@ -144,9 +146,10 @@ module.exports = {
         }
         newMeeting.image = image;
 
-        newMeeting.qrImg = "";
-
         let fin_meeting = await newMeeting.save();
+
+        // qr코드 생성
+        newMeeting.qrImg = await qrcodeController.makeQrcode(adminEmail, groupId, fin_meeting._id);
 
         try {
             const group = await groupModel.findOne({
