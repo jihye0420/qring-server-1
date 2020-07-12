@@ -287,8 +287,9 @@ const userController = {
 
         const filter = {
             email: userEmail,
+            auth: true
         };
-        const result = await adminModel.find(filter, {
+        const result = await adminModel.findOne(filter, {
             _id: 0,
             email: 1,
             name: 1,

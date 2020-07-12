@@ -17,7 +17,9 @@
         <span class="qring-main-checkout">출석이 완료되었습니다</span><br><br>
         <span class="qring-under-checkout">모임이 종료되었다면 아래 버튼을 눌러서<br>
           피드백을 작성해주세요.</span><br><br>
-        <div class="qring-button" OnClick="location.href ='http://localhost:3000/qrcode/feedback/<%=result._id%>'">피드백
+        <div class="qring-button"
+          OnClick="location.href ='http://qring-server-dev.ap-northeast-2.elasticbeanstalk.com/qrcode/feedback/<%=groupId%>/<%=meetingId%>'">
+          피드백
           작성하기</div>
         <div class="under-title-checkout">도움이 필요하신가요? <span style="color:#ff6600;">contact@qring.co</span> 로 연락주세요</div>
       </div>
