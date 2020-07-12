@@ -8,10 +8,58 @@ const resMessage = require('../modules/responseMessage');
 const async = require('pbkdf2/lib/async');
 const qrcodeController = require('../controllers/qrcode');
 
+async function listLoop(allGroup) {
+    const today = moment().format('YYYY.MM.DD');
+    const temp = {};
+    const resultPromises = allGroup.map(async (groupid, index,array )=> {
+        const group = await groupModel.findById({
+            _id : groupid
+        },{
+            meetings : 1
+        })
+        const lastMeeting = await meetingModel.findById({
+            _id: group.meetings[group.meetings.length - 1]
+        })
+        const userCount = lastMeeting.user.length;
+        var feedBackCount;
+        let isFeedBack = false;
+        if (lastMeeting.feedBack.length > 0) {
+            isFeedBack = true;
+            feedBackCount = lastMeeting.feedBack[0].result.length;
+        } else feedBackCount = 0;
+        
+        let Item = {
+            groupId: groupid,
+            meetingId: lastMeeting._id,
+            image: lastMeeting.image,
+            name: lastMeeting.name,
+            date: lastMeeting.date,
+            headCount : lastMeeting.headCount,
+            userCount: userCount,
+            feedBackCount: feedBackCount,
+            isFeedBack : isFeedBack
+        }
+        if (lastMeeting.date < today) { //종료된 모임
+
+            return {
+                type: 'end',
+                Item
+            }
+        } else { //진행중이거나 예정된 모임
+            return {
+                type: 'proceed',
+                Item
+            }
+        }
+    });
+    const resolvedResult = await Promise.all(resultPromises);
+    return ({
+        end: resolvedResult.filter((item) => item.type === 'end').map((item) => item.Item),
+        proceed: resolvedResult.filter((item) => item.type === 'proceed').map((item) => item.Item)
+    })
+}
 module.exports = {
-    /**
-     * 첫 모임 생성 
-     */
+    // 첫 모임 생성 & 피드백
     createNewGroup: async (req, res) => {
         const adminEmail = req.email;
         const {
@@ -24,8 +72,9 @@ module.exports = {
             feedBack
         } = req.body;
 
-
+        let isFeedBack = false;
         if (feedBack) {
+            isFeedBack = true;
             var parsedFeedbacks = await feedBack.map((fb) => {
                 let parsedFb;
                 if (typeof fb === 'string') {
@@ -39,6 +88,7 @@ module.exports = {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
+        //데이터 대입
         var newMeeting = new meetingModel();
         newMeeting.name = req.body.name
         newMeeting.date = req.body.date
@@ -50,8 +100,9 @@ module.exports = {
             newMeeting.feedBack = parsedFeedbacks
         }
 
+
+        //이미지가 안들어 왔을때 null로 저장, 들어오면 S3 url 저장
         let image = null;
-        // data check - undefined
         if (req.file !== undefined) {
             image = req.file.location;
             const type = req.file.mimetype.split('/')[1];
@@ -64,6 +115,7 @@ module.exports = {
 
         let fin_meeting = await newMeeting.save();
 
+        // 그룹 만들어 meetings 배열에 새 미팅 아이디 저장, admin의 groups 배열에 새그룹 id 저장
         var newGroup = new groupModel();
         const admin = await adminModel.findOne({
             email: adminEmail
@@ -79,18 +131,18 @@ module.exports = {
         admin.groups.push(newGroup._id);
         await admin.save();
 
+        // for res
         const data = {
             "groupid": newGroup._id,
-            "meeting": [{
-                "name": newMeeting.name,
-                "date": newMeeting.date,
-                "startTime": newMeeting.startTime,
-                "endTime": newMeeting.endTime,
-                "image": newMeeting.image,
-                "qrImg": newMeeting.qrImg,
-                "late": newMeeting.late,
-                "headCount": newMeeting.headCount
-            }]
+            "name": newMeeting.name,
+            "date": newMeeting.date,
+            "startTime": newMeeting.startTime,
+            "endTime": newMeeting.endTime,
+            "image": newMeeting.image,
+            "qrImg": newMeeting.qrImg,
+            "late": newMeeting.late,
+            "headCount": newMeeting.headCount,
+            "isFeedBack" : isFeedBack
         }
 
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
@@ -113,19 +165,24 @@ module.exports = {
             feedBack
         } = req.body;
 
-
-        const parsedFeedbacks = feedBack.map((fb) => {
-            let parsedFb;
-            if (typeof fb === 'string') {
-                parsedFb = JSON.parse(fb);
-            }
-            return parsedFb;
-        })
+        // 피드백 파싱
+        let isFeedBack = false;
+        if (feedBack) {
+            isFeedBack = true;
+            var parsedFeedbacks = await feedBack.map((fb) => {
+                let parsedFb;
+                if (typeof fb === 'string') {
+                    parsedFb = JSON.parse(fb);
+                }
+                return parsedFb;
+            })
+        }
 
         if (!name || !date || !startTime || !endTime || !late || !headCount) {
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
+        //데이터 대입
         var newMeeting = new meetingModel();
         newMeeting.name = req.body.name
         newMeeting.date = req.body.date
@@ -133,11 +190,13 @@ module.exports = {
         newMeeting.endTime = req.body.endTime
         newMeeting.late = req.body.late
         newMeeting.headCount = req.body.headCount
-        newMeeting.feedBack = parsedFeedbacks
+        if (feedBack) {
+            newMeeting.feedBack = parsedFeedbacks
+        }
+        
 
-
+        //이미지가 안들어 왔을때 null로 저장, 들어오면 S3 url 저장
         let image = null;
-        // data check - undefined
         if (req.file !== undefined) {
             image = req.file.location;
             const type = req.file.mimetype.split('/')[1];
@@ -160,19 +219,17 @@ module.exports = {
             await group.save();
 
             const data = {
-                "groupid": group._id,
-                "meeting": [{
-                    "name": newMeeting.name,
-                    "date": newMeeting.date,
-                    "startTime": newMeeting.startTime,
-                    "endTime": newMeeting.endTime,
-                    "image": newMeeting.image,
-                    "qrImg": newMeeting.qrImg,
-                    "late": newMeeting.late,
-                    "headCount": newMeeting.headCount
-                }]
+                "groupid": newGroup._id,
+                "name": newMeeting.name,
+                "date": newMeeting.date,
+                "startTime": newMeeting.startTime,
+                "endTime": newMeeting.endTime,
+                "image": newMeeting.image,
+                "qrImg": newMeeting.qrImg,
+                "late": newMeeting.late,
+                "headCount": newMeeting.headCount,
+                "isFeedBack" : isFeedBack
             }
-
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 group이 없습니다."));
@@ -228,7 +285,7 @@ module.exports = {
      */
     getInfo: async (req, res) => {
         const groupId = req.params.groupid
-        const meetingId = req.params.meetingid
+        const meetingId = req.params.meetingid //이전회차
         try {
             const meetingObject = await meetingModel.findOne({
                 _id: meetingId
@@ -241,7 +298,6 @@ module.exports = {
             const data = {
                 "groupId": groupId,
                 "meeting": {
-                    "_id": meetingObject._id,
                     "user": meetingObject.user,
                     "name": meetingObject.name,
                     "date": meetingObject.date,
@@ -329,17 +385,14 @@ module.exports = {
                 _id: groupId
             });
 
-            console.log(meetingId);
             if (group.meetings.length > 1) {
                 const newMeetings = [];
                 for (let Item of group.meetings) {
-                    console.log(Item);
                     if (Item != meetingId) {
                         newMeetings.push(Item);
                     }
                 }
                 group.meetings = newMeetings;
-                console.log(newMeetings);
                 await group.save();
             } else {
                 await groupModel.deleteOne({
@@ -365,63 +418,38 @@ module.exports = {
             email: adminEmail
         })
         const allGroup = admin.groups;
-
-        const today = moment().format('YYYY-MM-DD');
-        const end = [];
-        const proceed = [];
-
-        for (let groupid of allGroup) {
-            const group = await groupModel.findOne({
-                _id: groupid
-            })
-            try {
-                const lastMeeting = await meetingModel.findOne({
-                    _id: group.meetings[group.meetings.length - 1]
-                })
-                const userCount = lastMeeting.user.length;
-                var feedBackCount;
-                if (lastMeeting.feedBack.length > 0) {
-                    feedBackCount = lastMeeting.feedBack[0].result.length;
-                } else feedBackCount = 0;
-                let Item = {
-                    groupId: group._id,
-                    meetingId: lastMeeting._id,
-                    image: lastMeeting.image,
-                    name: lastMeeting.name,
-                    date: lastMeeting.date,
-                    userCount: userCount,
-                    feedBackCount: feedBackCount
-                }
-                if (lastMeeting.date < today) { //종료된 모임
-                    end.push(Item);
-                } else { //진행중이거나 예정된 모임
-                    proceed.push(Item);
-                }
-            } catch (e) {
-                return res.status(400).send(util.fail(400, "meeting 데이터 오류"));
-            }
+        if (allGroup.length ===0){
+            return res.status(200).send(util.success(200, "모임 리스트 조회",null));
         }
 
-        end.sort(function (a, b) {
-            if (a.date === b.date) { //오름차순
-                return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
-            }
-            return a.date > b.date ? -1 : a.date < b.date ? 1 : 0; //내림차순 
-        })
-        proceed.sort(function (a, b) {
-            if (a.date === b.date) { //오름차순
-                return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
-            }
-            return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
-        })
+        try{
+            const result = await listLoop(allGroup);
 
-        const meetingList = proceed.concat(end);
-
-        return res.status(200).send(util.success(200, "모임 리스트 조회", meetingList));
+            let end = result.end;
+            let proceed= result.proceed;
+            
+            end.sort(function (a, b) {
+                if (a.date === b.date) { //오름차순
+                    return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
+                }
+                return a.date > b.date ? -1 : a.date < b.date ? 1 : 0; //내림차순 
+            })
+            proceed.sort(function (a, b) {
+                if (a.date === b.date) { //오름차순
+                    return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
+                }
+                return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
+            })
+    
+            const meetingList = proceed.concat(end);
+            return res.status(200).send(util.success(200, "모임 리스트 조회", meetingList));
+        } catch(e){
+            return res.status(400).send(util.success(400, 'meeting 데이터 오류',null));
+        }
     },
 
     /**
-     * 모임 리스트에서 각 회차의 정보 조회 round가 -1일때 마지막 회차와 회차 수 반환, 다른 수 일때는 해당 회차 정보 반환
+     * groupid에 meetings에 있는 모든 meeting에 대한 정보 넘겨주기
      */
     round: async (req, res) => {
         const groupId = req.params.groupid;
@@ -442,10 +470,12 @@ module.exports = {
                     })
 
                     const userCount = meeting.user.length;
+                    
                     var feedBackCount;
                     if (meeting.feedBack.length > 0) {
                         feedBackCount = meeting.feedBack[0].result.length;
                     } else feedBackCount = 0;
+
                     const meetingdata = {
                         "meetingid": meeting._id,
                         "name": meeting.name,
