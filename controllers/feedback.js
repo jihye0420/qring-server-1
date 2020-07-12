@@ -20,7 +20,6 @@ module.exports = {
             _id: meetingId
         });
 
-
         const {
             list
         } = req.body;
@@ -51,20 +50,7 @@ module.exports = {
         // 데이터베이스에 저장
         await meeting.save();
 
-        const data = {
-            meetingId: meetingId,
-            name: meeting.name,
-            data: meeting.date,
-            startTime: meeting.startTime,
-            endTime: meeting.endTime,
-            late: meeting.late,
-            headCount: meeting.headCount,
-            image: meeting.image,
-            qrImg: meeting.qrImg
-        }
-
-        res.status(200).send(util.success(200, "피드백 질문 추가 완료", data));
-
+        res.status(200).send(util.success(200, "피드백 질문 추가 완료"));
     },
 
     readAll: async (req, res) => {
@@ -166,6 +152,46 @@ module.exports = {
 
         // 이 전체 결과를 result배열에 정돈된 데이터로 배열 추가하고 그 배열 리스트 보내기
 
+    },
+
+    submitResult: async (req, res) => {
+
+    },
+
+    shortAnswer: async (req, res) => {
+        //날짜랑 결과 내용 더보기 뷰
+        const feedbackId = req.params.feedbackId;
+
+        if (!feedbackId) {
+            res.status(400).send(util.fail(400, "feedbackId가 없습니다."));
+        }
+
+        const feedbacks = await MeetingModel.findOne({
+            'feedBack._id': feedbackId
+        }, {
+            _id: 0,
+            feedBack: 1
+        });
+
+        var feedBackArray = feedbacks.feedBack;
+        var resultArray = [];
+
+        for (var i in feedBackArray) {
+            console.log(feedbackId)
+            if (feedBackArray[i]._id == feedbackId) {
+                if (feedBackArray[i].form == 0) {
+                    resultArray = feedBackArray[i].result;
+                } else {
+                    res.status(400).send(util.fail(400, "해당 feedbackId가 단답형이 아닙니다."));
+                }
+            }
+        }
+
+
+        res.status(200).send(util.success(200, "단답형 더보기 완료", resultArray));
+
+
     }
+
 
 }
