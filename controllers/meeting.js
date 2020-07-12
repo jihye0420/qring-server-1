@@ -7,6 +7,55 @@ const statusCode = require('../modules/statusCode');
 const resMessage = require('../modules/responseMessage');
 const async = require('pbkdf2/lib/async');
 
+async function listLoop(allGroup) {
+    const today = moment().format('YYYY.MM.DD');
+    const temp = {};
+    // return new Promise(resolve=>{
+        var count = 0;
+        const resultPromises = allGroup.map(async (groupid, index,array )=> {
+            count ++;
+            const group = await groupModel.findById({
+                _id : groupid
+            },{
+                meetings : 1
+            })
+            const lastMeeting = await meetingModel.findById({
+                _id: group.meetings[group.meetings.length - 1]
+            })
+            const userCount = lastMeeting.user.length;
+            var feedBackCount;
+            if (lastMeeting.feedBack.length > 0) {
+                feedBackCount = lastMeeting.feedBack[0].result.length;
+            } else feedBackCount = 0;
+            let Item = {
+                groupId: groupid,
+                meetingId: lastMeeting._id,
+                image: lastMeeting.image,
+                name: lastMeeting.name,
+                date: lastMeeting.date,
+                headCount : lastMeeting.headCount,
+                userCount: userCount,
+                feedBackCount: feedBackCount
+            }
+            if (lastMeeting.date < today) { //종료된 모임
+
+                return {
+                    type: 'end',
+                    Item
+                }
+            } else { //진행중이거나 예정된 모임
+                return {
+                    type: 'proceed',
+                    Item
+                }
+            }
+        });
+        const resolvedResult = await Promise.all(resultPromises);
+        return ({
+            end: resolvedResult.filter((item) => item.type === 'end').map((item) => item.Item),
+            proceed: resolvedResult.filter((item) => item.type === 'proceed').map((item) => item.Item)
+        })
+}
 module.exports = {
     // 첫 모임 생성 & 피드백
     createNewGroup: async (req, res) => {
@@ -329,17 +378,14 @@ module.exports = {
                 _id: groupId
             });
 
-            console.log(meetingId);
             if (group.meetings.length > 1) {
                 const newMeetings = [];
                 for (let Item of group.meetings) {
-                    console.log(Item);
                     if (Item != meetingId) {
                         newMeetings.push(Item);
                     }
                 }
                 group.meetings = newMeetings;
-                console.log(newMeetings);
                 await group.save();
             } else {
                 await groupModel.deleteOne({
@@ -365,43 +411,14 @@ module.exports = {
             email: adminEmail
         })
         const allGroup = admin.groups;
-
-        const today = moment().format('YYYY-MM-DD');
-        const end = [];
-        const proceed = [];
-
-        for (let groupid of allGroup) {
-            const group = await groupModel.findOne({
-                _id : groupid
-            })
-            try {
-                const lastMeeting = await meetingModel.findOne({
-                    _id: group.meetings[group.meetings.length - 1]
-                })
-                const userCount = lastMeeting.user.length;
-                var feedBackCount;
-                if (lastMeeting.feedBack.length > 0) {
-                    feedBackCount = lastMeeting.feedBack[0].result.length;
-                } else feedBackCount = 0;
-                let Item = {
-                    groupId: group._id,
-                    meetingId: lastMeeting._id,
-                    image: lastMeeting.image,
-                    name: lastMeeting.name,
-                    date: lastMeeting.date,
-                    userCount: userCount,
-                    feedBackCount: feedBackCount
-                }
-                if (lastMeeting.date < today) { //종료된 모임
-                    end.push(Item);
-                } else { //진행중이거나 예정된 모임
-                    proceed.push(Item);
-                }
-            } catch (e) {
-                return res.status(400).send(util.fail(400, "meeting 데이터 오류"));
-            }
+        if (allGroup.length ===0){
+            return res.status(200).send(util.success(200, '모임 삭제 성공',null));
         }
 
+        const result = await listLoop(allGroup);
+        let end = result.end;
+        let proceed= result.proceed;
+        
         end.sort(function (a, b) {
             if (a.date === b.date) { //오름차순
                 return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
@@ -416,7 +433,6 @@ module.exports = {
         })
 
         const meetingList = proceed.concat(end);
-
         return res.status(200).send(util.success(200, "모임 리스트 조회", meetingList));
     },
 
