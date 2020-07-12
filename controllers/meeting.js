@@ -440,7 +440,7 @@ module.exports = {
                 }
                 return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
             })
-    
+            console.log(end,"---------------",proceed);
             const meetingList = proceed.concat(end);
             return res.status(200).send(util.success(200, "모임 리스트 조회", meetingList));
         } catch(e){
@@ -471,20 +471,22 @@ module.exports = {
 
                     const userCount = meeting.user.length;
                     
+                    let isFeedBack = false;
                     var feedBackCount;
                     if (meeting.feedBack.length > 0) {
+                        isFeedBack =true;
                         feedBackCount = meeting.feedBack[0].result.length;
                     } else feedBackCount = 0;
-
                     const meetingdata = {
                         "meetingid": meeting._id,
+                        "image": meeting.image,
+                        "qrImg": meeting.qrImg,
                         "name": meeting.name,
                         "date": meeting.date,
+                        "headCount": meeting.headCount,
                         "userCount": userCount,
                         "feedBackCount": feedBackCount,
-                        "headCount": meeting.headCount,
-                        "image": meeting.image,
-                        "qrImg": meeting.qrImg
+                        "isFeedBack" : isFeedBack
                     }
 
                     data.push(meetingdata);
