@@ -7,7 +7,9 @@ const util = require("../modules/util");
 const meetingModel = require("../models/meeting");
 const groupModel = require("../models/group");
 const moment = require("moment");
-const { group } = require("console");
+const {
+  group
+} = require("console");
 const meeting = require("../models/meeting");
 
 const s3 = new AWS.S3({
@@ -148,37 +150,36 @@ const qrcodeController = {
   submitForm: async (req, res) => {
     const groupId = req.params.groupId;
     const meetingId = req.params.meetingId;
-    const { name, email, abroad, health } = req.body;
+    const {
+      name,
+      email,
+      abroad,
+      health
+    } = req.body;
 
     if (!meetingId) {
       res.status(402).send(util.fail(402, "meetingId가 없습니다."));
     }
 
-    const groupInfo = await groupModel.findById(
-      {
-        _id: groupId,
-      },
-      {
-        meetings: 1,
-      }
-    );
+    const groupInfo = await groupModel.findById({
+      _id: groupId,
+    }, {
+      meetings: 1,
+    });
     const rounds = groupInfo.meetings.length;
     const meetingIdx = groupInfo.meetings.indexOf(meetingId);
 
-    let meetingInfo = await meetingModel.findById(
-      {
-        _id: meetingId,
-      },
-      {
-        _id: 0,
-        date: 1,
-        startTime: 1,
-        endTime: 1,
-        late: 1,
-        headCount: 1,
-        user: 1,
-      }
-    );
+    let meetingInfo = await meetingModel.findById({
+      _id: meetingId,
+    }, {
+      _id: 0,
+      date: 1,
+      startTime: 1,
+      endTime: 1,
+      late: 1,
+      headCount: 1,
+      user: 1,
+    });
 
     if (meetingInfo === null) {
       res
@@ -190,8 +191,10 @@ const qrcodeController = {
     const now = moment().format("YYYY.MM.DD HH:mm:ss");
     const lDate = meetingInfo.date + " " + meetingInfo.startTime + ":00";
     let limitDate = new Date(lDate);
+    //1시간 전부터 가능
     limitDate.setHours(limitDate.getHours() - 1);
     limitDate = moment(limitDate).format("YYYY.MM.DD HH:mm:ss");
+    console.log(limitDate);
 
     // 출결 확인하기
     const attendanceFlag = await qrcodeController.checkAttendance(
@@ -209,6 +212,7 @@ const qrcodeController = {
       //지각
       attendance = 0;
     }
+    console.log("attendanceFlag", attendanceFlag);
     if (attendanceFlag === -1) {
       res.status(401).send(util.fail(401, "출석 가능 시간이 아닙니다."));
       return;
@@ -226,7 +230,7 @@ const qrcodeController = {
           }
         });
 
-        // DB에 추가하기
+        // flag가 false면 DB에 추가하기
         if (!flag) {
           let createdAt = moment().format("YYYY.MM.DD HH:mm:ss");
           const filter = {
@@ -249,16 +253,13 @@ const qrcodeController = {
           });
 
           if (meetingInfo.user.length >= meetingInfo.headCount) {
-            await meetingModel.findByIdAndUpdate(
-              {
-                _id: meetingId,
+            await meetingModel.findByIdAndUpdate({
+              _id: meetingId,
+            }, {
+              $set: {
+                headCount: meetingInfo.user.length + 1,
               },
-              {
-                $set: {
-                  headCount: meetingInfo.user.length + 1,
-                },
-              }
-            );
+            });
           }
           res.render("checkresult", {
             groupId: groupId,
@@ -345,16 +346,13 @@ const qrcodeController = {
           });
 
           if (meetingInfo.user.length >= meetingInfo.headCount) {
-            await meetingModel.findByIdAndUpdate(
-              {
-                _id: meetingId,
+            await meetingModel.findByIdAndUpdate({
+              _id: meetingId,
+            }, {
+              $set: {
+                headCount: meetingInfo.user.length + 1,
               },
-              {
-                $set: {
-                  headCount: meetingInfo.user.length + 1,
-                },
-              }
-            );
+            });
           }
           res.render("checkresult", {
             groupId: groupId,
@@ -377,15 +375,12 @@ const qrcodeController = {
    */
   getPreUsers: async (meetingIdx, meetingId, groupInfo) => {
     const preMeetingId = groupInfo.meetings[meetingIdx - 1]; // 이어 만들기인 경우에만 이전 미팅 참석자를 가져오므로 -1 OK
-    const preMeetingInfo = await meetingModel.findById(
-      {
-        _id: preMeetingId,
-      },
-      {
-        _id: 0,
-        user: 1,
-      }
-    );
+    const preMeetingInfo = await meetingModel.findById({
+      _id: preMeetingId,
+    }, {
+      _id: 0,
+      user: 1,
+    });
 
     preMeetingInfo.user.forEach((element) => {
       element.attendance = -1;
@@ -399,11 +394,9 @@ const qrcodeController = {
       user: preMeetingInfo.user,
     };
     const meetingInfo = await meetingModel.findByIdAndUpdate(
-      filter,
-      {
+      filter, {
         $set: update,
-      },
-      {
+      }, {
         new: true,
       }
     );
@@ -440,6 +433,9 @@ const qrcodeController = {
     const end = date.concat(" ", endTime + ":00");
     const late = date.concat(" ", lateLimit_hour, ":", lateLimit_min, ":00");
 
+    console.log("createdAt:", createdAt);
+    console.log("startLimit:", startLimit);
+    console.log("end:", end);
     if (createdAt < startLimit || createdAt > end) {
       return -1; // 출석 체크 아예 불가능
     } else {
@@ -534,15 +530,12 @@ const qrcodeController = {
           .status(401)
           .send(util.fail(401, "해당하는 userId가 없습니다."));
       }
-      const groupInfo = await groupModel.findById(
-        {
-          _id: groupId,
-        },
-        {
-          _id: 0,
-          meetings: 1,
-        }
-      );
+      const groupInfo = await groupModel.findById({
+        _id: groupId,
+      }, {
+        _id: 0,
+        meetings: 1,
+      });
       if (groupInfo === undefined || groupInfo === null) {
         return res
           .status(400)
@@ -592,15 +585,12 @@ const qrcodeController = {
    */
   loopMeetingList: async (meetings, email) => {
     const resultPromise = meetings.map(async (mId) => {
-      const preMeetingInfo = await meetingModel.findById(
-        {
-          _id: mId,
-        },
-        {
-          _id: 0,
-          user: 1,
-        }
-      );
+      const preMeetingInfo = await meetingModel.findById({
+        _id: mId,
+      }, {
+        _id: 0,
+        user: 1,
+      });
       const preUserInfo = await preMeetingInfo.user.find(
         (element) => element.email === email
       );
@@ -627,7 +617,10 @@ const qrcodeController = {
    */
   addUser: async (req, res) => {
     const meetingId = req.params.meetingId;
-    const { name, email } = req.body;
+    const {
+      name,
+      email
+    } = req.body;
 
     if (!meetingId) {
       res.status(401).send(util.fail(401, "meetingId가 없습니다."));
@@ -635,15 +628,12 @@ const qrcodeController = {
 
     const abroad = false;
     const health = false;
-    const result = await meetingModel.findById(
-      {
-        _id: meetingId,
-      },
-      {
-        _id: 0,
-        user: 1,
-      }
-    );
+    const result = await meetingModel.findById({
+      _id: meetingId,
+    }, {
+      _id: 0,
+      user: 1,
+    });
 
     if (result === null || result === undefined) {
       res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
@@ -657,6 +647,7 @@ const qrcodeController = {
       }
     });
 
+    // flag가 false면
     if (!flag) {
       const attendance = -1;
       const isAdded = true;
@@ -688,7 +679,10 @@ const qrcodeController = {
   updateUser: async (req, res) => {
     const meetingId = req.params.meetingId;
     const userId = req.params.userId;
-    const { name, attendance } = req.body;
+    const {
+      name,
+      attendance
+    } = req.body;
 
     if (!name || !attendance) {
       return res
@@ -705,11 +699,9 @@ const qrcodeController = {
       "user.$.attendance": attendance,
     };
     const result = await meetingModel.findOneAndUpdate(
-      filter,
-      {
+      filter, {
         $set: update,
-      },
-      {
+      }, {
         new: true,
       }
     );
@@ -760,17 +752,13 @@ const qrcodeController = {
     });
     if (idx > -1) users.splice(idx, 1);
 
-    const result = await meetingModel.findOneAndUpdate(
-      {
-        _id: meetingId,
-      },
-      {
-        user: users,
-      },
-      {
-        new: true,
-      }
-    );
+    const result = await meetingModel.findOneAndUpdate({
+      _id: meetingId,
+    }, {
+      user: users,
+    }, {
+      new: true,
+    });
 
     res
       .status(200)
@@ -780,8 +768,13 @@ const qrcodeController = {
   userCheck: async (req, res) => {
     const groupId = req.params.groupId;
     const meetingId = req.params.meetingId;
-    const result = await meetingModel.findOne({ _id: meetingId });
-    res.render("index", { result: result, gId: groupId });
+    const result = await meetingModel.findOne({
+      _id: meetingId
+    });
+    res.render("index", {
+      result: result,
+      gId: groupId
+    });
   },
 
   feedbackCheck: async (req, res) => {
