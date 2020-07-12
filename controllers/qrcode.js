@@ -186,11 +186,11 @@ const qrcodeController = {
       return;
     }
 
-    const now = moment().format('YYYY-MM-DD HH:mm:ss');
+    const now = moment().format('YYYY.MM.DD HH:mm:ss');
     const lDate = meetingInfo.date + " " + meetingInfo.startTime + ":00";
     let limitDate = new Date(lDate);
     limitDate.setHours(limitDate.getHours() - 1);
-    limitDate = moment(limitDate).format('YYYY-MM-DD HH:mm:ss');
+    limitDate = moment(limitDate).format('YYYY.MM.DD HH:mm:ss');
 
     // 출결 확인하기
     const attendanceFlag =
@@ -220,7 +220,7 @@ const qrcodeController = {
 
         // DB에 추가하기
         if (!flag) {
-          let createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+          let createdAt = moment().format('YYYY.MM.DD HH:mm:ss');
           const filter = {
             _id: meetingId
           };
@@ -285,7 +285,7 @@ const qrcodeController = {
                 'user.$.health': health,
                 'user.$.attendance': attendance,
                 'user.$.isAdded': isAdded,
-                'user.$.createdAt': moment().format('YYYY-MM-DD HH:mm:ss')
+                'user.$.createdAt': moment().format('YYYY.MM.DD HH:mm:ss')
               };
               await meetingModel.findOneAndUpdate(filter, {
                 $set: update
@@ -305,7 +305,7 @@ const qrcodeController = {
           // result가 false면 없는 이메일 === 새로 추가되는 참석자
           isAdded = true;
 
-          const createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+          const createdAt = moment().format('YYYY.MM.DD HH:mm:ss');
 
           const filter = {
             _id: meetingId
@@ -403,7 +403,7 @@ const qrcodeController = {
       lateLimit_min = "0" + lateLimit_min.toString();
     }
 
-    let createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+    let createdAt = moment().format('YYYY.MM.DD HH:mm:ss');
     const end = date.concat(" ", endTime + ":00");
     const late = date.concat(" ", lateLimit_hour, ":", lateLimit_min, ":00");
 
@@ -442,7 +442,7 @@ const qrcodeController = {
     }
 
     const end = meetingInfo.date + " " + meetingInfo.endTime + ":00"
-    const now = moment().format('YYYY-MM-DD HH:mm:ss');
+    const now = moment().format('YYYY.MM.DD HH:mm:ss');
 
     let present = await meetingInfo.user.filter((data) => data.attendance >= 0);
     present.sort((a, b) => {
@@ -469,11 +469,17 @@ const qrcodeController = {
         }));
       }
     }
-    
 
-    if (userId === "4"){
-      return res.status(202).send(util.success(201, "참석자 정보 4명만 불러오기 성공", {
-        "present": present.slice(0,4)
+    // 참석자 4명 이하로 받아오기
+    if (userId === "4") {
+      let limit = 0;
+      if (present.length < 4) {
+        limit = present.length;
+      } else {
+        limit = 4;
+      }
+      return res.status(202).send(util.success(202, "참석자 정보 4명만 불러오기 성공", {
+        "present": present.slice(0, limit)
       }));
     }
 
@@ -494,30 +500,66 @@ const qrcodeController = {
       }
       const meetings = groupInfo.meetings;
 
-      let attendance = [0, 0, 0];
+      //let attendance = [0, 0, 0];
       const email = userInfo.email;
 
       // 병렬 처리(iterator)를 위해 forEach 대신 for ... of 사용
-      for (const mId of meetings) {
-        const preMeetingInfo = await meetingModel.findById({
-          _id: mId
-        }, {
-          _id: 0,
-          user: 1
-        });
-        const preUserInfo = await preMeetingInfo.user.find(element => element.email === email);
-        if (preUserInfo === null || preUserInfo === undefined) {
-          //continue
-        } else {
-          attendance[preUserInfo.attendance + 1] += 1
-        }
-      }
+      // for (const mId of meetings) {
+      //   const preMeetingInfo = await meetingModel.findById({
+      //     _id: mId
+      //   }, {
+      //     _id: 0,
+      //     user: 1
+      //   });
+      //   const preUserInfo = await preMeetingInfo.user.find(element => element.email === email);
+      //   if (preUserInfo === null || preUserInfo === undefined) {
+      //     //continue
+      //   } else {
+      //     attendance[preUserInfo.attendance + 1] += 1
+      //   }
+      // }
+
+      let attendance = [0, 0, 0];
+      const attendanceList = await qrcodeController.loopMeetingList(meetings, email);
+      attendanceList.attendance.forEach((state) => {
+        attendance[state +1] += 1;
+      });
+
       await res.status(200).send(util.success(200, "참석자 불러오기 성공", {
         userInfo,
         attendance
       }));
     }
   },
+
+  /**
+   * 특정 참석자 정보 받아오기
+   */
+  loopMeetingList : async (meetings, email) => {
+    const resultPromise = meetings.map(async (mId) => {
+      const preMeetingInfo = await meetingModel.findById({
+        _id: mId
+      }, {
+        _id: 0,
+        user: 1
+      });
+      const preUserInfo = await preMeetingInfo.user.find(element => element.email === email);
+      if (preUserInfo === null || preUserInfo === undefined) {
+        //continue
+      } else {
+        let item = preUserInfo.attendance;
+        return {
+          type : 'attendance',
+          item
+        }
+      }
+    });
+    const resolvedResult = await Promise.all(resultPromise);
+    return ({
+      attendance: resolvedResult.filter((item) => item.type === 'attendance').map((item) => item.item)
+    });
+  },
+
 
   /**
    * 사용자 추가
