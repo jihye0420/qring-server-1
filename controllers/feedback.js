@@ -134,32 +134,22 @@ module.exports = {
     },
     getResult: async (req, res) => {
         //0이 단답형, 1이 객관식, 2는 평점
-        const groupId = req.params.groupId;
-        const round = req.params.round;
+        const meetingId = req.params.meetingId;
 
-        intRound = parseInt(round);
-
-        if (!groupId || !intRound) {
-            res.status(400).send(util.fail(400, "groupId나 round param이 없습니다."));
-        }
-
-        const group = await GroupModel.findOne({
-            _id: groupId
-        }, {
-            _id: 0,
-            meetings: 1
-        });
-
-        if (group.meetings === undefined || !group.meetings) {
-            res.status(400).send(util.fail(400, "해당 groupId에 해당하는 meeting이 없습니다."));
+        if (!meetingId) {
+            res.status(400).send(util.fail(400, "meetingId param이 없습니다."));
         }
 
         const meeting = await MeetingModel.findOne({
-            _id: group.meetings[intRound - 1]._id
+            _id: meetingId
         }, {
             _id: 0,
             feedBack: 1
         })
+
+        if (!meeting) {
+            res.status(400).send(util.fail(400, "meeting ID를 찾을 수 없습니다."));
+        }
 
         res.status(200).send(util.success(200, "피드백 결과 목록 완료", meeting));
 
