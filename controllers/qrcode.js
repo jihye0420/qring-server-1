@@ -240,10 +240,14 @@ const qrcodeController = {
             $push: update
           });
 
-          if (meetingInfo.user.length >= meetingInfo.headCount){
-            await meetingModel.findByIdAndUpdate({_id: meetingId}, {$set : {
-              headCount : meetingInfo.user.length+1
-            }})
+          if (meetingInfo.user.length >= meetingInfo.headCount) {
+            await meetingModel.findByIdAndUpdate({
+              _id: meetingId
+            }, {
+              $set: {
+                headCount: meetingInfo.user.length + 1
+              }
+            })
           }
           res.status(200).send(util.success(200, "제출에 성공하였습니다."));
         }
@@ -321,10 +325,14 @@ const qrcodeController = {
             $push: update
           });
 
-          if (meetingInfo.user.length >= meetingInfo.headCount){
-            await meetingModel.findByIdAndUpdate({_id: meetingId}, {$set : {
-              headCount : meetingInfo.user.length+1
-            }})
+          if (meetingInfo.user.length >= meetingInfo.headCount) {
+            await meetingModel.findByIdAndUpdate({
+              _id: meetingId
+            }, {
+              $set: {
+                headCount: meetingInfo.user.length + 1
+              }
+            })
           }
           res.status(200).send(util.success(200, "제출에 성공하였습니다."));
         }
@@ -425,7 +433,7 @@ const qrcodeController = {
       _id: 0,
       user: 1,
       date: 1,
-      startTime: 1, 
+      startTime: 1,
       endTime: 1
     });
 
@@ -433,23 +441,40 @@ const qrcodeController = {
       return res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
     }
 
+    const end = meetingInfo.date + " " + meetingInfo.endTime + ":00"
+    const now = moment().format('YYYY-MM-DD HH:mm:ss');
+
+    let present = await meetingInfo.user.filter((data) => data.attendance >= 0);
+    present.sort((a, b) => {
+      return a.createdAt < b.createdAt ? 1 : -1;
+    });
+
     // -1일 땐 전체 참석자 정보 받아오기
     if (userId === "-1") {
-      const end = meetingInfo.date + " " + meetingInfo.endTime + ":00"
-      const now = moment().format('YYYY-MM-DD HH:mm:ss');
-
-      let present = meetingInfo.user.filter((data) => data.attendance >= 0);
       let absent = [];
 
       // 모임이 진행 중일 때 : 결석자는 제외하고 보여주기
-      if (now < end){
-        return res.status(200).send(util.success(200, "모임 진행 중 전체 참석자 정보 불러오기 성공", {"present" : present, "absent" : absent}));
+      if (now < end) {
+        return res.status(200).send(util.success(200, "모임 진행 중 전체 참석자 정보 불러오기 성공", {
+          "present": present,
+          "absent": absent
+        }));
       }
       // 모임이 끝난 후 : 결석자를 포함하여 보여주기
-      else{
-        absent = meetingInfo.user.filter((data) => data.attendance < 0)
-        return res.status(201).send(util.success(201, "모임이 끝난 후 전체 참석자 정보 불러오기 성공", {"present" : present, "absent" : absent}));
+      else {
+        absent = meetingInfo.user.filter((data) => data.attendance < 0);
+        return res.status(201).send(util.success(201, "모임이 끝난 후 전체 참석자 정보 불러오기 성공", {
+          "present": present,
+          "absent": absent
+        }));
       }
+    }
+    
+
+    if (userId === "4"){
+      return res.status(202).send(util.success(201, "참석자 정보 4명만 불러오기 성공", {
+        "present": present.slice(0,4)
+      }));
     }
 
     // 특정 참석자 정보 받아오기
@@ -464,7 +489,7 @@ const qrcodeController = {
         _id: 0,
         meetings: 1
       });
-      if (groupInfo === undefined || groupInfo === null){
+      if (groupInfo === undefined || groupInfo === null) {
         return res.status(400).send(util.fail(402, "해당하는 groupId가 없습니다."));
       }
       const meetings = groupInfo.meetings;
@@ -474,15 +499,23 @@ const qrcodeController = {
 
       // 병렬 처리(iterator)를 위해 forEach 대신 for ... of 사용
       for (const mId of meetings) {
-        const preMeetingInfo = await meetingModel.findById({_id : mId}, {_id: 0, user:1});
+        const preMeetingInfo = await meetingModel.findById({
+          _id: mId
+        }, {
+          _id: 0,
+          user: 1
+        });
         const preUserInfo = await preMeetingInfo.user.find(element => element.email === email);
-        if (preUserInfo === null || preUserInfo === undefined){
+        if (preUserInfo === null || preUserInfo === undefined) {
           //continue
         } else {
           attendance[preUserInfo.attendance + 1] += 1
         }
       }
-      await res.status(200).send(util.success(200, "참석자 불러오기 성공", {userInfo, attendance}));
+      await res.status(200).send(util.success(200, "참석자 불러오기 성공", {
+        userInfo,
+        attendance
+      }));
     }
   },
 
@@ -509,7 +542,7 @@ const qrcodeController = {
       user: 1
     });
 
-    if (result === null || result === undefined){
+    if (result === null || result === undefined) {
       res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
     }
 
