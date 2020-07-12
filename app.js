@@ -18,6 +18,19 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.io = require('socket.io')();
+
+app.io.on('connection', (socket) => {
+  socket.on('init', (data) => {
+    console.log("시작");
+  });
+});
+
+app.use((req, res, next) => {
+  req.io = app.io;
+  next();
+});
+
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
