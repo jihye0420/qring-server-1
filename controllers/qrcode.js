@@ -177,6 +177,7 @@ const qrcodeController = {
       startTime: 1,
       endTime: 1,
       late: 1,
+      headCount: 1,
       user: 1,
     });
 
@@ -238,6 +239,13 @@ const qrcodeController = {
           await meetingModel.findOneAndUpdate(filter, {
             $push: update
           });
+
+          if (meetingInfo.user.length >= meetingInfo.headCount){
+            await meetingModel.findByIdAndUpdate({_id: meetingId}, {$set : {
+              headCount : meetingInfo.user.length+1
+            }})
+          }
+          res.status(200).send(util.success(200, "제출에 성공하였습니다."));
         }
       } else { //------이어서 만들기 또는 2회차 이상인 경우-------//
         console.log("이어서 만들기");
@@ -278,11 +286,11 @@ const qrcodeController = {
               await meetingModel.findOneAndUpdate(filter, {
                 $set: update
               });
+              res.status(200).send(util.success(200, "제출에 성공하였습니다."));
             } else {
               res.status(400).send(util.success(400, "이미 제출하셨습니다."));
               return;
             }
-
           }
           // 이번 회차에서 새로 추가된 참석자인 경우에는 이메일 중복 제출을 방지 === isAdded가 true인 경우
           else {
@@ -309,13 +317,25 @@ const qrcodeController = {
               createdAt
             }
           };
-          await meetingModel.findOneAndUpdate(filter, {
+          await meetingModel.findByIdAndUpdate(filter, {
             $push: update
           });
+
+          if (meetingInfo.user.length >= meetingInfo.headCount){
+            await meetingModel.findByIdAndUpdate({_id: meetingId}, {$set : {
+              headCount : meetingInfo.user.length+1
+            }})
+          }
+          res.status(200).send(util.success(200, "제출에 성공하였습니다."));
         }
       }
     }
-    res.status(200).send(util.success(200, "제출에 성공하였습니다."));
+    // if (meetingInfo.user.length >= meetingInfo.headCount){
+    //   await meetingModel.findByIdAndUpdate({_id: meetingId}, {$set : {
+    //     headCount : meetingInfo.user.length+1
+    //   }})
+    // }
+    // res.status(200).send(util.success(200, "제출에 성공하였습니다."));
   },
 
   /**
@@ -388,7 +408,6 @@ const qrcodeController = {
     }
     return 1;
   },
-
 
   /**
    * 전체 참석자 정보 받아오기
