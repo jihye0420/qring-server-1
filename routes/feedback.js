@@ -14,7 +14,7 @@ router.get('/question/:meetingId', auth.checkToken, feedbackController.readAll);
 router.post('/result/:meetingId', auth.checkToken, feedbackController.postResult);
 
 // 피드백 결과 목록
-router.get('/result/:groupId/:round', auth.checkToken, feedbackController.getResult);
+router.get('/result/:meetingId', auth.checkToken, feedbackController.getResult);
 
 // 단답형만 결과 목록 더 보여야함
 
