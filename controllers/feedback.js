@@ -122,7 +122,7 @@ module.exports = {
             qrImg: meeting.qrImg
         }
 
-        res.status(200).send(util.success(200, "피드백 결과 목록 완료", data));
+        res.status(200).send(util.success(200, "피드백 결과 제출 완료", data));
     },
     getResult: async (req, res) => {
         //0이 단답형, 1이 객관식, 2는 평점
@@ -202,24 +202,36 @@ module.exports = {
             feedBack: 1
         });
 
-        var feedBackArray = feedbacks.feedBack;
+        //결과 배열
         var resultArray = [];
+        // 날짜 제출 배열
+        var dateArray = [];
 
-        for (var i in feedBackArray) {
-            console.log(feedbackId)
-            if (feedBackArray[i]._id == feedbackId) {
-                if (feedBackArray[i].form == 0) {
-                    resultArray = feedBackArray[i].result;
-                } else {
-                    res.status(400).send(util.fail(400, "해당 feedbackId가 단답형이 아닙니다."));
-                }
+        let feedBackArray = [];
+        //검색해서 찾으면 true
+        const flag = feedbacks.feedBack.some((element) => {
+            feedBackArray = element;
+            return element._id.toString() === feedbackId;
+        });
+
+        if (flag) {
+            for (var item of feedBackArray.result) {
+                resultArray.unshift(item);
+            }
+            for (var item of feedBackArray.submitDate) {
+                dateArray.unshift(item);
             }
         }
 
+        let response = [];
+        for (var idx in resultArray) {
+            response.push({
+                "result": resultArray[idx],
+                "data": dateArray[idx]
+            });
+        }
 
-        res.status(200).send(util.success(200, "단답형 더보기 완료", resultArray));
-
-
+        res.status(200).send(util.success(200, "단답형 더보기 완료", response));
     }
 
 
