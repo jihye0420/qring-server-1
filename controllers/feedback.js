@@ -161,6 +161,7 @@ module.exports = {
     },
 
     submitResult: async (req, res) => {
+        //날짜를 받아와서 db에 넣어주기
 
     },
 
