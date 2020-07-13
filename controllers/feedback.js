@@ -20,8 +20,8 @@ module.exports = {
             _id: meetingId
         });
 
-        if (!meeting || meeting === undefined) {
-            res.status(400).send(util.fail(400, "해당 meetingId를 DB에서 찾을 수 없습니다."));
+        if (!meeting) {
+            res.status(400).send(util.fail(400, "해당 meetingId에 해당하는 meeting이 없습니다."));
         }
 
         const {
@@ -55,7 +55,6 @@ module.exports = {
         await meeting.save();
 
         res.status(200).send(util.success(200, "피드백 질문 추가 완료"));
-
     },
 
     readAll: async (req, res) => {
@@ -78,7 +77,6 @@ module.exports = {
         }
 
         res.status(200).send(util.success(200, "피드백 질문 목록 완료", meeting.feedBack));
-
     },
 
 
