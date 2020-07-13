@@ -4,7 +4,11 @@ var router = express.Router();
 /* GET home page. */
 
 router.get("/", function (req, res, next) {
-  res.json({ state: "success" });
+  res.render("index");
+});
+
+router.get("/checkout", function (req, res, next) {
+  res.render("checkresult");
 });
 
 router.use("/user", require("./user"));

@@ -22,7 +22,7 @@ mongoose.connect(
   "mongodb+srv://modak:" +
     userInfo.pw +
     "@modoc-mqsht.mongodb.net/qring?retryWrites=true&w=majority",
-  { useUnifiedTopology: true, useNewUrlParser: true }
+  { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false }
 );
 
 var port = normalizePort(process.env.PORT || "3000");
@@ -33,6 +33,7 @@ app.set("port", port);
  */
 
 var server = http.createServer(app);
+app.io.attach(server);
 
 /**
  * Listen on provided port, on all network interfaces.
