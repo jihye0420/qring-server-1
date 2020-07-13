@@ -10,7 +10,6 @@ const qrcodeController = require('../controllers/qrcode');
 
 async function listLoop(allGroup) {
     const today = moment().format('YYYY.MM.DD');
-    const temp = {};
     const resultPromises = allGroup.map(async (groupid, index,array )=> {
         const group = await groupModel.findById({
             _id : groupid
@@ -57,6 +56,51 @@ async function listLoop(allGroup) {
         end: resolvedResult.filter((item) => item.type === 'end').map((item) => item.Item),
         proceed: resolvedResult.filter((item) => item.type === 'proceed').map((item) => item.Item)
     })
+}
+async function proceedMeeting(adminEmail) {
+    const admin = await adminModel.findOne({
+        email: adminEmail
+    })
+    const allGroup = admin.groups;
+
+
+    const now = moment().format("YYYY.MM.DD HH:mm:ss");
+    var lastMeeting = null;
+    var groupIdData = null;
+    let lastMeetingStartTime;
+    
+    for (let groupId of allGroup){
+        const group = await groupModel.findById({
+            _id : groupId
+        })
+        for (let meetingId of group.meetings){
+            const meeting = await meetingModel.findById({
+                _id : meetingId
+            })
+            const start = meeting.date + " " + meeting.startTime + ":00";
+            var attendeStart = new Date(start);
+            attendeStart.setHours(attendeStart.getHours()-1);
+            attendeStart = moment(attendeStart).format('YYYY.MM.DD HH:mm:ss');
+
+            const end = meeting.date + " " + meeting.endTime + ":00";
+            var feedBackEnd = new Date(end);
+            feedBackEnd.setHours(feedBackEnd.getHours()+2);
+            feedBackEnd = moment(feedBackEnd).format('YYYY.MM.DD HH:mm:ss');
+
+            //종료되지 않은 모임
+            if (now < feedBackEnd ){
+                //초기값이거나 시작시간이 더 빠른것
+                if (lastMeeting === null || attendeStart < lastMeetingStartTime){
+                    lastMeeting = meeting;
+                    lastMeetingStartTime = attendeStart; 
+
+                }
+            }
+        }
+    }
+    return {
+        "groupId" :
+    }
 }
 module.exports = {
     // 첫 모임 생성 & 피드백
@@ -529,6 +573,7 @@ module.exports = {
                 group.meetings = newMeetings;
                 await group.save();
             } else { //group에 meeting이 1개 meeting, group, admin에 groupid 삭제
+                console.log(admin.groups);
                 const newGroups =[];
                 for (let Item of admin.groups) {
                     if (Item != groupId) {
@@ -594,18 +639,8 @@ module.exports = {
      * 홈 화면에 현재 진행중인 모임 socket
      */
     ProceedMeeting: async(req, res)=>{
-        // const meeting = await meetingModel.findById({
-        //     _id : req.params.meetingid
-        // })
-        // const startTime = 
-        // const start = meeting.date + " " + meeting.startTime + ":00";
-        // const end = meeting.date + " " + meeting.endTime + ":00";
-        // const now = moment().format("YYYY.MM.DD HH:mm:ss");
-
-        // //모임 시작 전
-        // if (now < start) {
-
-        // }
+        const lastMeeting = await proceedMeeting(req.email); 
+        res.status(200).send(util.success(200,"가까운 모임 조회", lastMeeting));
     },
     /**
      * groupid에 meetings에 있는 모든 meeting에 대한 정보 넘겨주기

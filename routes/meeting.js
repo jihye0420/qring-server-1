@@ -32,7 +32,7 @@ router.delete('/:groupid/:meetingid', auth.checkToken, meetingController.deleteM
 router.get('/list', auth.checkToken, meetingController.list);
 
 //현재 진행중인 모임 socket
-router.get('/list/proceed/:meetingid', auth.checkToken,meetingController.ProceedMeeting);
+router.get('/list/proceed', auth.checkToken,meetingController.ProceedMeeting);
 
 //모임 회차 정보 조회 groupId 
 router.get('/list/:groupid', auth.checkToken, meetingController.round);
