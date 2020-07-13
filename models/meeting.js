@@ -69,6 +69,9 @@ const MeetingSchema = new schema({
         },
         result: [{
             type: String
+        }],
+        submitDate: [{
+            type: String
         }]
     }]
 }, {

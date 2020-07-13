@@ -63,13 +63,16 @@ module.exports = {
         // 모든 피드백 질문들 가져옴
         const meeting = await MeetingModel.findOne({
             _id: meetingId
+        }, {
+            _id: 0,
+            feedBack: 1
         });
 
         if (meeting === undefined || !meeting) {
             res.status(400).send(util.fail(400, "해당 meetingId에 해당하는 meeting이 없습니다."));
         }
 
-        res.status(200).send(util.success(200, "피드백 질문 목록 완료", meeting));
+        res.status(200).send(util.success(200, "피드백 질문 목록 완료", meeting.feedBack));
 
     },
 
