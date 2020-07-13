@@ -61,7 +61,7 @@ const MeetingSchema = new schema({
             type: String,
         },
         choice: [{
-            type: String,
+            type: String
         }],
         //0이 단답형, 1이 객관식, 2는 평점
         form: {
