@@ -498,11 +498,11 @@ const qrcodeController = {
         absent = meetingInfo.user.filter((data) => data.attendance < 0);
         //참석자가 headCount수보다 작은 경우 익명의 가데이터 보내주기
         const alluser = present.length + absent.length;
-        console.log (present.length,"O",absent.length,"a",alluser);
         if (alluser< meetingInfo.headCount) {
           for (let i=1; i<= meetingInfo.headCount - alluser; i++){
             const name = "결석한 회원 " + i;
             absent.push({
+              _id : null,
               name: name,
               email: null,
               abroad: false,
