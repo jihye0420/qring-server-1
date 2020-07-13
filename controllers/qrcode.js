@@ -404,7 +404,7 @@ const qrcodeController = {
     }
 
     // 참석자 4명 이하로 받아오기
-    if (userId = "4") {
+    if (userId === "4") {
       let limit = 0;
       if (present.length < 4) {
         limit = present.length;
@@ -593,16 +593,24 @@ const qrcodeController = {
       "user._id": userId,
     };
 
-    const meetingInfo = meetingModel.findById(filter, {
+    const meetingInfo = await meetingModel.findById(filter, {
       _id: 0,
       user: 1
     });
     let originAttendance = -100;
-    const flag = meetingInfo.user.some((element) => {
-      originAttendance = element.attendance;
-      return !!~element._id.search(userId);
+    // const flag = meetingInfo.user.some((element) => {
+    //   originAttendance = element.attendance;
+    //   return !!~element._id.search(_id);
+    // });
+
+    result.user.some((element) => {
+      if (element._id.toString() === userId) {
+        originAttendance = element.attendance;
+        return true;
+      }
     });
 
+    let result = {}
     // 유저가 있고, 그 유저의 출결 상태가 결석이 아닐 때만 변경 가능.
     if (flag) {
       if (originAttendance > -1) {
@@ -610,7 +618,7 @@ const qrcodeController = {
           "user.$.name": name,
           "user.$.attendance": attendance,
         };
-        const result = await meetingModel.findOneAndUpdate(
+        await meetingModel.findOneAndUpdate(
           filter, {
             $set: update,
           }, {
