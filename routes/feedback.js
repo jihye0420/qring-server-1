@@ -19,7 +19,7 @@ router.get('/result/:meetingId', auth.checkToken, feedbackController.getResult);
 // 모임원이 결과를 제출했을 때, 결과를 받는 url이 필요
 router.post("/submission/:meetingId", auth.checkToken, feedbackController.submitResult);
 
-// 단답형만 결과 목록 더 보여야함
+// 단답형 더보기 뷰
 router.get('/result/more/:feedbackId', auth.checkToken, feedbackController.shortAnswer);
 
 module.exports = router;

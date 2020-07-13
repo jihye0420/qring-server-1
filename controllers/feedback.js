@@ -140,23 +140,59 @@ module.exports = {
         })
 
         if (!meeting) {
-            res.status(400).send(util.fail(400, "meeting ID를 찾을 수 없습니다."));
+            res.status(400).send(util.fail(400, "meeting ID를 DB에서 찾을 수 없습니다."));
         }
 
-        res.status(200).send(util.success(200, "피드백 결과 목록 완료", meeting));
+        var feedbackArray = [];
+        for (var item of meeting.feedBack) {
+            feedbackArray.push(item);
+        }
+
+        var latestArray = [];
+
+        // 제일 답한 갯수가 많은 순서대로 choice가 들어있는 배열
+        var resultArray = [];
+        // 제일 답한 갯수가 많은 그 갯수가 들어있는 배열
+        var countArray = [];
+
+        // 폼이 0(단답형) 일때, 
+        for (var i in feedbackArray) {
+            if (feedbackArray[i].form == 0) {
+                for (var item of feedbackArray[i].result) {
+                    latestArray.unshift(item);
+                }
+
+            }
+            // 폼이 1(객관식) 일때,
+            // 보기와 사용자들이 해당 보기와 보기에 답한 갯수를 보내줘야 함 
+            else if (feedbackArray[i].form == 1) {
+                for (var item of feedbackArray[i].result) {
+
+                }
 
 
-        // 총 피드백 현황(피드백 전체 갯수도 보내야함), 타이틀, 내용 리스트도 보내야함
+                for (var idx in resultArray) {
+                    response.push({
+                        "choice": resultArray[idx],
+                        "count": countArray[idx]
+                    });
+                }
+            }
+            if (feedbackArray[i].form == 2) {
 
-        // 폼이 0(단답형) 일때, 배열 데이터들을 보내면 됨
+            }
+        }
 
-        // 폼이 1(객관식) 일때,
-        // color와 보기와 사용자들이 해당 보기와 보기에 답한 갯수를 보내줘야 함
+
+
 
         // 폼이 2(평점형) 일때, 평점 평균내고, 5점 몇개 4점 몇개 갯수 보내줘야 함
 
 
         // 이 전체 결과를 result배열에 정돈된 데이터로 배열 추가하고 그 배열 리스트 보내기
+
+
+        res.status(200).send(util.success(200, "피드백 결과 목록 완료", meeting));
 
     },
 
