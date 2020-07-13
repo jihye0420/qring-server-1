@@ -510,11 +510,15 @@ module.exports = {
     deleteMeeting: async (req, res) => {
         const groupId = req.params.groupid;
         const meetingId = req.params.meetingid;
+        const admin = await adminModel.findOne({
+            email: req.email
+        })
         try {
             const group = await groupModel.findOne({
                 _id: groupId
             });
 
+            //group에 meeting이 1개 이상인 경유 -> meeting만 삭제
             if (group.meetings.length > 1) {
                 const newMeetings = [];
                 for (let Item of group.meetings) {
@@ -524,7 +528,15 @@ module.exports = {
                 }
                 group.meetings = newMeetings;
                 await group.save();
-            } else {
+            } else { //group에 meeting이 1개 meeting, group, admin에 groupid 삭제
+                const newGroups =[];
+                for (let Item of admin.groups) {
+                    if (Item != group._id) {
+                        newGroups.push(Item);
+                    }
+                }
+                admin.groups = newGroups;
+                await admin.save();
                 await groupModel.deleteOne({
                     _id: groupId
                 })
@@ -577,7 +589,23 @@ module.exports = {
             return res.status(400).send(util.success(400, 'meeting 데이터 오류',null));
         }
     },
+    /**
+     * 홈 화면에 현재 진행중인 모임 socket
+     */
+    ProceedMeeting: async(req, res)=>{
+        // const meeting = await meetingModel.findById({
+        //     _id : req.params.meetingid
+        // })
+        // const startTime = 
+        // const start = meeting.date + " " + meeting.startTime + ":00";
+        // const end = meeting.date + " " + meeting.endTime + ":00";
+        // const now = moment().format("YYYY.MM.DD HH:mm:ss");
 
+        // //모임 시작 전
+        // if (now < start) {
+
+        // }
+    },
     /**
      * groupid에 meetings에 있는 모든 meeting에 대한 정보 넘겨주기
      */
