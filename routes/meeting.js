@@ -10,6 +10,9 @@ router.post('/', auth.checkToken, upload.single('image'), meetingController.crea
 //이어서 모임 생성 groupId
 router.post('/:groupid', auth.checkToken, upload.single('image'), meetingController.createNewMeeting);
 
+//이어서 모임 생성 groupId
+router.post('/imageurl/:groupid', auth.checkToken, meetingController.createNewMeetingImageUrl);
+
 //모임 시간 확인
 router.get('/time', auth.checkToken, meetingController.time);
 
