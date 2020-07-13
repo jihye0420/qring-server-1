@@ -463,6 +463,7 @@ const qrcodeController = {
       date: 1,
       startTime: 1,
       endTime: 1,
+      headCount : 1
     });
 
     if (meetingInfo === undefined || meetingInfo === null) {
@@ -495,6 +496,23 @@ const qrcodeController = {
       // 모임이 끝난 후 : 결석자를 포함하여 보여주기
       else {
         absent = meetingInfo.user.filter((data) => data.attendance < 0);
+        //참석자가 headCount수보다 작은 경우 익명의 가데이터 보내주기
+        const alluser = present.length + absent.length;
+        if (alluser< meetingInfo.headCount) {
+          for (let i=1; i<= meetingInfo.headCount - alluser; i++){
+            const name = "결석한 회원 " + i;
+            absent.push({
+              _id : null,
+              name: name,
+              email: null,
+              abroad: false,
+              health: false,
+              attendance: -1,
+              isAdded: false,
+              createdAt: null
+            })
+          }
+        }
         return res.status(201).send(
           util.success(201, "모임이 끝난 후 전체 참석자 정보 불러오기 성공", {
             present: present,
