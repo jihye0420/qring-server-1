@@ -145,7 +145,7 @@ const qrcodeController = {
   },
 
   /**
-   * 웹 출석 폼 제출
+   * 웹 출석 폼 제출 : 이전 미팅 참석자들 참조
    */
   submitForm: async (req, res) => {
     const groupId = req.params.groupId;
@@ -323,7 +323,7 @@ const qrcodeController = {
   },
 
   /**
-   * 전체 참석자 정보 받아오기 : 이전 미팅 참석자들 참조
+   * 전체 참석자 정보 받아오기
    */
   readUserInfo: async (req, res) => {
     const groupId = req.params.groupId;
