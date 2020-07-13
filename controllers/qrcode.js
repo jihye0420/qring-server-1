@@ -582,7 +582,7 @@ const qrcodeController = {
       attendance
     } = req.body;
 
-    if (!name || !attendance) {
+    if (!name) {
       return res
         .status(400)
         .send(util.fail(400, "필요한 파라미터가 없습니다."));
@@ -597,53 +597,54 @@ const qrcodeController = {
       _id: 0,
       user: 1
     });
-    let originAttendance = -100;
-    // const flag = meetingInfo.user.some((element) => {
-    //   originAttendance = element.attendance;
-    //   return !!~element._id.search(_id);
-    // });
 
-    result.user.some((element) => {
-      if (element._id.toString() === userId) {
-        originAttendance = element.attendance;
-        return true;
-      }
+    let originAttendance = -100;
+    const flag = meetingInfo.user.some((element) => {
+      originAttendance = element.attendance;
+      return !!~(element._id.toString()).search(userId);
     });
 
     let result = {}
-    // 유저가 있고, 그 유저의 출결 상태가 결석이 아닐 때만 변경 가능.
+    // 유저가 있고, 그 유저의 출결 상태가 결석이 아닐 때만 출결을 변경 가능.
     if (flag) {
+      let update = {}
       if (originAttendance > -1) {
-        let update = {
+        update = {
           "user.$.name": name,
           "user.$.attendance": attendance,
         };
-        await meetingModel.findOneAndUpdate(
-          filter, {
-            $set: update,
-          }, {
-            new: true,
-          }
-        );
+      } else {
+        update = {
+          "user.$.name": name
+        };
       }
-
-      if (result === null) {
-        return res
-          .status(401)
-          .send(util.fail(401, "해당하는 meetingId가 없습니다."));
-      }
-
-      let data = {};
-      result.user.some((element) => {
-        if (element._id.toString() === userId) {
-          data = element;
-          return true;
+      const data = await meetingModel.findOneAndUpdate(
+        filter, {
+          $set: update,
+        }, {
+          new: true,
         }
-      });
-      res
-        .status(200)
-        .send(util.success(200, "참석자 정보 수정에 성공했습니다.", data));
+      );
+      res.status(200).send(util.success(200, "참석자 정보 수정에 성공했습니다.", data));
     }
+
+    if (result === null) {
+      return res
+        .status(401)
+        .send(util.fail(401, "해당하는 meetingId가 없습니다."));
+    }
+
+    //   let data = {};
+    //   result.user.some((element) => {
+    //     if (element._id.toString() === userId) {
+    //       data = element;
+    //       return true;
+    //     }
+    //   });
+    //   res
+    //     .status(200)
+    //     .send(util.success(200, "참석자 정보 수정에 성공했습니다.", data));
+    // }
   },
 
   /**

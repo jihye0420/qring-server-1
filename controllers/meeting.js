@@ -531,12 +531,13 @@ module.exports = {
             } else { //group에 meeting이 1개 meeting, group, admin에 groupid 삭제
                 const newGroups =[];
                 for (let Item of admin.groups) {
-                    if (Item != group._id) {
+                    if (Item != groupId) {
                         newGroups.push(Item);
                     }
                 }
                 admin.groups = newGroups;
                 await admin.save();
+                console.log(admin.groups);
                 await groupModel.deleteOne({
                     _id: groupId
                 })
