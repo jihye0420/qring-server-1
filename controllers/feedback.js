@@ -10,7 +10,6 @@ module.exports = {
     //피드백 질문 생성
     create: async (req, res) => {
         const meetingId = req.params.meetingId;
-        console.log(meetingId);
 
         if (!meetingId) {
             res.status(400).send(util.fail(400, "meetingId가 없습니다."));
@@ -19,9 +18,6 @@ module.exports = {
         // 모든 피드백 정보들 가져옴
         const meeting = await MeetingModel.findOne({
             _id: meetingId
-        }, {
-            _id: 0,
-            feedBack: 1
         });
 
         if (!meeting || meeting === undefined) {
@@ -39,7 +35,6 @@ module.exports = {
 
         var array = [];
 
-        //list는 feedback 배열
         for (var item of list) {
             array.push(item);
         }
@@ -47,21 +42,20 @@ module.exports = {
         // 객관식일때는, 객관식 선택지 필요
         for (var idx in array) {
             if (array[idx].form == 1) {
-                if (!array[idx].choice) {
+                if (array[idx].choice === undefined) {
                     res.status(400).send(util.fail(400, "객관식 선택지 누락"));
                     return;
                 }
             }
         }
 
-        console.log(array, "--------------------------");
         meeting.feedBack = array;
-        console.log(meeting.feedBack);
 
         // 데이터베이스에 저장
         await meeting.save();
 
         res.status(200).send(util.success(200, "피드백 질문 추가 완료"));
+
     },
 
     readAll: async (req, res) => {
