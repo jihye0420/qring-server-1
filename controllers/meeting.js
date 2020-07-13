@@ -150,6 +150,85 @@ module.exports = {
     },
 
     /**
+     * 이어서 모임 생성 이미지는 URL
+     */
+    createNewMeetingImageUrl: async (req, res) => {
+        const adminEmail = req.email;
+        const groupId = req.params.groupid;
+        const {
+            image,
+            name,
+            date,
+            startTime,
+            endTime,
+            late,
+            headCount,
+            feedBack
+        } = req.body;
+
+        // 피드백 파싱
+        let isFeedBack = false;
+        if (feedBack) {
+            isFeedBack = true;
+            var parsedFeedbacks = await feedBack.map((fb) => {
+                let parsedFb;
+                if (typeof fb === 'string') {
+                    parsedFb = JSON.parse(fb);
+                }
+                return parsedFb;
+            })
+        }
+
+        if (!name || !date || !startTime || !endTime || !late || !headCount) {
+            console.log(name,date, startTime,endTime, headCount, late);
+            return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
+        }
+
+        //데이터 대입
+        var newMeeting = new meetingModel();
+        newMeeting.image = req.body.image
+        newMeeting.name = req.body.name
+        newMeeting.date = req.body.date
+        newMeeting.startTime = req.body.startTime
+        newMeeting.endTime = req.body.endTime
+        newMeeting.late = req.body.late
+        newMeeting.headCount = req.body.headCount
+        if (feedBack) {
+            newMeeting.feedBack = parsedFeedbacks
+        }
+        
+
+        let fin_meeting = await newMeeting.save();
+
+        // qr코드 생성
+        newMeeting.qrImg = await qrcodeController.makeQrcode(adminEmail, groupId, fin_meeting._id);
+
+        try {
+            const group = await groupModel.findOne({
+                _id: groupId
+            })
+            group.meetings.push(fin_meeting._id);
+            await group.save();
+
+            const data = {
+                "groupid": group._id,
+                "name": newMeeting.name,
+                "date": newMeeting.date,
+                "startTime": newMeeting.startTime,
+                "endTime": newMeeting.endTime,
+                "image": newMeeting.image,
+                "qrImg": newMeeting.qrImg,
+                "late": newMeeting.late,
+                "headCount": newMeeting.headCount,
+                "isFeedBack" : isFeedBack
+            }
+            return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
+        } catch (e) {
+            return res.status(402).send(util.fail(402, "해당하는 group이 없습니다."));
+        }
+
+    },
+    /**
      * 이어서 모임 생성
      */
     createNewMeeting: async (req, res) => {
