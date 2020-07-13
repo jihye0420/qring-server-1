@@ -10,6 +10,9 @@ router.post('/', auth.checkToken, upload.single('image'), meetingController.crea
 //이어서 모임 생성 groupId
 router.post('/:groupid', auth.checkToken, upload.single('image'), meetingController.createNewMeeting);
 
+//이어서 모임 생성 groupId (image:"url")
+router.post('/imageurl/:groupid', auth.checkToken, meetingController.createNewMeetingImageUrl);
+
 //모임 시간 확인
 router.get('/time', auth.checkToken, meetingController.time);
 
@@ -18,6 +21,9 @@ router.get('/info/:groupid/:meetingid', auth.checkToken, meetingController.getIn
 
 //모임 정보 수정 meetingId
 router.put('/info/:meetingid', auth.checkToken, upload.single('image'), meetingController.putInfo);
+
+//모임 정보 수정 meetingId (image:"url")
+router.put('/info/imageurl/:meetingid', auth.checkToken, upload.single('image'), meetingController.putInfoImageUrl);
 
 // 모임삭제 meetingId
 router.delete('/:groupid/:meetingid', auth.checkToken, meetingController.deleteMeeting);
