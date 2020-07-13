@@ -454,6 +454,57 @@ module.exports = {
         }
     },
     /**
+     * 모임 편집 기능
+     */
+    putInfoImageUrl: async (req, res) => {
+        const meetingId = req.params.meetingid
+        try {
+            let meeting = await meetingModel.findOne({
+                _id: meetingId
+            })
+
+            const {
+                image,
+                name,
+                date,
+                startTime,
+                endTime,
+                late,
+                headCount,
+            } = req.body;
+
+            if (!name || !date || !startTime || !endTime || !late || !headCount) {
+                return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
+            }
+
+            meeting.image = req.body.image;
+            meeting.name = req.body.name;
+            meeting.date = req.body.date;
+            meeting.startTime = req.body.startTime;
+            meeting.endTime = req.body.endTime;
+            meeting.late = req.body.late;
+            meeting.headCount = req.body.headCount;
+
+
+            const data = {
+                "name": meeting.name,
+                "data": meeting.date,
+                "startTime": meeting.startTime,
+                "endTime": meeting.endTime,
+                "late": meeting.late,
+                "headCount": meeting.headCount,
+                "image": meeting.image,
+                "qrImg": meeting.qrImg
+            }
+
+            await meeting.save();
+
+            return res.status(200).send(util.success(200, '모임 정보 수정 성공', data));
+        } catch (e) {
+            return res.status(402).send(util.fail(402, "해당하는 meeting이 없습니다."));
+        }
+    },
+    /**
      * 모임 삭제
      */
     deleteMeeting: async (req, res) => {
