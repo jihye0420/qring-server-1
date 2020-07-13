@@ -162,6 +162,28 @@ module.exports = {
 
     submitResult: async (req, res) => {
         //날짜를 받아와서 db에 넣어주기
+        const meetingId = req.params.meetingId;
+
+        const {
+            list
+        } = req.body;
+
+        const meeting = await meetingModel.findById({
+            _id: meetingId
+        }, {
+            _id: 0,
+            feedBack: 1
+        });
+
+        //list에 있는 값들을 하나씩 빼서 feedback.result[i]에 각각 push
+        for (var item of list) {
+            meeting.feedBack[i].result.push(item);
+        }
+
+
+        await meeting.save();
+
+        res.status(200).send(util.success(200, "사용자 피드백 제출 완료"));
 
     },
 

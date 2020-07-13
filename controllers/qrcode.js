@@ -150,18 +150,18 @@ const qrcodeController = {
   submitForm: async (req, res) => {
     const groupId = req.params.groupId;
     const meetingId = req.params.meetingId;
+
     const {
-      name,
-      email,
-      abroad,
-      health
+      list
     } = req.body;
 
+    //list에 있는 값을 feedback.result에 순서대로 하나씩 push해야한다.
     const groupInfo = await groupModel.findById({
       _id: groupId,
     }, {
       meetings: 1,
     });
+
     const meetingIdx = groupInfo.meetings.indexOf(meetingId);
     const meetingInfo = await meetingModel.findById({
       _id: meetingId
