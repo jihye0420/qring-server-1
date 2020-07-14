@@ -300,6 +300,13 @@ const userController = {
             .status(200)
             .send(util.success(200, "프로필 불러오기 성공", result));
     },
+
+    /**
+     * 토큰 검사 완료
+     */
+    checkToken: async(req, res) => {
+        res.status(200).send(util.success(200, "토큰 검사 완료"));
+    }
 };
 
 module.exports = userController;

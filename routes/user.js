@@ -33,4 +33,9 @@ router.post("/profile", auth.checkToken, userController.editProfile);
  */
 router.get("/profile", auth.checkToken, userController.readProfile);
 
+/**
+ * 토큰 검사
+ */
+router.get('/token', auth.checkToken, userController.checkToken);
+
 module.exports = router;
