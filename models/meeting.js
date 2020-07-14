@@ -60,14 +60,17 @@ const MeetingSchema = new schema({
         content: {
             type: String,
         },
-        choice: [{
-            type: String,
-        }],
+        choice: {
+            type: Array
+        },
         //0이 단답형, 1이 객관식, 2는 평점
         form: {
             type: Number
         },
         result: [{
+            type: String
+        }],
+        submitDate: [{
             type: String
         }]
     }]
