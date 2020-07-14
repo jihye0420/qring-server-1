@@ -9,22 +9,17 @@ const async = require('pbkdf2/lib/async');
 const qrcodeController = require('../controllers/qrcode');
 
 async function deleteProceeds(admin,meetingId){
-
-    // const resultPromises = admin.proceeds.map(async (meetingItem)=>{
-    //     if (meetingItem.meetingId != meetingId){
-    //         return meetingItem
-    //     }
-    // })
-
-    // const resolvedResult = await Promise.all(resultPromises);
-
-
-    const newProceeds = admin.proceeds.filter((item) => item.meetingId !== meetingId);
+    console.log('deleteproceed')
+    console.log(admin);
+    console.log(admin.proceeds);
+    const newProceeds = admin.proceeds.filter((item) => item.meetingId != meetingId);
     admin.proceeds = newProceeds;
+    console.log(admin.proceeds);
     await admin.save();
 }
 
 async function pushProceeds(admin, newMeeting){
+    console.log('pushproceed')
     const proceed ={
         meetingId : newMeeting._id,
         date : newMeeting.date,
@@ -46,9 +41,6 @@ async function pushProceeds(admin, newMeeting){
     }
     await admin.save();
 }
-
-
-
 
 async function listLoop(allGroup) {
     const today = moment().format('YYYY.MM.DD');
@@ -505,14 +497,13 @@ module.exports = {
      */
     putInfo: async (req, res) => {
         const admin = await adminModel.findOne({
-            email: req.feedBackEndEmail
+            email: req.email
         })
         const meetingId = req.params.meetingid
         try {
             let meeting = await meetingModel.findOne({
                 _id: meetingId
             })
-            console.log(meeting);
 
             const {
                 name,
@@ -534,7 +525,6 @@ module.exports = {
             meeting.late = req.body.late;
             meeting.headCount = req.body.headCount;
 
-            console.log(meeting);
             let image = null;
             // data check - undefined
             if (req.file !== undefined) {
@@ -556,10 +546,10 @@ module.exports = {
                 "image": meeting.image,
                 "qrImg": meeting.qrImg
             }
-
             await meeting.save();
-            // await deleteProceeds(admin, meetingId);
-            // await pushProceeds(admin,meeting);
+
+            await deleteProceeds(admin, meetingId);
+            await pushProceeds(admin,meeting);
             return res.status(200).send(util.success(200, '모임 정보 수정 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 meeting이 없습니다."));
@@ -570,7 +560,7 @@ module.exports = {
      */
     putInfoImageUrl: async (req, res) => {
         const admin = await adminModel.findOne({
-            email: req.mail
+            email: req.email
         })
         const meetingId = req.params.meetingid
         try {
@@ -614,6 +604,8 @@ module.exports = {
 
             await meeting.save();
 
+            await deleteProceeds(admin, meetingId);
+            await pushProceeds(admin,meeting);
             return res.status(200).send(util.success(200, '모임 정보 수정 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 meeting이 없습니다."));
@@ -711,6 +703,7 @@ module.exports = {
      */
     ProceedMeeting: async(req, res)=>{
         const lastMeeting = await proceedMeeting(req.email); 
+        //data에 이미지랑 isFeedBack FeedBackCount
         res.status(200).send(util.success(200,"가까운 모임 조회", lastMeeting));
     },
     /**
