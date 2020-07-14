@@ -79,6 +79,13 @@ module.exports = {
             res.status(400).send(util.fail(400, "해당 meetingId에 해당하는 meeting이 없습니다."));
         }
 
+        var data = {
+            "_id": meeting.feedBack._id,
+            "title": meeting.feedBack.title,
+            "content": meeting.feedBack.content,
+            "form": meeting.feedBack.form
+        }
+
         res.status(200).send(util.success(200, "피드백 질문 목록 완료", meeting.feedBack));
     },
 
@@ -151,10 +158,13 @@ module.exports = {
             feedbackArray.push(item);
         }
 
-        var response = [];
+        let rating = [];
+        let multiChoice = [];
+        let shortAnswer = [];
 
         // 폼이 0(단답형) 일때, // 결과를 받는 배열 -> resultArray에는 단답형일 때 최신순으로 답 7개만 [ , , , ,] push. 
         for (var idx in feedbackArray) {
+
             if (feedbackArray[idx].form == 0) {
                 var resultArray = [];
                 for (var item of feedbackArray[idx].result) {
@@ -162,9 +172,7 @@ module.exports = {
                 }
 
                 resultArray = resultArray.slice(0, 7);
-                response.push({
-                    "shortAnswer": resultArray
-                });
+                shortAnswer.push(resultArray);
 
             }
             // 폼이 1(객관식) 일때,
@@ -181,19 +189,19 @@ module.exports = {
                         // 보기 순서대로, count도 들어감
                         // 질문이 들어가는게 resultArray배열
                         resultArray[i] = feedbackArray[idx].choice[i];
-                        if (feedbackArray[idx].result[i] === "0") {
+                        if (feedbackArray[idx].result[i] === "1") {
                             countArray[0] = ++countArray[0];
-                        } else if (feedbackArray[idx].result[i] === "1") {
-                            countArray[1] = ++countArray[1];
                         } else if (feedbackArray[idx].result[i] === "2") {
-                            countArray[2] = ++countArray[2];
+                            countArray[1] = ++countArray[1];
                         } else if (feedbackArray[idx].result[i] === "3") {
-                            countArray[3] = ++countArray[3];
+                            countArray[2] = ++countArray[2];
                         } else if (feedbackArray[idx].result[i] === "4") {
-                            countArray[4] = ++countArray[4];
+                            countArray[3] = ++countArray[3];
                         } else if (feedbackArray[idx].result[i] === "5") {
-                            countArray[5] = ++countArray[5];
+                            countArray[4] = ++countArray[4];
                         } else if (feedbackArray[idx].result[i] === "6") {
+                            countArray[5] = ++countArray[5];
+                        } else if (feedbackArray[idx].result[i] === "7") {
                             countArray[6] = ++countArray[6];
                         }
                     }
@@ -215,9 +223,7 @@ module.exports = {
                     return Number(b.count) - Number(a.count);
                 })
 
-                response.push({
-                    "multiChoice": [sortData]
-                });
+                multiChoice.push(sortData);
 
 
 
@@ -258,15 +264,17 @@ module.exports = {
                     }
                 }
 
-                response.push({
-                    "rating": countArray
-                });
+                rating.push(countArray);
 
             }
         }
 
         // 이 전체 결과를 result배열에 정돈된 데이터로 배열 추가하고 그 배열 리스트 보내기
-        res.status(200).send(util.success(200, "피드백 결과 목록 완료", response));
+        res.status(200).send(util.success(200, "피드백 결과 목록 완료", {
+            "rating": rating,
+            "multiChoice": multiChoice,
+            "shortAnswer": shortAnswer
+        }));
 
     },
 
