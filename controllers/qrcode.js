@@ -7,9 +7,6 @@ const util = require("../modules/util");
 const meetingModel = require("../models/meeting");
 const groupModel = require("../models/group");
 const moment = require("moment");
-const {
-  group
-} = require("console");
 const meeting = require("../models/meeting");
 
 const s3 = new AWS.S3({
@@ -19,72 +16,6 @@ const s3 = new AWS.S3({
 });
 
 const qrcodeController = {
-  // /**
-  //  * QR 코드 생성
-  //  */
-  // makeQrcode: async (req, res) => {
-  //   const userEmail = req.email;
-  //   const userId = req.userId;
-  //   console.log(userId);
-  //   const groupId = req.params.groupId;
-  //   const meetingId = req.params.meetingId;
-
-  //   const qrInformation = `http://qring-server-dev.ap-northeast-2.elasticbeanstalk.com/qrcode/check/${groupId}/${meetingId}`;
-
-  //   qrCode.toFile(
-  //     path.join(__dirname, `../public/qrcode/${userEmail}and${meetingId}.png`),
-  //     qrInformation,
-  //     (err, string) => {
-  //       if (err) {
-  //         console.log(err);
-  //         throw err;
-  //       }
-
-  //       const param = {
-  //         Bucket: "qring",
-  //         Key: "qrcode/" + `${meetingId}`,
-  //         ACL: "public-read",
-  //         Body: fs.createReadStream(
-  //           path.join(
-  //             __dirname,
-  //             `../public/qrcode/${userEmail}and${meetingId}.png`
-  //           )
-  //         ),
-  //         ContentType: "image/png",
-  //       };
-
-  //       // s3 버킷에 업로드
-  //       s3.upload(param, async (err, data) => {
-  //         if (err) throw err;
-  //         console.log("QRcode generator", data.Location);
-
-  //         // DB에 이미지 링크 저장
-  //         const filter = {
-  //           _id: meetingId
-  //         };
-  //         const update = {
-  //           qrImg: data.Location
-  //         };
-  //         await meetingModel.updateOne(filter, {
-  //           $set: update
-  //         });
-
-  //         fs.unlink(
-  //           path.join(
-  //             __dirname,
-  //             `../public/qrcode/${userEmail}and${meetingId}.png`
-  //           ),
-  //           (err) => {
-  //             if (err) throw err;
-  //           }
-  //         );
-  //       });
-  //     }
-  //   );
-
-  //   res.status(200).send(util.success(200, "QR코드 생성 성공"));
-  // },
-
   /**
    * QR 코드 생성 함수형
    */
@@ -245,6 +176,8 @@ const qrcodeController = {
           }, {
             $push: update
           });
+          req.io.to(meetingId).emit('homeAttendCnt',meetingInfo.user.length);
+          req.io.to(meetingId).emit('meetingAttendCnt',meetingInfo.user.length);
           res.status(200).send(util.success(200, "제출에 성공하였습니다."));
           return;
         }
@@ -372,8 +305,12 @@ const qrcodeController = {
 
       // 모임이 진행 중일 때 : 결석자는 제외하고 보여주기
       if (now < end) {
+        req.io.to(meetingId).emit('meetingAttendList', "");
         return res.status(200).send(
           util.success(200, "모임 진행 중 전체 참석자 정보 불러오기 성공", {
+            date : meetingInfo.date,
+            startTime : meetingInfo.startTime,
+            endTime : meetingInfo.endTime,
             present: present,
             absent: absent,
           })
@@ -401,6 +338,9 @@ const qrcodeController = {
         }
         return res.status(201).send(
           util.success(201, "모임이 끝난 후 전체 참석자 정보 불러오기 성공", {
+            date : meetingInfo.date,
+            startTime : meetingInfo.startTime,
+            endTime : meetingInfo.endTime,
             present: present,
             absent: absent,
           })
@@ -585,8 +525,7 @@ const qrcodeController = {
     const meetingId = req.params.meetingId;
     const userId = req.params.userId;
     const {
-      name,
-      attendance
+      name
     } = req.body;
 
     if (!name) {
@@ -599,47 +538,16 @@ const qrcodeController = {
       _id: meetingId,
       "user._id": userId,
     };
-
-    const meetingInfo = await meetingModel.findById(filter, {
-      _id: 0,
-      user: 1
-    });
-
-    if (meetingInfo === null) {
-      return res
-        .status(401)
-        .send(util.fail(401, "해당하는 meetingId가 없습니다."));
-    }
-
-    let originAttendance = -100;
-    const flag = meetingInfo.user.some((element) => {
-      originAttendance = element.attendance;
-      return !!~(element._id.toString()).search(userId);
-    });
-
-    let result = {}
-    // 유저가 있고, 그 유저의 출결 상태가 결석이 아닐 때만 출결을 변경 가능.
-    if (flag) {
-      let update = {}
-      if (originAttendance > -1) {
-        update = {
-          "user.$.name": name,
-          "user.$.attendance": attendance,
-        };
-      } else {
-        update = {
-          "user.$.name": name
-        };
+    update = {
+      "user.$.name": name
+    };
+    await meetingModel.findOneAndUpdate(
+      filter, {
+        $set: update,
       }
-      const data = await meetingModel.findOneAndUpdate(
-        filter, {
-          $set: update,
-        }, {
-          new: true,
-        }
-      );
-      res.status(200).send(util.success(200, "참석자 정보 수정에 성공했습니다.", data));
-    }
+    );
+
+      res.status(200).send(util.success(200, "참석자 정보 수정에 성공했습니다."));
   },
 
   /**
