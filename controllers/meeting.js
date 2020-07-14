@@ -236,7 +236,6 @@ module.exports = {
         }
 
         if (!name || !date || !startTime || !endTime || !late || !headCount) {
-            console.log(name,date, startTime,endTime, headCount, late);
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
@@ -375,6 +374,7 @@ module.exports = {
      * 모임 생성시 시간 중복 확인
      */
     time: async (req, res) => {
+        console.log(1);
         const adminEmail = req.email;
         const admin = await adminModel.findOne({
             email: adminEmail
@@ -388,7 +388,6 @@ module.exports = {
             startTime,
             endTime,
         } = req.body;
-
 
         for (let groupItem of allGroup) {
             for (let meetingId of groupItem.meetings) {
