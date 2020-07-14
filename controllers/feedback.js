@@ -172,34 +172,28 @@ module.exports = {
             else if (feedbackArray[idx].form == 1) {
                 var resultArray = [];
                 resultArray.length = feedbackArray[idx].choice.length;
-                var countArray = [0, 0, 0, 0, 0, 0, 0];
-                countArray.length = feedbackArray[idx].choice.length;
                 for (var item of feedbackArray[idx].result) {
-                    var c1 = 0;
-                    var c2 = 0;
-                    var c3 = 0;
-                    var c4 = 0;
-                    var c5 = 0;
-                    var c6 = 0;
-                    var c7 = 0;
+
+                    var countArray = [0, 0, 0, 0, 0, 0, 0];
+                    countArray.length = feedbackArray[idx].choice.length;
 
                     for (var i in feedbackArray[idx].result) {
                         // 보기 순서대로, count도 들어감
                         resultArray[i] = feedbackArray[idx].choice[i];
                         if (feedbackArray[idx].result[i] === "0") {
-                            countArray[0] = ++c1;
+                            countArray[0] = ++countArray[0];
                         } else if (feedbackArray[idx].result[i] === "1") {
-                            countArray[1] = ++c2;
+                            countArray[1] = ++countArray[1];
                         } else if (feedbackArray[idx].result[i] === "2") {
-                            countArray[2] = ++c3;
+                            countArray[2] = ++countArray[2];
                         } else if (feedbackArray[idx].result[i] === "3") {
-                            countArray[3] = ++c4;
+                            countArray[3] = ++countArray[3];
                         } else if (feedbackArray[idx].result[i] === "4") {
-                            countArray[4] = ++c5;
+                            countArray[4] = ++countArray[4];
                         } else if (feedbackArray[idx].result[i] === "5") {
-                            countArray[5] = ++c6;
+                            countArray[5] = ++countArray[5];
                         } else if (feedbackArray[idx].result[i] === "6") {
-                            countArray[6] = ++c7;
+                            countArray[6] = ++countArray[6];
                         }
                     }
 
