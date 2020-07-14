@@ -24,6 +24,11 @@ const AdminSchema = new Schema({
         ref: 'group'
     }],
     proceeds: [{
+        groupId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'group',
+            required: true
+        },
         meetingId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'meeting',

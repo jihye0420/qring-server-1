@@ -20,10 +20,10 @@ router.post('/info/time', auth.checkToken, meetingController.time);
 router.get('/info/:groupid/:meetingid', auth.checkToken, meetingController.getInfo);
 
 //모임 정보 수정 meetingId
-router.put('/info/:meetingid', auth.checkToken, upload.single('image'), meetingController.putInfo);
+router.put('/info/:groupid/:meetingid', auth.checkToken, upload.single('image'), meetingController.putInfo);
 
 //모임 정보 수정 meetingId (image:"url")
-router.put('/info/imageurl/:meetingid', auth.checkToken, upload.single('image'), meetingController.putInfoImageUrl);
+router.put('/info/imageurl/:groupid/:meetingid', auth.checkToken, upload.single('image'), meetingController.putInfoImageUrl);
 
 // 모임삭제 meetingId
 router.delete('/:groupid/:meetingid', auth.checkToken, meetingController.deleteMeeting);
