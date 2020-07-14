@@ -570,17 +570,6 @@ const qrcodeController = {
     res.status(200).send(util.success(200, "참석자 삭제에 성공했습니다."));
   },
 
-  feedbackResult: async (req, res) => {
-    const resultList = req.body;
-    const groupId = req.params.groupId;
-    const meetingId = req.params.meetingId;
-    const result = await meetingModel.findOne({ _id: meetingId });
-    for (var i in resultList) {
-      console.log(resultList[i]);
-    }
-    res.render("feedbackresult", { result: result, gId: groupId });
-  },
-
   userCheck: async (req, res) => {
     const groupId = req.params.groupId;
     const meetingId = req.params.meetingId;
