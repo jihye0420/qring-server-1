@@ -122,51 +122,6 @@ module.exports = {
         }));
     },
 
-
-    postResult: async (req, res) => {
-        //0이 단답형, 1이 객관식, 2는 평점
-        const meetingId = req.params.meetingId;
-
-        if (!meetingId) {
-            res.status(400).send(util.fail(400, "meetingId가 없습니다."));
-        }
-
-        const meeting = await MeetingModel.findOne({
-            _id: meetingId
-        });
-
-        // 피드백 결과 배열
-        const {
-            list
-        } = req.body;
-
-        if (!list) {
-            res.status(400).send(util.fail(400, "피드백 결과 누락"));
-            return;
-        }
-
-        // 피드백 배열 중, 한 피드백 문항씩 꺼내 array에 넣는다.
-        for (var i in meeting.feedBack) {
-            meeting.feedBack[i].result.push(list[i]);
-        }
-
-        // 데이터베이스에 저장
-        await meeting.save();
-
-        const data = {
-            meetingId: meetingId,
-            name: meeting.name,
-            data: meeting.date,
-            startTime: meeting.startTime,
-            endTime: meeting.endTime,
-            late: meeting.late,
-            headCount: meeting.headCount,
-            image: meeting.image,
-            qrImg: meeting.qrImg
-        }
-
-        res.status(200).send(util.success(200, "피드백 결과 제출 완료", data));
-    },
     getResult: async (req, res) => {
         //0이 단답형, 1이 객관식, 2는 평점
         const meetingId = req.params.meetingId;
@@ -224,6 +179,11 @@ module.exports = {
                     countArray.length = feedbackArray[idx].choice.length;
 
                     for (var i in feedbackArray[idx].result) {
+                        console.log(feedbackArray[idx].result);
+                        if (feedbackArray[idx].result == null) {
+                            countArray = [0, 0, 0, 0, 0, 0, 0];
+                            console.log("result가 0임");
+                        }
                         // 보기 순서대로, count도 들어감
                         // 질문이 들어가는게 resultArray배열
                         resultArray[i] = feedbackArray[idx].choice[i];
@@ -244,7 +204,6 @@ module.exports = {
                         }
                     }
 
-                    //아무것도 체크한 답이 없다면 0을 push
                 }
 
                 resultArray = resultArray.slice(0, feedbackArray[idx].choice.length);
@@ -260,6 +219,7 @@ module.exports = {
                 sortData = sortData.sort((a, b) => {
                     return Number(b.count) - Number(a.count);
                 })
+
 
                 multiChoice.push({
                     "_id": meeting.feedBack[idx]._id,
@@ -334,6 +294,8 @@ module.exports = {
         }
 
         await meeting.save();
+
+        req.io.to(meetingId).emit('meetingFeedbackCnt', meeting.feedBack.length);
 
         res.status(200).send(util.success(200, "사용자 피드백 제출 완료"));
 
