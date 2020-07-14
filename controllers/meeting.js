@@ -9,46 +9,48 @@ const async = require('pbkdf2/lib/async');
 const qrcodeController = require('../controllers/qrcode');
 
 async function deleteProceeds(admin,meetingId){
-
-    // const resultPromises = admin.proceeds.map(async (meetingItem)=>{
-    //     if (meetingItem.meetingId != meetingId){
-    //         return meetingItem
-    //     }
-    // })
-
-    // const resolvedResult = await Promise.all(resultPromises);
-
-
-    const newProceeds = admin.proceeds.filter((item) => item.meetingId !== meetingId);
+    const newProceeds = admin.proceeds.filter((item) => item.meetingId != meetingId);
     admin.proceeds = newProceeds;
     await admin.save();
 }
 
-async function pushProceeds(admin, newMeeting){
+async function pushProceeds(admin, groupId, newMeeting){
     const proceed ={
+        groupId :groupId,
         meetingId : newMeeting._id,
         date : newMeeting.date,
         startTime : newMeeting.startTime,
         endTime : newMeeting.endTime
     }
     admin.proceeds.push(proceed);
-    console.log(admin.proceeds);
-    try{
-        admin.proceeds.sort(function (a, b) {
-            if (a.date === b.date) { //오름차순
-                return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
-            }
-            return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
-        })
-
-    }catch(e){
-        console.log("error");
-    }
+    admin.proceeds.sort(function (a, b) {
+        if (a.date === b.date) { //오름차순
+            return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
+        }
+        return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
+    })
     await admin.save();
 }
 
+async function cleanProceeds(admin){
+    const now = moment().format("YYYY.MM.DD HH:mm:ss");
+    for (let meeting of admin.proceeds){
 
+        const end = meeting.date + " " + meeting.endTime + ":00";
+        var feedBackEnd = new Date(end);
+        feedBackEnd.setHours(feedBackEnd.getHours()+2);
+        feedBackEnd = moment(feedBackEnd).format('YYYY.MM.DD HH:mm:ss');
 
+        //피드백 제출까지 종료된 모임
+        if (now >= feedBackEnd ){
+            admin.proceeds.shift();
+        }
+        else{
+            break;
+        }
+    }
+    await admin.save();
+}
 
 async function listLoop(allGroup) {
     const today = moment().format('YYYY.MM.DD');
@@ -243,7 +245,7 @@ module.exports = {
             "isFeedBack" : isFeedBack
         }
 
-        await pushProceeds(admin,newMeeting);
+        await pushProceeds(admin,newGroup._id,newMeeting);
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
 
     },
@@ -323,7 +325,7 @@ module.exports = {
                 "headCount": newMeeting.headCount,
                 "isFeedBack" : isFeedBack
             }
-            await pushProceeds(admin,fin_meeting);
+            await pushProceeds(admin,group._id,fin_meeting);
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 group이 없습니다."));
@@ -414,7 +416,7 @@ module.exports = {
                 "headCount": newMeeting.headCount,
                 "isFeedBack" : isFeedBack
             }
-            await pushProceeds(admin,fin_meeting);
+            await pushProceeds(admin,group._id,fin_meeting);
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 group이 없습니다."));
@@ -425,7 +427,6 @@ module.exports = {
      * 모임 생성시 시간 중복 확인
      */
     time: async (req, res) => {
-        console.log(1);
         const adminEmail = req.email;
         const admin = await adminModel.findOne({
             email: adminEmail
@@ -440,26 +441,17 @@ module.exports = {
             endTime,
         } = req.body;
 
-        for (let groupItem of allGroup) {
-            for (let meetingId of groupItem.meetings) {
-                try {
-                    let meetingItem = await meetingModel.findOne({
-                        _id: meetingId
-                    })
-
-                    if (meetingItem.date == date) {
-                        if (meetingItem.endTime <= startTime) {
-                            continue;
-                        } else if (meetingItem.startTime >= endTime) {
-                            continue;
-                        } else {
-                            return res.status(400).send(util.fail(400, '모임 시간이 중복됩니다.'));
-                        }
-                    }
-                } catch (e) {
-                    return res.status(401).send(util.fail(401, "meeting 데이터 오류"));
+        for (let meetingItem of admin.proceeds) {
+            if (meetingItem.date == date) {
+                if (meetingItem.endTime <= startTime) {
+                    continue;
+                } else if (meetingItem.startTime >= endTime) {
+                    continue;
+                } else {
+                    return res.status(400).send(util.fail(400, '모임 시간이 중복됩니다.'));
                 }
             }
+            else if (meetingItem.date > date) break;
         }
 
         return res.status(200).send(util.success(200, '모임 생성이 가능한 시간입니다.'))
@@ -505,14 +497,14 @@ module.exports = {
      */
     putInfo: async (req, res) => {
         const admin = await adminModel.findOne({
-            email: req.feedBackEndEmail
+            email: req.email
         })
         const meetingId = req.params.meetingid
+        const groupId = req.params.groupid
         try {
             let meeting = await meetingModel.findOne({
                 _id: meetingId
             })
-            console.log(meeting);
 
             const {
                 name,
@@ -534,7 +526,6 @@ module.exports = {
             meeting.late = req.body.late;
             meeting.headCount = req.body.headCount;
 
-            console.log(meeting);
             let image = null;
             // data check - undefined
             if (req.file !== undefined) {
@@ -556,10 +547,11 @@ module.exports = {
                 "image": meeting.image,
                 "qrImg": meeting.qrImg
             }
-
             await meeting.save();
-            // await deleteProceeds(admin, meetingId);
-            // await pushProceeds(admin,meeting);
+
+
+            await deleteProceeds(admin, meetingId);
+            await pushProceeds(admin,groupId,meeting);
             return res.status(200).send(util.success(200, '모임 정보 수정 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 meeting이 없습니다."));
@@ -570,9 +562,10 @@ module.exports = {
      */
     putInfoImageUrl: async (req, res) => {
         const admin = await adminModel.findOne({
-            email: req.mail
+            email: req.email
         })
         const meetingId = req.params.meetingid
+        const groupId = req.params.groupid
         try {
             let meeting = await meetingModel.findOne({
                 _id: meetingId
@@ -614,6 +607,8 @@ module.exports = {
 
             await meeting.save();
 
+            await deleteProceeds(admin, meetingId);
+            await pushProceeds(admin,groupId,meeting);
             return res.status(200).send(util.success(200, '모임 정보 수정 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 meeting이 없습니다."));
@@ -644,7 +639,6 @@ module.exports = {
                 group.meetings = newMeetings;
                 await group.save();
             } else { //group에 meeting이 1개 meeting, group, admin에 groupid 삭제
-                console.log(admin.groups);
                 const newGroups =[];
                 for (let Item of admin.groups) {
                     if (Item != groupId) {
@@ -653,7 +647,6 @@ module.exports = {
                 }
                 admin.groups = newGroups;
                 await admin.save();
-                console.log(admin.groups);
                 await groupModel.deleteOne({
                     _id: groupId
                 })
@@ -710,8 +703,41 @@ module.exports = {
      * 홈 화면에 현재 진행중인 모임 socket
      */
     ProceedMeeting: async(req, res)=>{
-        const lastMeeting = await proceedMeeting(req.email); 
-        res.status(200).send(util.success(200,"가까운 모임 조회", lastMeeting));
+        const admin = await adminModel.findOne({
+            email : req.email
+        })
+        //const lastMeeting = await proceedMeeting(req.email); 
+        //data에 이미지랑 isFeedBack FeedBackCount
+        await cleanProceeds(admin);
+        if (admin.proceeds.length>0){
+            const lastMeeting = await meetingModel.findById({
+                _id: admin.proceeds[0].meetingId
+            })
+    
+            const start = lastMeeting.date + " " + lastMeeting.startTime + ":00";
+            const end = lastMeeting.date + " " + lastMeeting.endTime + ":00";
+            let isFeedBack = false;
+            if (lastMeeting.feedBack.length > 0) {
+                isFeedBack = true;
+            }
+            const data = {
+                "groupId": admin.proceeds[0].groupId,
+                "meetingId": lastMeeting._id,
+                "name": lastMeeting.name,
+                "image": lastMeeting.image,
+                "qrImg": lastMeeting.qrImg,
+                "start": start,
+                "end": end,
+                "attendCount": lastMeeting.user.length,
+                "feedBackCount" : lastMeeting.feedBack.length,
+                "headCount": lastMeeting.headCount,
+                "isFeedBack": isFeedBack
+            }
+            res.status(200).send(util.success(200,"가까운 모임 조회",data));
+        }
+        else {
+            res.status(200).send(util.success(200,"가까운 모임 조회",null));
+        }
     },
     /**
      * groupid에 meetings에 있는 모든 meeting에 대한 정보 넘겨주기
