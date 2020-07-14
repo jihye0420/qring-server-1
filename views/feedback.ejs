@@ -18,7 +18,8 @@
 
 <body>
   <div id="wrap">
-    <form class="formform" action="/qrcode/feedback/5f02cde923aa7292ac990ce6" method="POST" autocomplete="off">
+    <form class="formform" action="/qrcode/submitfeedback/<%=groupId%>/<%=result._id%>" method="POST"
+      autocomplete="off">
       <div style="text-align: center; margin-top: 32px;">
         <img src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-banner.png" width="88px;" />
       </div>
@@ -44,41 +45,90 @@
           아래 피드백을 작성해주세요.
         </div>
       </div>
-
-      <% result.feedBack.forEach(n =>{ %> <% if(n.form == 0){ %>
+      <%for(i = 0; i < result.feedBack.length; i++) { %>
+      <% if(result.feedBack[i].form == 0){ %>
+      <div class="hrhr" style="
+        margin-top: 32px;
+        background-color: rgba(230, 230, 230, 0.776);
+        height: 1px;
+        border: none;
+      "></div>
       <div class="form-input">
-        <div class="wrap_bold" style="margin-top: 20px;"><%= n.title %></div>
-        <div class="wrap_sub" style="margin-top: 5px;"><%= n.content %></div>
-        <textarea class="form_textarea" placeholder="자유롭게 적어주세요 :)" rows="3" name="name">adw</textarea>
+        <div class="wrap_bold" style="margin-top: 20px;"><%= result.feedBack[i].title %></div>
+        <div class="wrap_sub" style="margin-top: 5px;"><%= result.feedBack[i].content %></div>
+        <textarea required="true" class="form_textarea" placeholder="자유롭게 적어주세요 :)" rows="3" name="<%=i%>"></textarea>
       </div>
-      <% } else if(n.form == 1){ %>
-      <div class="wrap_bold" style="margin-top: 20px;"><%= n.title %></div>
-      <div class="wrap_sub" style="margin-top: 5px;"><%= n.content %></div>
+      <% } else if(result.feedBack[i].form == 1){ %>
+      <div class="hrhr" style="
+        margin-top: 32px;
+        background-color: rgba(230, 230, 230, 0.776);
+        height: 1px;
+        border: none;
+      "></div>
+      <div class="wrap_bold" style="margin-top: 20px;"><%= result.feedBack[i].title %></div>
+      <div class="wrap_sub" style="margin-top: 5px;"><%= result.feedBack[i].content %></div>
       <div class="radio_wrap" style="text-align: left;">
-        <% n.choice.forEach(t=>{ %>
+        <% result.feedBack[i].choice.forEach(t=>{ %>
         <label class="container"><%= t %>
-          <input type="radio" value="true" name="oversea" />
+          <input required="true" type="radio" value="true" name='<%=i%>' />
           <span class="checkmark"></span> </label><br />
         <% }) %>
       </div>
-      <% } else if(n.form == 2){ %>
-      <div class="wrap_bold" style="margin-top: 20px;"><%= n.title %></div>
-      <div class="wrap_sub" style="margin-top: 5px;"><%= n.content %></div>
-      <div class="starRev">
-        <span class="starR1">별1_왼쪽</span>
-        <span class="starR2">별1_오른쪽</span>
-        <span class="starR1">별2_왼쪽</span>
-        <span class="starR2">별2_오른쪽</span>
-        <span class="starR1">별3_왼쪽</span>
-        <span class="starR2">별3_오른쪽</span>
-        <span class="starR1">별4_왼쪽</span>
-        <span class="starR2">별4_오른쪽</span>
-        <span class="starR1">별5_왼쪽</span>
-        <span class="starR2">별5_오른쪽</span>
+      <% } else if(result.feedBack[i].form == 2){ %>
+      <div class="hrhr" style="
+        margin-top: 32px;
+        background-color: rgba(230, 230, 230, 0.776);
+        height: 1px;
+        border: none;
+      "></div>
+      <div style="margin-top:20px;">
+
+        <div class="wrap_bold" style="margin-top: 20px;"><%= result.feedBack[i].title %></div>
+        <div class="wrap_sub" style="margin-top: 5px;"><%= result.feedBack[i].content %></div>
+        <div class="startRadio">
+          <label class="startRadio__box">
+            <input type="radio" checked name="<%=i%>" id="" value="0.5">
+            <span class="startRadio__img"><span class="blind">별 1개</span></span>
+          </label>
+          <label class="startRadio__box">
+            <input type="radio" name="<%=i%>" id="" value="1">
+            <span class="startRadio__img"><span class="blind">별 1.5개</span></span>
+          </label>
+          <label class="startRadio__box">
+            <input type="radio" name="<%=i%>" id="" value="1.5">
+            <span class="startRadio__img"><span class="blind">별 2개</span></span>
+          </label>
+          <label class="startRadio__box">
+            <input type="radio" name="<%=i%>" id="" value="2">
+            <span class="startRadio__img"><span class="blind">별 2.5개</span></span>
+          </label>
+          <label class="startRadio__box">
+            <input type="radio" name="<%=i%>" id="" value="2.5">
+            <span class="startRadio__img"><span class="blind">별 3개</span></span>
+          </label>
+          <label class="startRadio__box">
+            <input type="radio" name="<%=i%>" id="" value="3">
+            <span class="startRadio__img"><span class="blind">별 3.5개</span></span>
+          </label>
+          <label class="startRadio__box">
+            <input type="radio" name="<%=i%>" id="" value="3.5">
+            <span class="startRadio__img"><span class="blind">별 4개</span></span>
+          </label>
+          <label class="startRadio__box">
+            <input type="radio" name="<%=i%>" id="" value="4">
+            <span class="startRadio__img"><span class="blind">별 4.5개</span></span>
+          </label>
+          <label class="startRadio__box">
+            <input type="radio" name="<%=i%>" id="" value="4.5">
+            <span class="startRadio__img"><span class="blind">별 5개</span></span>
+          </label>
+          <label class="startRadio__box">
+            <input type="radio" name="<%=i%>" id="" value="5">
+            <span class="startRadio__img"><span class="blind">별 5.5개</span></span>
+          </label>
+        </div>
       </div><br>
-      <% } %> <% }) %>
-
-
+      <% } %> <% } %>
       <button class="wrap_button" style="font-weight: bolder;" type="submit">
         제출
       </button>
@@ -111,10 +161,6 @@
           "<img style='width:30px;' src='/images/loading.gif'>"
         );
         $(".wrap_button").attr("disabled", true);
-        localStorage.setItem("name", $(".input_name").val());
-        localStorage.setItem("phone", $(".input_phone").val());
-        localStorage.setItem("address", $(".input_address").val());
-        localStorage.setItem("part", $(':radio[name="part"]:checked').val());
         return true;
       });
     });
