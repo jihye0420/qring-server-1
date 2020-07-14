@@ -4,6 +4,9 @@ const AdminModel = require('../models/admin.js');
 const MeetingModel = require('../models/meeting.js');
 const async = require('pbkdf2/lib/async');
 const util = require('../modules/util');
+const {
+    response
+} = require('express');
 
 
 module.exports = {
@@ -148,51 +151,114 @@ module.exports = {
             feedbackArray.push(item);
         }
 
-        var latestArray = [];
+        var response = [];
 
-        // 제일 답한 갯수가 많은 순서대로 choice가 들어있는 배열
-        var resultArray = [];
-        // 제일 답한 갯수가 많은 그 갯수가 들어있는 배열
-        var countArray = [];
-
-        // 폼이 0(단답형) 일때, 
-        for (var i in feedbackArray) {
-            if (feedbackArray[i].form == 0) {
-                for (var item of feedbackArray[i].result) {
-                    latestArray.unshift(item);
+        // 폼이 0(단답형) 일때, // 결과를 받는 배열 -> resultArray에는 단답형일 때 최신순으로 답 7개만 [ , , , ,] push. 
+        for (var idx in feedbackArray) {
+            if (feedbackArray[idx].form == 0) {
+                var resultArray = [];
+                for (var item of feedbackArray[idx].result) {
+                    resultArray.unshift(item);
                 }
+
+                response.push(resultArray);
 
             }
             // 폼이 1(객관식) 일때,
-            // 보기와 사용자들이 해당 보기와 보기에 답한 갯수를 보내줘야 함 
-            else if (feedbackArray[i].form == 1) {
-                for (var item of feedbackArray[i].result) {
+            // 객관식일 때 {chocie: , count: }가 push.
+            else if (feedbackArray[idx].form == 1) {
 
+                var countArray = [];
+                console.log("객관식인 문제: ", feedbackArray[idx]);
+                for (var item of feedbackArray[idx].result) {
+                    var c1 = 0;
+                    var c2 = 0;
+                    var c3 = 0;
+                    var c4 = 0;
+                    var c5 = 0;
+                    var c6 = 0;
+                    var c7 = 0;
+                    for (var i in feedbackArray[idx].result) {
+                        if (feedbackArray[idx].result[i] === "1") {
+                            c1++;
+                            countArray[0] = c1;
+                            //console.log(countArray);
+                        }
+                        if (feedbackArray[idx].result[i] === "2") {
+                            c2++;
+                            countArray[1] = c2;
+                        }
+                        if (feedbackArray[idx].result[i] === "3") {
+                            c3++;
+                            countArray[2] = c3;
+                        }
+                        if (feedbackArray[idx].result[i] === "4") {
+                            c4++;
+                            countArray[3] = c4;
+                        }
+                        if (feedbackArray[idx].result[i] === "5") {
+                            c5++;
+                            countArray[4] = c5;
+                        }
+                        if (feedbackArray[idx].result[i] === "6") {
+                            c6++;
+                            countArray[5] = c6;
+                        }
+                        if (feedbackArray[idx].result[i] === "7") {
+                            c7++;
+                            countArray[6] = c7;
+                            // console.log(countArray);
+                        }
+                    }
+                    //countArray.push
                 }
 
+                response.push({
+                    //"choice": resultArray[idx],
+                    "count": countArray
+                });
 
-                for (var idx in resultArray) {
-                    response.push({
-                        "choice": resultArray[idx],
-                        "count": countArray[idx]
-                    });
-                }
+                console.log(response);
             }
-            if (feedbackArray[i].form == 2) {
+            // 평점형일 때 {count: [5점,4점,3점,2점,1점] }가 push
+            if (feedbackArray[idx].form == 2) {
+                countArray = [];
+                if (feedbackArray[idx].result[i] == 1) {
+                    c1 = c1 + 1;
+                    countArray[0] = c1;
+                    //console.log(countArray);
+                }
+                if (feedbackArray[idx].result[i] == 2) {
+                    c2 = c2 + 1;
+                    countArray[1] = c2;
+                    //console.log(countArray);
+                }
+                if (feedbackArray[idx].result[i] == 3) {
+                    c3 = c3 + 1;
+                    countArray[2] = c3;
+                    //console.log(countArray);
+                }
+                if (feedbackArray[idx].result[i] == 4) {
+                    c4 = c4 + 1;
+                    countArray[3] = c4;
+                    // console.log(countArray);
+                }
+                if (feedbackArray[idx].result[i] == 5) {
+                    c5 = c5 + 1;
+                    countArray[4] = c5;
+                    //console.log(countArray);
+                }
 
+                response.push({
+                    "count": countArray
+                });
             }
         }
-
-
-
-
-        // 폼이 2(평점형) 일때, 평점 평균내고, 5점 몇개 4점 몇개 갯수 보내줘야 함
-
 
         // 이 전체 결과를 result배열에 정돈된 데이터로 배열 추가하고 그 배열 리스트 보내기
 
 
-        res.status(200).send(util.success(200, "피드백 결과 목록 완료", meeting));
+        res.status(200).send(util.success(200, "피드백 결과 목록 완료", response));
 
     },
 
