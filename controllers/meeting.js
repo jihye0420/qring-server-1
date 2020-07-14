@@ -8,6 +8,48 @@ const resMessage = require('../modules/responseMessage');
 const async = require('pbkdf2/lib/async');
 const qrcodeController = require('../controllers/qrcode');
 
+async function deleteProceeds(admin,meetingId){
+
+    // const resultPromises = admin.proceeds.map(async (meetingItem)=>{
+    //     if (meetingItem.meetingId != meetingId){
+    //         return meetingItem
+    //     }
+    // })
+
+    // const resolvedResult = await Promise.all(resultPromises);
+
+
+    const newProceeds = admin.proceeds.filter((item) => item.meetingId !== meetingId);
+    admin.proceeds = newProceeds;
+    await admin.save();
+}
+
+async function pushProceeds(admin, newMeeting){
+    const proceed ={
+        meetingId : newMeeting._id,
+        date : newMeeting.date,
+        startTime : newMeeting.startTime,
+        endTime : newMeeting.endTime
+    }
+    admin.proceeds.push(proceed);
+    console.log(admin.proceeds);
+    try{
+        admin.proceeds.sort(function (a, b) {
+            if (a.date === b.date) { //오름차순
+                return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
+            }
+            return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
+        })
+
+    }catch(e){
+        console.log("error");
+    }
+    await admin.save();
+}
+
+
+
+
 async function listLoop(allGroup) {
     const today = moment().format('YYYY.MM.DD');
     const resultPromises = allGroup.map(async (groupid, index,array )=> {
@@ -108,6 +150,7 @@ async function proceedMeeting(adminEmail) {
         "meetingId" : lastMeeting._id,
         "name" : lastMeeting.name,
         "qrImg" : lastMeeting.qrImg,
+        "attendCount" : lastMeeting.user.length,
         "headCount" : lastMeeting.headCount,
         "start" : start,
         "end" : end
@@ -200,6 +243,7 @@ module.exports = {
             "isFeedBack" : isFeedBack
         }
 
+        await pushProceeds(admin,newMeeting);
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
 
     },
@@ -209,6 +253,9 @@ module.exports = {
      */
     createNewMeetingImageUrl: async (req, res) => {
         const adminEmail = req.email;
+        const admin = await adminModel.findOne({
+            email : adminEmail
+        })
         const groupId = req.params.groupid;
         const {
             image,
@@ -276,6 +323,7 @@ module.exports = {
                 "headCount": newMeeting.headCount,
                 "isFeedBack" : isFeedBack
             }
+            await pushProceeds(admin,fin_meeting);
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 group이 없습니다."));
@@ -287,6 +335,9 @@ module.exports = {
      */
     createNewMeeting: async (req, res) => {
         const adminEmail = req.email;
+        const admin = await adminModel.findOne({
+            email : adminEmail
+        })
         const groupId = req.params.groupid;
         const {
             name,
@@ -363,6 +414,7 @@ module.exports = {
                 "headCount": newMeeting.headCount,
                 "isFeedBack" : isFeedBack
             }
+            await pushProceeds(admin,fin_meeting);
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 group이 없습니다."));
@@ -452,11 +504,15 @@ module.exports = {
      * 모임 편집 기능
      */
     putInfo: async (req, res) => {
+        const admin = await adminModel.findOne({
+            email: req.feedBackEndEmail
+        })
         const meetingId = req.params.meetingid
         try {
             let meeting = await meetingModel.findOne({
                 _id: meetingId
             })
+            console.log(meeting);
 
             const {
                 name,
@@ -478,6 +534,7 @@ module.exports = {
             meeting.late = req.body.late;
             meeting.headCount = req.body.headCount;
 
+            console.log(meeting);
             let image = null;
             // data check - undefined
             if (req.file !== undefined) {
@@ -487,7 +544,7 @@ module.exports = {
                     return res.status(401).send(util.fail(401, '유효하지 않은 형식입니다.'));
                 }
             }
-            newMeeting.image = image;
+            meeting.image = image;
 
             const data = {
                 "name": meeting.name,
@@ -501,7 +558,8 @@ module.exports = {
             }
 
             await meeting.save();
-
+            // await deleteProceeds(admin, meetingId);
+            // await pushProceeds(admin,meeting);
             return res.status(200).send(util.success(200, '모임 정보 수정 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 meeting이 없습니다."));
@@ -511,6 +569,9 @@ module.exports = {
      * 모임 편집 기능
      */
     putInfoImageUrl: async (req, res) => {
+        const admin = await adminModel.findOne({
+            email: req.mail
+        })
         const meetingId = req.params.meetingid
         try {
             let meeting = await meetingModel.findOne({
@@ -605,6 +666,7 @@ module.exports = {
             _id: meetingId
         });
 
+        await deleteProceeds(admin, meetingId);
         return res.status(200).send(util.success(200, '모임 삭제 성공'));
     },
     /**
@@ -638,7 +700,6 @@ module.exports = {
                 }
                 return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
             })
-            console.log(end,"---------------",proceed);
             const meetingList = proceed.concat(end);
             return res.status(200).send(util.success(200, "모임 리스트 조회", meetingList));
         } catch(e){
