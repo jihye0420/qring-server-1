@@ -99,10 +99,9 @@ async function proceedMeeting(adminEmail) {
         }
     }
 
+    const start = lastMeeting.date + " " + lastMeeting.startTime + ":00";
     const end = lastMeeting.date + " " + lastMeeting.endTime + ":00";
-    var feedBackEnd = new Date(end);
-    feedBackEnd.setHours(feedBackEnd.getHours()+2);
-    feedBackEnd = moment(feedBackEnd).format('YYYY.MM.DD HH:mm:ss');
+
 
     return {
         "groupId" : groupIdData,
@@ -110,8 +109,8 @@ async function proceedMeeting(adminEmail) {
         "name" : lastMeeting.name,
         "qrImg" : lastMeeting.qrImg,
         "headCount" : lastMeeting.headCount,
-        "start" : lastMeetingStartTime,
-        "end" : feedBackEnd
+        "start" : start,
+        "end" : end
     }
 }
 module.exports = {
