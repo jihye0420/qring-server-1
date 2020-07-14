@@ -14,7 +14,7 @@ router.post('/:groupid', auth.checkToken, upload.single('image'), meetingControl
 router.post('/imageurl/:groupid', auth.checkToken, meetingController.createNewMeetingImageUrl);
 
 //모임 시간 확인
-router.get('/time', auth.checkToken, meetingController.time);
+router.post('/time', auth.checkToken, meetingController.time);
 
 //이어서 생성시 모임 정보 조회 meetingId
 router.get('/info/:groupid/:meetingid', auth.checkToken, meetingController.getInfo);
