@@ -176,8 +176,8 @@ const qrcodeController = {
           }, {
             $push: update
           });
-          req.io.to(meetingId).emit('homeAttendCnt',meetingInfo.user.length);
-          req.io.to(meetingId).emit('meetingAttendCnt',meetingInfo.user.length);
+          req.io.to(meetingId).emit('homeAttendCnt', meetingInfo.user.length);
+          req.io.to(meetingId).emit('meetingAttendCnt', meetingInfo.user.length);
           res.status(200).send(util.success(200, "제출에 성공하였습니다."));
           return;
         }
@@ -280,6 +280,9 @@ const qrcodeController = {
       headCount: 1
     });
 
+    const startTime = meetingInfo.date + meetingInfo.startTime;
+    const endTime = meetingInfo.date + meetingInfo.endTime;
+
     if (meetingInfo === undefined || meetingInfo === null) {
       return res
         .status(400)
@@ -308,9 +311,8 @@ const qrcodeController = {
         req.io.to(meetingId).emit('meetingAttendList', "");
         return res.status(200).send(
           util.success(200, "모임 진행 중 전체 참석자 정보 불러오기 성공", {
-            date : meetingInfo.date,
-            startTime : meetingInfo.startTime,
-            endTime : meetingInfo.endTime,
+            startTime: startTime,
+            endTime: endTime,
             present: present,
             absent: absent,
           })
@@ -338,9 +340,8 @@ const qrcodeController = {
         }
         return res.status(201).send(
           util.success(201, "모임이 끝난 후 전체 참석자 정보 불러오기 성공", {
-            date : meetingInfo.date,
-            startTime : meetingInfo.startTime,
-            endTime : meetingInfo.endTime,
+            startTime: startTime,
+            endTime: endTime,
             present: present,
             absent: absent,
           })
@@ -388,7 +389,7 @@ const qrcodeController = {
 
       //let attendance = [0, 0, 0];
       const email = userInfo.email;
-      
+
       let attendance = [0, 0, 0];
       // 병렬 처리(iterator)를 위해 forEach 대신 for ... of 사용
       // for (const mId of meetings) {
@@ -547,7 +548,7 @@ const qrcodeController = {
       }
     );
 
-      res.status(200).send(util.success(200, "참석자 정보 수정에 성공했습니다."));
+    res.status(200).send(util.success(200, "참석자 정보 수정에 성공했습니다."));
   },
 
   /**
