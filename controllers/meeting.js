@@ -108,6 +108,7 @@ async function proceedMeeting(adminEmail) {
         "meetingId" : lastMeeting._id,
         "name" : lastMeeting.name,
         "qrImg" : lastMeeting.qrImg,
+        "attendCount" : lastMeeting.user.length,
         "headCount" : lastMeeting.headCount,
         "start" : start,
         "end" : end
