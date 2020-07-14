@@ -79,14 +79,47 @@ module.exports = {
             res.status(400).send(util.fail(400, "해당 meetingId에 해당하는 meeting이 없습니다."));
         }
 
-        var data = {
-            "_id": meeting.feedBack._id,
-            "title": meeting.feedBack.title,
-            "content": meeting.feedBack.content,
-            "form": meeting.feedBack.form
+        let rating = [];
+        let multiChoice = [];
+        let shortAnswer = [];
+
+        for (var idx in meeting.feedBack) {
+
+            // 폼이 0(단답형) 일때, 
+            if (meeting.feedBack[idx].form == 0) {
+                shortAnswer.push({
+                    "_id": meeting.feedBack[idx]._id,
+                    "title": meeting.feedBack[idx].title,
+                    "content": meeting.feedBack[idx].content,
+                    "form": meeting.feedBack[idx].form
+                });
+            }
+            // 폼이 1(객관식) 일때,
+            else if (meeting.feedBack[idx].form == 1) {
+                multiChoice.push({
+                    "_id": meeting.feedBack[idx]._id,
+                    "title": meeting.feedBack[idx].title,
+                    "content": meeting.feedBack[idx].content,
+                    "form": meeting.feedBack[idx].form
+                });
+            }
+            // 평점형일 때 
+            else if (meeting.feedBack[idx].form == 2) {
+                rating.push({
+                    "_id": meeting.feedBack[idx]._id,
+                    "title": meeting.feedBack[idx].title,
+                    "content": meeting.feedBack[idx].content,
+                    "form": meeting.feedBack[idx].form
+                });
+            }
         }
 
-        res.status(200).send(util.success(200, "피드백 질문 목록 완료", meeting.feedBack));
+
+        res.status(200).send(util.success(200, "피드백 질문 목록 완료", {
+            "rating": rating,
+            "multiChoice": multiChoice,
+            "shortAnswer": shortAnswer
+        }));
     },
 
 
