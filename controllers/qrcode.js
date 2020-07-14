@@ -280,17 +280,14 @@ const qrcodeController = {
       headCount: 1
     });
 
-    const startTime = meetingInfo.date + meetingInfo.startTime;
-    const endTime = meetingInfo.date + meetingInfo.endTime;
+    const startTime = meetingInfo.date + " " + meetingInfo.startTime;
+    const endTime = meetingInfo.date + " " + meetingInfo.endTime;
 
     if (meetingInfo === undefined || meetingInfo === null) {
       return res
         .status(400)
         .send(util.fail(400, "해당하는 meetingId가 없습니다."));
     }
-
-    const end = meetingInfo.date + " " + meetingInfo.endTime + ":00";
-    const now = moment().format("YYYY.MM.DD HH:mm:ss");
 
     let present = await meetingInfo.user.filter((data) => data.attendance >= 0);
     present.forEach((element) => {
@@ -304,39 +301,22 @@ const qrcodeController = {
 
     // -1일 땐 전체 참석자 정보 받아오기
     if (userId === "-1") {
-      let absent = [];
-
-      // 모임이 진행 중일 때 : 결석자는 제외하고 보여주기
-      if (now < end) {
-        req.io.to(meetingId).emit('meetingAttendList', "");
-        return res.status(200).send(
-          util.success(200, "모임 진행 중 전체 참석자 정보 불러오기 성공", {
-            startTime: startTime,
-            endTime: endTime,
-            present: present,
-            absent: absent,
+      absent = meetingInfo.user.filter((data) => data.attendance < 0);
+      //참석자가 headCount수보다 작은 경우 익명의 가데이터 보내주기
+      const alluser = present.length + absent.length;
+      if (alluser < meetingInfo.headCount) {
+        for (let i = 1; i <= meetingInfo.headCount - alluser; i++) {
+          const name = "결석한 회원 " + i;
+          absent.push({
+            _id: null,
+            name: name,
+            email: null,
+            abroad: false,
+            health: false,
+            attendance: -1,
+            isAdded: false,
+            createdAt: null
           })
-        );
-      }
-      // 모임이 끝난 후 : 결석자를 포함하여 보여주기
-      else {
-        absent = meetingInfo.user.filter((data) => data.attendance < 0);
-        //참석자가 headCount수보다 작은 경우 익명의 가데이터 보내주기
-        const alluser = present.length + absent.length;
-        if (alluser < meetingInfo.headCount) {
-          for (let i = 1; i <= meetingInfo.headCount - alluser; i++) {
-            const name = "결석한 회원 " + i;
-            absent.push({
-              _id: null,
-              name: name,
-              email: null,
-              abroad: false,
-              health: false,
-              attendance: -1,
-              isAdded: false,
-              createdAt: null
-            })
-          }
         }
         return res.status(201).send(
           util.success(201, "모임이 끝난 후 전체 참석자 정보 불러오기 성공", {
