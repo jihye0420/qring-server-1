@@ -677,6 +677,7 @@ const qrcodeController = {
                         groupId: groupId,
                       });
                     },
+
 };
 
 module.exports = qrcodeController;
