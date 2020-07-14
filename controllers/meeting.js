@@ -440,7 +440,7 @@ module.exports = {
             startTime,
             endTime,
         } = req.body;
-
+        await cleanProceeds(admin);
         for (let meetingItem of admin.proceeds) {
             if (meetingItem.date == date) {
                 if (meetingItem.endTime <= startTime) {
