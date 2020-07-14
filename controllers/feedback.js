@@ -125,65 +125,86 @@ module.exports = {
                 });
 
             }
+
             // 폼이 1(객관식) 일때,
             // 객관식일 때 {chocie: , count: }가 push.
             else if (feedbackArray[idx].form == 1) {
                 var resultArray = [];
                 resultArray.length = feedbackArray[idx].choice.length;
-                for (var item of feedbackArray[idx].result) {
 
-                    var countArray = [0, 0, 0, 0, 0, 0, 0];
-                    countArray.length = feedbackArray[idx].choice.length;
+                var a = [];
 
-                    for (var i in feedbackArray[idx].result) {
-                        console.log(feedbackArray[idx].result);
-                        if (feedbackArray[idx].result == null) {
-                            countArray = [0, 0, 0, 0, 0, 0, 0];
-                            console.log("result가 0임");
+                for (var item of feedbackArray[idx].choice) {
+                    a.push({
+                        "choice": item,
+                        "count": 0
+                    })
+                }
+
+
+                if (feedbackArray[idx].result == 0) {
+                    multiChoice.push({
+                        "_id": meeting.feedBack[idx]._id,
+                        "title": meeting.feedBack[idx].title,
+                        "content": meeting.feedBack[idx].content,
+                        "result": a
+                    });
+                } else {
+                    for (var item of feedbackArray[idx].result) {
+
+                        var countArray = [0, 0, 0, 0, 0, 0, 0];
+                        countArray.length = feedbackArray[idx].choice.length;
+
+                        for (var i in feedbackArray[idx].result) {
+
+                            if (feedbackArray[idx].result == null) {
+                                countArray = [0, 0, 0, 0, 0, 0, 0];
+                                console.log("result가 0임");
+                            }
+                            // 보기 순서대로, count도 들어감
+                            // 질문이 들어가는게 resultArray배열
+                            resultArray[i] = feedbackArray[idx].choice[i];
+                            if (feedbackArray[idx].result[i] == 1) {
+                                countArray[0] = ++countArray[0];
+                            } else if (feedbackArray[idx].result[i] == 2) {
+                                countArray[1] = ++countArray[1];
+                            } else if (feedbackArray[idx].result[i] == 3) {
+                                countArray[2] = ++countArray[2];
+                            } else if (feedbackArray[idx].result[i] == 4) {
+                                countArray[3] = ++countArray[3];
+                            } else if (feedbackArray[idx].result[i] == 5) {
+                                countArray[4] = ++countArray[4];
+                            } else if (feedbackArray[idx].result[i] == 6) {
+                                countArray[5] = ++countArray[5];
+                            } else if (feedbackArray[idx].result[i] == 7) {
+                                countArray[6] = ++countArray[6];
+                            }
                         }
-                        // 보기 순서대로, count도 들어감
-                        // 질문이 들어가는게 resultArray배열
-                        resultArray[i] = feedbackArray[idx].choice[i];
-                        if (feedbackArray[idx].result[i] == 1) {
-                            countArray[0] = ++countArray[0];
-                        } else if (feedbackArray[idx].result[i] == 2) {
-                            countArray[1] = ++countArray[1];
-                        } else if (feedbackArray[idx].result[i] == 3) {
-                            countArray[2] = ++countArray[2];
-                        } else if (feedbackArray[idx].result[i] == 4) {
-                            countArray[3] = ++countArray[3];
-                        } else if (feedbackArray[idx].result[i] == 5) {
-                            countArray[4] = ++countArray[4];
-                        } else if (feedbackArray[idx].result[i] == 6) {
-                            countArray[5] = ++countArray[5];
-                        } else if (feedbackArray[idx].result[i] == 7) {
-                            countArray[6] = ++countArray[6];
-                        }
+
                     }
 
-                }
+                    resultArray = resultArray.slice(0, feedbackArray[idx].choice.length);
 
-                resultArray = resultArray.slice(0, feedbackArray[idx].choice.length);
+                    var sortData = [];
+                    for (var idx in resultArray) {
+                        sortData.push({
+                            "choice": resultArray[idx],
+                            "count": countArray[idx]
+                        });
+                    }
 
-                var sortData = [];
-                for (var idx in resultArray) {
-                    sortData.push({
-                        "choice": resultArray[idx],
-                        "count": countArray[idx]
+                    sortData = sortData.sort((a, b) => {
+                        return Number(b.count) - Number(a.count);
+                    })
+
+
+                    multiChoice.push({
+                        "_id": meeting.feedBack[idx]._id,
+                        "title": meeting.feedBack[idx].title,
+                        "content": meeting.feedBack[idx].content,
+                        "result": sortData
                     });
                 }
-
-                sortData = sortData.sort((a, b) => {
-                    return Number(b.count) - Number(a.count);
-                })
-
-
-                multiChoice.push({
-                    "_id": meeting.feedBack[idx]._id,
-                    "title": meeting.feedBack[idx].title,
-                    "content": meeting.feedBack[idx].content,
-                    "result": sortData
-                });
 
             }
             // 평점형일 때 {count: [5점,4점,3점,2점,1점] }가 push
