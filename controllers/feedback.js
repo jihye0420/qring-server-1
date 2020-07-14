@@ -62,11 +62,9 @@ module.exports = {
 
     readAll: async (req, res) => {
         const meetingId = req.params.meetingId;
-
         if (!meetingId) {
             res.status(400).send(util.fail(400, "meetingId가 없습니다."));
         }
-
         // 모든 피드백 질문들 가져옴
         const meeting = await MeetingModel.findOne({
             _id: meetingId
@@ -74,53 +72,12 @@ module.exports = {
             _id: 0,
             feedBack: 1
         });
-
         if (meeting === undefined || !meeting) {
             res.status(400).send(util.fail(400, "해당 meetingId에 해당하는 meeting이 없습니다."));
         }
-
-        let rating = [];
-        let multiChoice = [];
-        let shortAnswer = [];
-
-        for (var idx in meeting.feedBack) {
-
-            // 폼이 0(단답형) 일때, 
-            if (meeting.feedBack[idx].form == 0) {
-                shortAnswer.push({
-                    "_id": meeting.feedBack[idx]._id,
-                    "title": meeting.feedBack[idx].title,
-                    "content": meeting.feedBack[idx].content,
-                    "form": meeting.feedBack[idx].form
-                });
-            }
-            // 폼이 1(객관식) 일때,
-            else if (meeting.feedBack[idx].form == 1) {
-                multiChoice.push({
-                    "_id": meeting.feedBack[idx]._id,
-                    "title": meeting.feedBack[idx].title,
-                    "content": meeting.feedBack[idx].content,
-                    "form": meeting.feedBack[idx].form
-                });
-            }
-            // 평점형일 때 
-            else if (meeting.feedBack[idx].form == 2) {
-                rating.push({
-                    "_id": meeting.feedBack[idx]._id,
-                    "title": meeting.feedBack[idx].title,
-                    "content": meeting.feedBack[idx].content,
-                    "form": meeting.feedBack[idx].form
-                });
-            }
-        }
-
-
-        res.status(200).send(util.success(200, "피드백 질문 목록 완료", {
-            "rating": rating,
-            "multiChoice": multiChoice,
-            "shortAnswer": shortAnswer
-        }));
+        res.status(200).send(util.success(200, "피드백 질문 목록 완료", meeting.feedBack));
     },
+
 
     getResult: async (req, res) => {
         //0이 단답형, 1이 객관식, 2는 평점
