@@ -9,17 +9,12 @@ const async = require('pbkdf2/lib/async');
 const qrcodeController = require('../controllers/qrcode');
 
 async function deleteProceeds(admin,meetingId){
-    console.log('deleteproceed')
-    console.log(admin);
-    console.log(admin.proceeds);
     const newProceeds = admin.proceeds.filter((item) => item.meetingId != meetingId);
     admin.proceeds = newProceeds;
-    console.log(admin.proceeds);
     await admin.save();
 }
 
 async function pushProceeds(admin, groupId, newMeeting){
-    console.log('pushproceed')
     const proceed ={
         groupId :groupId,
         meetingId : newMeeting._id,
@@ -28,18 +23,12 @@ async function pushProceeds(admin, groupId, newMeeting){
         endTime : newMeeting.endTime
     }
     admin.proceeds.push(proceed);
-    console.log(admin.proceeds);
-    try{
-        admin.proceeds.sort(function (a, b) {
-            if (a.date === b.date) { //오름차순
-                return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
-            }
-            return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
-        })
-
-    }catch(e){
-        console.log("error");
-    }
+    admin.proceeds.sort(function (a, b) {
+        if (a.date === b.date) { //오름차순
+            return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
+        }
+        return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
+    })
     await admin.save();
 }
 
@@ -438,7 +427,6 @@ module.exports = {
      * 모임 생성시 시간 중복 확인
      */
     time: async (req, res) => {
-        console.log(1);
         const adminEmail = req.email;
         const admin = await adminModel.findOne({
             email: adminEmail
@@ -453,26 +441,17 @@ module.exports = {
             endTime,
         } = req.body;
 
-        for (let groupItem of allGroup) {
-            for (let meetingId of groupItem.meetings) {
-                try {
-                    let meetingItem = await meetingModel.findOne({
-                        _id: meetingId
-                    })
-
-                    if (meetingItem.date == date) {
-                        if (meetingItem.endTime <= startTime) {
-                            continue;
-                        } else if (meetingItem.startTime >= endTime) {
-                            continue;
-                        } else {
-                            return res.status(400).send(util.fail(400, '모임 시간이 중복됩니다.'));
-                        }
-                    }
-                } catch (e) {
-                    return res.status(401).send(util.fail(401, "meeting 데이터 오류"));
+        for (let meetingItem of admin.proceeds) {
+            if (meetingItem.date == date) {
+                if (meetingItem.endTime <= startTime) {
+                    continue;
+                } else if (meetingItem.startTime >= endTime) {
+                    continue;
+                } else {
+                    return res.status(400).send(util.fail(400, '모임 시간이 중복됩니다.'));
                 }
             }
+            else if (meetingItem.date > date) break;
         }
 
         return res.status(200).send(util.success(200, '모임 생성이 가능한 시간입니다.'))
@@ -660,7 +639,6 @@ module.exports = {
                 group.meetings = newMeetings;
                 await group.save();
             } else { //group에 meeting이 1개 meeting, group, admin에 groupid 삭제
-                console.log(admin.groups);
                 const newGroups =[];
                 for (let Item of admin.groups) {
                     if (Item != groupId) {
@@ -669,7 +647,6 @@ module.exports = {
                 }
                 admin.groups = newGroups;
                 await admin.save();
-                console.log(admin.groups);
                 await groupModel.deleteOne({
                     _id: groupId
                 })
@@ -733,7 +710,6 @@ module.exports = {
         //data에 이미지랑 isFeedBack FeedBackCount
         await cleanProceeds(admin);
         if (admin.proceeds.length>0){
-            console.log(admin.proceeds[0]);
             const lastMeeting = await meetingModel.findById({
                 _id: admin.proceeds[0].meetingId
             })
