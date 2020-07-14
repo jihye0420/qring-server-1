@@ -10,17 +10,18 @@ const qrcodeController = require('../controllers/qrcode');
 
 async function deleteProceeds(admin,meetingId){
 
-    const resultPromises = admin.proceeds.map(async (meetingItem)=>{
-        if (meetingItem.meetingId != meetingId){
-            return meetingItem
-        }
-    })
+    // const resultPromises = admin.proceeds.map(async (meetingItem)=>{
+    //     if (meetingItem.meetingId != meetingId){
+    //         return meetingItem
+    //     }
+    // })
 
-    const resolvedResult = await Promise.all(resultPromises);
+    // const resolvedResult = await Promise.all(resultPromises);
 
-    admin.proceeds = resolvedResult;
+
+    const newProceeds = admin.proceeds.filter((item) => item.meetingId !== meetingId);
+    admin.proceeds = newProceeds;
     await admin.save();
-    return resolvedResult;
 }
 
 async function pushProceeds(admin, newMeeting){
@@ -503,11 +504,15 @@ module.exports = {
      * 모임 편집 기능
      */
     putInfo: async (req, res) => {
+        const admin = await adminModel.findOne({
+            email: req.feedBackEndEmail
+        })
         const meetingId = req.params.meetingid
         try {
             let meeting = await meetingModel.findOne({
                 _id: meetingId
             })
+            console.log(meeting);
 
             const {
                 name,
@@ -529,6 +534,7 @@ module.exports = {
             meeting.late = req.body.late;
             meeting.headCount = req.body.headCount;
 
+            console.log(meeting);
             let image = null;
             // data check - undefined
             if (req.file !== undefined) {
@@ -538,7 +544,7 @@ module.exports = {
                     return res.status(401).send(util.fail(401, '유효하지 않은 형식입니다.'));
                 }
             }
-            newMeeting.image = image;
+            meeting.image = image;
 
             const data = {
                 "name": meeting.name,
@@ -552,7 +558,8 @@ module.exports = {
             }
 
             await meeting.save();
-
+            // await deleteProceeds(admin, meetingId);
+            // await pushProceeds(admin,meeting);
             return res.status(200).send(util.success(200, '모임 정보 수정 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 meeting이 없습니다."));
@@ -562,6 +569,9 @@ module.exports = {
      * 모임 편집 기능
      */
     putInfoImageUrl: async (req, res) => {
+        const admin = await adminModel.findOne({
+            email: req.mail
+        })
         const meetingId = req.params.meetingid
         try {
             let meeting = await meetingModel.findOne({
@@ -656,6 +666,7 @@ module.exports = {
             _id: meetingId
         });
 
+        await deleteProceeds(admin, meetingId);
         return res.status(200).send(util.success(200, '모임 삭제 성공'));
     },
     /**
