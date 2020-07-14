@@ -210,7 +210,12 @@ const qrcodeController = {
       attendance = 0;
     }
     if (attendanceFlag === -1) {
-      res.status(401).send(util.fail(401, "출석 가능 시간이 아닙니다."));
+      res.render("checkresult", {
+        groupId: groupId,
+        meetingId: meetingId,
+        result: false,
+      });
+      // res.status(401).send(util.fail(401, "출석 가능 시간이 아닙니다."));
       return;
     } else {
       // 출석이 가능한 시간에 폼을 제출한 경우
@@ -263,6 +268,7 @@ const qrcodeController = {
           res.render("checkresult", {
             groupId: groupId,
             meetingId: meetingId,
+            result: true,
           });
           // res.status(200).send(util.success(200, "제출에 성공하였습니다."));
         }
@@ -359,6 +365,7 @@ const qrcodeController = {
           res.render("checkresult", {
             groupId: groupId,
             meetingId: meetingId,
+            result: true,
           });
           // res.status(200).send(util.success(200, "제출에 성공하였습니다."));
         }
@@ -775,6 +782,17 @@ const qrcodeController = {
     res
       .status(200)
       .send(util.success(200, "참석자 삭제에 성공했습니다.", result.user));
+  },
+
+  feedbackResult: async (req, res) => {
+    const resultList = req.body;
+    const groupId = req.params.groupId;
+    const meetingId = req.params.meetingId;
+    const result = await meetingModel.findOne({ _id: meetingId });
+    for (var i in resultList) {
+      console.log(resultList[i]);
+    }
+    res.render("feedbackresult", { result: result, gId: groupId });
   },
 
   userCheck: async (req, res) => {

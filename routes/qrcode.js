@@ -18,6 +18,12 @@ router.get(
 /**
  * 웹 출석 폼 제출
  */
+
+router.post(
+  "/submitfeedback/:groupId/:meetingId",
+  qrcodeController.feedbackResult
+);
+
 router.post("/submission/:groupId/:meetingId", qrcodeController.submitForm);
 
 /**

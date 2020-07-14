@@ -1,15 +1,13 @@
 @font-face {
   font-family: "YiSunShinDotumM";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/YiSunShinDotumM.woff")
-    format("woff");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/YiSunShinDotumM.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: "CookieRun-Regular";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/CookieRun-Regular.woff")
-    format("woff");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/CookieRun-Regular.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -30,6 +28,7 @@ body {
 
 .input {
   height: 36px;
+  padding: 15px 10px;
   width: 100%;
   border-radius: 8px;
   border: solid 1px #cccccc;
@@ -84,6 +83,7 @@ body {
 .wrap_sub {
   font-size: 13px;
   color: gray;
+  margin-bottom: 10px;
 }
 
 .wrap_bold {
@@ -161,12 +161,12 @@ a {
 }
 
 /* On mouse-over, add a grey background color */
-.container:hover input ~ .checkmark {
+.container:hover input~.checkmark {
   /* background-color: #ccc; */
 }
 
 /* When the radio button is checked, add a blue background */
-.container input:checked ~ .checkmark {
+.container input:checked~.checkmark {
   border: 1px solid #ff6600;
 }
 
@@ -178,7 +178,7 @@ a {
 }
 
 /* Show the indicator (dot/circle) when checked */
-.container input:checked ~ .checkmark:after {
+.container input:checked~.checkmark:after {
   display: block;
 }
 
@@ -251,8 +251,8 @@ body {
   border-bottom: 2px solid rgb(22, 22, 22);
 }
 
-.form-input input:focus + .placeholder,
-.form-input input:valid + .placeholder {
+.form-input input:focus+.placeholder,
+.form-input input:valid+.placeholder {
   top: 0;
   cursor: inherit;
   font-size: 14px;
@@ -275,44 +275,11 @@ body {
   font-family: CookieRun-Regular;
 }
 
-.starR {
-  background: url("http://miuu227.godohosting.com/images/icon/ico_review.png")
-    no-repeat right 0;
-  background-size: auto 100%;
-  width: 30px;
-  height: 30px;
-  display: inline-block;
-  text-indent: -9999px;
-  cursor: pointer;
-}
 
-.starR.on {
-  background-position: 0 0;
-}
-
-.starR1 {
-  background: url("http://miuu227.godohosting.com/images/icon/ico_review.png")
-    no-repeat -52px 0;
-  background-size: auto 100%;
-  width: 15px;
-  height: 30px;
-  float: left;
-  text-indent: -9999px;
-  cursor: pointer;
-}
-.starR2 {
-  background: url("http://miuu227.godohosting.com/images/icon/ico_review.png")
-    no-repeat right 0;
-  background-size: auto 100%;
-  width: 15px;
-  height: 30px;
-  float: left;
-  text-indent: -9999px;
-  cursor: pointer;
-}
 .starR1.on {
   background-position: 0 0;
 }
+
 .starR2.on {
   background-position: -15px 0;
 }
@@ -324,4 +291,63 @@ body {
   width: 100%;
   resize: none;
   padding: 16px 20px;
+}
+
+.blind {
+  position: absolute;
+  overflow: hidden;
+  margin: -1px;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+  border: none;
+  clip: rect(0, 0, 0, 0);
+}
+
+.startRadio {
+  display: inline-block;
+  overflow: hidden;
+  height: 40px;
+}
+
+.startRadio:after {
+  content: "";
+  display: block;
+  position: relative;
+  z-index: 10;
+  height: 30px;
+  background: url("../images/bin_star.png") repeat-x 0 0;
+  background-size: contain;
+  pointer-events: none;
+}
+
+.startRadio__box {
+  position: relative;
+  z-index: 1;
+  float: left;
+  width: 15px;
+  height: 30px;
+  cursor: pointer;
+  background-color: rgb(211, 211, 211);
+}
+
+.startRadio__box input {
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  position: absolute !important;
+}
+
+.startRadio__box input:checked+.startRadio__img {
+  background-color: #ff6600;
+  border: #ff6600;
+}
+
+.startRadio__img {
+  display: block;
+  position: absolute;
+  right: 0;
+  width: 500px;
+  height: 30px;
+  pointer-events: none;
 }
