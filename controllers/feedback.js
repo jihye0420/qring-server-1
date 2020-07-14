@@ -205,7 +205,13 @@ module.exports = {
                 }
 
                 resultArray = resultArray.slice(0, 7);
-                shortAnswer.push(resultArray);
+                shortAnswer.push({
+                    "_id": meeting.feedBack[idx]._id,
+                    "title": meeting.feedBack[idx].title,
+                    "content": meeting.feedBack[idx].content,
+                    "form": meeting.feedBack[idx].form,
+                    "result": resultArray
+                });
 
             }
             // 폼이 1(객관식) 일때,
@@ -256,7 +262,13 @@ module.exports = {
                     return Number(b.count) - Number(a.count);
                 })
 
-                multiChoice.push(sortData);
+                multiChoice.push({
+                    "_id": meeting.feedBack[idx]._id,
+                    "title": meeting.feedBack[idx].title,
+                    "content": meeting.feedBack[idx].content,
+                    "form": meeting.feedBack[idx].form,
+                    "result": sortData
+                });
 
 
 
@@ -297,7 +309,13 @@ module.exports = {
                     }
                 }
 
-                rating.push(countArray);
+                rating.push({
+                    "_id": meeting.feedBack[idx]._id,
+                    "title": meeting.feedBack[idx].title,
+                    "content": meeting.feedBack[idx].content,
+                    "form": meeting.feedBack[idx].form,
+                    "result": countArray
+                });
 
             }
         }
