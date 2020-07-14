@@ -313,11 +313,10 @@ module.exports = {
 
     submitResult: async (req, res) => {
         //날짜를 받아와서 db에 넣어주기
+
         const meetingId = req.params.meetingId;
 
-        const {
-            list
-        } = req.body;
+        const list = req.body;
 
         const meeting = await meetingModel.findById({
             _id: meetingId
@@ -327,10 +326,9 @@ module.exports = {
         });
 
         //list에 있는 값들을 하나씩 빼서 feedback.result[i]에 각각 push
-        for (var item of list) {
-            meeting.feedBack[i].result.push(item);
+        for (var idx in list) {
+            meeting.feedBack[idx].result.push(list[idx]);
         }
-
 
         await meeting.save();
 
