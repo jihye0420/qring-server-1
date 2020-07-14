@@ -280,8 +280,8 @@ const qrcodeController = {
       headCount: 1
     });
 
-    const startTime = meetingInfo.date + " " + meetingInfo.startTime;
-    const endTime = meetingInfo.date + " " + meetingInfo.endTime;
+    const startTime = meetingInfo.date + " " + meetingInfo.startTime + ":00";
+    const endTime = meetingInfo.date + " " + meetingInfo.endTime + ":00";
 
     if (meetingInfo === undefined || meetingInfo === null) {
       return res
