@@ -18,19 +18,32 @@ async function deleteProceeds(admin,meetingId){
 
     const resolvedResult = await Promise.all(resultPromises);
 
+    admin.proceeds = resolvedResult;
+    await admin.save();
     return resolvedResult;
 }
 
-async function pushProceeds(admin, proceed){
-
+async function pushProceeds(admin, newMeeting){
+    const proceed ={
+        meetingId : newMeeting._id,
+        date : newMeeting.date,
+        startTime : newMeeting.startTime,
+        endTime : newMeeting.endTime
+    }
     admin.proceeds.push(proceed);
+    console.log(admin.proceeds);
+    try{
+        admin.proceeds.sort(function (a, b) {
+            if (a.date === b.date) { //오름차순
+                return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
+            }
+            return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
+        })
 
-    admin.proceeds.sort(function (a, b) {
-        if (a.date === b.date) { //오름차순
-            return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
-        }
-        return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
-    })
+    }catch(e){
+        console.log("error");
+    }
+    await admin.save();
 }
 
 
@@ -229,6 +242,7 @@ module.exports = {
             "isFeedBack" : isFeedBack
         }
 
+        await pushProceeds(admin,newMeeting);
         return res.status(200).send(util.success(200, '새 모임 생성 성공', data));
 
     },
@@ -238,6 +252,9 @@ module.exports = {
      */
     createNewMeetingImageUrl: async (req, res) => {
         const adminEmail = req.email;
+        const admin = await adminModel.findOne({
+            email : adminEmail
+        })
         const groupId = req.params.groupid;
         const {
             image,
@@ -305,6 +322,7 @@ module.exports = {
                 "headCount": newMeeting.headCount,
                 "isFeedBack" : isFeedBack
             }
+            await pushProceeds(admin,fin_meeting);
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 group이 없습니다."));
@@ -316,6 +334,9 @@ module.exports = {
      */
     createNewMeeting: async (req, res) => {
         const adminEmail = req.email;
+        const admin = await adminModel.findOne({
+            email : adminEmail
+        })
         const groupId = req.params.groupid;
         const {
             name,
@@ -392,6 +413,7 @@ module.exports = {
                 "headCount": newMeeting.headCount,
                 "isFeedBack" : isFeedBack
             }
+            await pushProceeds(admin,fin_meeting);
             return res.status(200).send(util.success(200, '이어서 모임 생성 성공', data));
         } catch (e) {
             return res.status(402).send(util.fail(402, "해당하는 group이 없습니다."));
