@@ -263,7 +263,7 @@ module.exports = {
         for (var idx in resultArray) {
             response.push({
                 "result": resultArray[idx],
-                "data": dateArray[idx]
+                "date": dateArray[idx]
             });
         }
 
