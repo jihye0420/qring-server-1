@@ -8,6 +8,34 @@ const resMessage = require('../modules/responseMessage');
 const async = require('pbkdf2/lib/async');
 const qrcodeController = require('../controllers/qrcode');
 
+async function deleteProceeds(admin,meetingId){
+
+    const resultPromises = admin.proceeds.map(async (meetingItem)=>{
+        if (meetingItem.meetingId != meetingId){
+            return meetingItem
+        }
+    })
+
+    const resolvedResult = await Promise.all(resultPromises);
+
+    return resolvedResult;
+}
+
+async function pushProceeds(admin, proceed){
+
+    admin.proceeds.push(proceed);
+
+    admin.proceeds.sort(function (a, b) {
+        if (a.date === b.date) { //오름차순
+            return a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0;
+        }
+        return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
+    })
+}
+
+
+
+
 async function listLoop(allGroup) {
     const today = moment().format('YYYY.MM.DD');
     const resultPromises = allGroup.map(async (groupid, index,array )=> {
@@ -639,7 +667,6 @@ module.exports = {
                 }
                 return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; //오름차순
             })
-            console.log(end,"---------------",proceed);
             const meetingList = proceed.concat(end);
             return res.status(200).send(util.success(200, "모임 리스트 조회", meetingList));
         } catch(e){
