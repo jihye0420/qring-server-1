@@ -163,7 +163,7 @@ module.exports = {
 
                 resultArray = resultArray.slice(0, 7);
                 response.push({
-                    "단답형": resultArray
+                    "shortAnswer": resultArray
                 });
 
             }
@@ -179,6 +179,7 @@ module.exports = {
 
                     for (var i in feedbackArray[idx].result) {
                         // 보기 순서대로, count도 들어감
+                        // 질문이 들어가는게 resultArray배열
                         resultArray[i] = feedbackArray[idx].choice[i];
                         if (feedbackArray[idx].result[i] === "0") {
                             countArray[0] = ++countArray[0];
@@ -200,6 +201,8 @@ module.exports = {
                     //아무것도 체크한 답이 없다면 0을 push
                 }
 
+                resultArray = resultArray.slice(0, feedbackArray[idx].choice.length);
+
                 var sortData = [];
                 for (var idx in resultArray) {
                     sortData.push({
@@ -212,25 +215,24 @@ module.exports = {
                     return Number(b.count) - Number(a.count);
                 })
 
-                for (var item of sortData) {
-                    response.push({
-                        "객관식": item
-                    });
-                }
+                response.push({
+                    "multiChoice": [sortData]
+                });
+
 
 
             }
             // 평점형일 때 {count: [5점,4점,3점,2점,1점] }가 push
-            if (feedbackArray[idx].form == 2) {
-                countArray = [];
+            else if (feedbackArray[idx].form == 2) {
+
+                var countArray = [0, 0, 0, 0, 0];
                 countArray.length = 5;
+
                 var c1 = 0;
                 var c2 = 0;
                 var c3 = 0;
                 var c4 = 0;
                 var c5 = 0;
-                var c6 = 0;
-                var c7 = 0;
                 for (var i in feedbackArray[idx].result) {
                     {
                         if (feedbackArray[idx].result[i] == 1) {
@@ -257,7 +259,7 @@ module.exports = {
                 }
 
                 response.push({
-                    "평점형": countArray
+                    "rating": countArray
                 });
 
             }
