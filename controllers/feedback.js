@@ -4,6 +4,9 @@ const AdminModel = require('../models/admin.js');
 const MeetingModel = require('../models/meeting.js');
 const async = require('pbkdf2/lib/async');
 const util = require('../modules/util');
+const {
+    response
+} = require('express');
 
 
 module.exports = {
@@ -76,7 +79,47 @@ module.exports = {
             res.status(400).send(util.fail(400, "해당 meetingId에 해당하는 meeting이 없습니다."));
         }
 
-        res.status(200).send(util.success(200, "피드백 질문 목록 완료", meeting.feedBack));
+        let rating = [];
+        let multiChoice = [];
+        let shortAnswer = [];
+
+        for (var idx in meeting.feedBack) {
+
+            // 폼이 0(단답형) 일때, 
+            if (meeting.feedBack[idx].form == 0) {
+                shortAnswer.push({
+                    "_id": meeting.feedBack[idx]._id,
+                    "title": meeting.feedBack[idx].title,
+                    "content": meeting.feedBack[idx].content,
+                    "form": meeting.feedBack[idx].form
+                });
+            }
+            // 폼이 1(객관식) 일때,
+            else if (meeting.feedBack[idx].form == 1) {
+                multiChoice.push({
+                    "_id": meeting.feedBack[idx]._id,
+                    "title": meeting.feedBack[idx].title,
+                    "content": meeting.feedBack[idx].content,
+                    "form": meeting.feedBack[idx].form
+                });
+            }
+            // 평점형일 때 
+            else if (meeting.feedBack[idx].form == 2) {
+                rating.push({
+                    "_id": meeting.feedBack[idx]._id,
+                    "title": meeting.feedBack[idx].title,
+                    "content": meeting.feedBack[idx].content,
+                    "form": meeting.feedBack[idx].form
+                });
+            }
+        }
+
+
+        res.status(200).send(util.success(200, "피드백 질문 목록 완료", {
+            "rating": rating,
+            "multiChoice": multiChoice,
+            "shortAnswer": shortAnswer
+        }));
     },
 
 
@@ -148,61 +191,150 @@ module.exports = {
             feedbackArray.push(item);
         }
 
-        var latestArray = [];
+        let rating = [];
+        let multiChoice = [];
+        let shortAnswer = [];
 
-        // 제일 답한 갯수가 많은 순서대로 choice가 들어있는 배열
-        var resultArray = [];
-        // 제일 답한 갯수가 많은 그 갯수가 들어있는 배열
-        var countArray = [];
+        // 폼이 0(단답형) 일때, // 결과를 받는 배열 -> resultArray에는 단답형일 때 최신순으로 답 7개만 [ , , , ,] push. 
+        for (var idx in feedbackArray) {
 
-        // 폼이 0(단답형) 일때, 
-        for (var i in feedbackArray) {
-            if (feedbackArray[i].form == 0) {
-                for (var item of feedbackArray[i].result) {
-                    latestArray.unshift(item);
+            if (feedbackArray[idx].form == 0) {
+                var resultArray = [];
+                for (var item of feedbackArray[idx].result) {
+                    resultArray.unshift(item);
                 }
+
+                resultArray = resultArray.slice(0, 7);
+                shortAnswer.push({
+                    "_id": meeting.feedBack[idx]._id,
+                    "title": meeting.feedBack[idx].title,
+                    "content": meeting.feedBack[idx].content,
+                    "form": meeting.feedBack[idx].form,
+                    "result": resultArray
+                });
 
             }
             // 폼이 1(객관식) 일때,
-            // 보기와 사용자들이 해당 보기와 보기에 답한 갯수를 보내줘야 함 
-            else if (feedbackArray[i].form == 1) {
-                for (var item of feedbackArray[i].result) {
+            // 객관식일 때 {chocie: , count: }가 push.
+            else if (feedbackArray[idx].form == 1) {
+                var resultArray = [];
+                resultArray.length = feedbackArray[idx].choice.length;
+                for (var item of feedbackArray[idx].result) {
 
+                    var countArray = [0, 0, 0, 0, 0, 0, 0];
+                    countArray.length = feedbackArray[idx].choice.length;
+
+                    for (var i in feedbackArray[idx].result) {
+                        // 보기 순서대로, count도 들어감
+                        // 질문이 들어가는게 resultArray배열
+                        resultArray[i] = feedbackArray[idx].choice[i];
+                        if (feedbackArray[idx].result[i] === "1") {
+                            countArray[0] = ++countArray[0];
+                        } else if (feedbackArray[idx].result[i] === "2") {
+                            countArray[1] = ++countArray[1];
+                        } else if (feedbackArray[idx].result[i] === "3") {
+                            countArray[2] = ++countArray[2];
+                        } else if (feedbackArray[idx].result[i] === "4") {
+                            countArray[3] = ++countArray[3];
+                        } else if (feedbackArray[idx].result[i] === "5") {
+                            countArray[4] = ++countArray[4];
+                        } else if (feedbackArray[idx].result[i] === "6") {
+                            countArray[5] = ++countArray[5];
+                        } else if (feedbackArray[idx].result[i] === "7") {
+                            countArray[6] = ++countArray[6];
+                        }
+                    }
+
+                    //아무것도 체크한 답이 없다면 0을 push
                 }
 
+                resultArray = resultArray.slice(0, feedbackArray[idx].choice.length);
 
+                var sortData = [];
                 for (var idx in resultArray) {
-                    response.push({
+                    sortData.push({
                         "choice": resultArray[idx],
                         "count": countArray[idx]
                     });
                 }
+
+                sortData = sortData.sort((a, b) => {
+                    return Number(b.count) - Number(a.count);
+                })
+
+                multiChoice.push({
+                    "_id": meeting.feedBack[idx]._id,
+                    "title": meeting.feedBack[idx].title,
+                    "content": meeting.feedBack[idx].content,
+                    "form": meeting.feedBack[idx].form,
+                    "result": sortData
+                });
+
+
+
             }
-            if (feedbackArray[i].form == 2) {
+            // 평점형일 때 {count: [5점,4점,3점,2점,1점] }가 push
+            else if (feedbackArray[idx].form == 2) {
+
+                var countArray = [0, 0, 0, 0, 0];
+                countArray.length = 5;
+
+                var c1 = 0;
+                var c2 = 0;
+                var c3 = 0;
+                var c4 = 0;
+                var c5 = 0;
+                for (var i in feedbackArray[idx].result) {
+                    {
+                        if (feedbackArray[idx].result[i] == 1) {
+                            countArray[4] = ++c1;
+                            //console.log(countArray);
+                        }
+                        if (feedbackArray[idx].result[i] == 2) {
+                            countArray[3] = ++c2;
+                            //console.log(countArray);
+                        }
+                        if (feedbackArray[idx].result[i] == 3) {
+                            countArray[2] = ++c3;
+                            //console.log(countArray);
+                        }
+                        if (feedbackArray[idx].result[i] == 4) {
+                            countArray[1] = ++c4;
+                            // console.log(countArray);
+                        }
+                        if (feedbackArray[idx].result[i] == 5) {
+                            countArray[0] = ++c5;
+                            //console.log(countArray);
+                        }
+                    }
+                }
+
+                rating.push({
+                    "_id": meeting.feedBack[idx]._id,
+                    "title": meeting.feedBack[idx].title,
+                    "content": meeting.feedBack[idx].content,
+                    "form": meeting.feedBack[idx].form,
+                    "result": countArray
+                });
 
             }
         }
 
-
-
-
-        // 폼이 2(평점형) 일때, 평점 평균내고, 5점 몇개 4점 몇개 갯수 보내줘야 함
-
-
         // 이 전체 결과를 result배열에 정돈된 데이터로 배열 추가하고 그 배열 리스트 보내기
-
-
-        res.status(200).send(util.success(200, "피드백 결과 목록 완료", meeting));
+        res.status(200).send(util.success(200, "피드백 결과 목록 완료", {
+            "rating": rating,
+            "multiChoice": multiChoice,
+            "shortAnswer": shortAnswer
+        }));
 
     },
 
     submitResult: async (req, res) => {
         //날짜를 받아와서 db에 넣어주기
+
         const meetingId = req.params.meetingId;
 
-        const {
-            list
-        } = req.body;
+        const list = req.body;
 
         const meeting = await meetingModel.findById({
             _id: meetingId
@@ -212,10 +344,9 @@ module.exports = {
         });
 
         //list에 있는 값들을 하나씩 빼서 feedback.result[i]에 각각 push
-        for (var item of list) {
-            meeting.feedBack[i].result.push(item);
+        for (var idx in list) {
+            meeting.feedBack[idx].result.push(list[idx]);
         }
-
 
         await meeting.save();
 
