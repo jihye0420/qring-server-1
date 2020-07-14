@@ -209,7 +209,6 @@ module.exports = {
                     "_id": meeting.feedBack[idx]._id,
                     "title": meeting.feedBack[idx].title,
                     "content": meeting.feedBack[idx].content,
-                    "form": meeting.feedBack[idx].form,
                     "result": resultArray
                 });
 
@@ -228,19 +227,19 @@ module.exports = {
                         // 보기 순서대로, count도 들어감
                         // 질문이 들어가는게 resultArray배열
                         resultArray[i] = feedbackArray[idx].choice[i];
-                        if (feedbackArray[idx].result[i] === "1") {
+                        if (feedbackArray[idx].result[i] == 1) {
                             countArray[0] = ++countArray[0];
-                        } else if (feedbackArray[idx].result[i] === "2") {
+                        } else if (feedbackArray[idx].result[i] == 2) {
                             countArray[1] = ++countArray[1];
-                        } else if (feedbackArray[idx].result[i] === "3") {
+                        } else if (feedbackArray[idx].result[i] == 3) {
                             countArray[2] = ++countArray[2];
-                        } else if (feedbackArray[idx].result[i] === "4") {
+                        } else if (feedbackArray[idx].result[i] == 4) {
                             countArray[3] = ++countArray[3];
-                        } else if (feedbackArray[idx].result[i] === "5") {
+                        } else if (feedbackArray[idx].result[i] == 5) {
                             countArray[4] = ++countArray[4];
-                        } else if (feedbackArray[idx].result[i] === "6") {
+                        } else if (feedbackArray[idx].result[i] == 6) {
                             countArray[5] = ++countArray[5];
-                        } else if (feedbackArray[idx].result[i] === "7") {
+                        } else if (feedbackArray[idx].result[i] == 7) {
                             countArray[6] = ++countArray[6];
                         }
                     }
@@ -266,11 +265,8 @@ module.exports = {
                     "_id": meeting.feedBack[idx]._id,
                     "title": meeting.feedBack[idx].title,
                     "content": meeting.feedBack[idx].content,
-                    "form": meeting.feedBack[idx].form,
                     "result": sortData
                 });
-
-
 
             }
             // 평점형일 때 {count: [5점,4점,3점,2점,1점] }가 push
@@ -279,32 +275,22 @@ module.exports = {
                 var countArray = [0, 0, 0, 0, 0];
                 countArray.length = 5;
 
-                var c1 = 0;
-                var c2 = 0;
-                var c3 = 0;
-                var c4 = 0;
-                var c5 = 0;
                 for (var i in feedbackArray[idx].result) {
                     {
                         if (feedbackArray[idx].result[i] == 1) {
-                            countArray[4] = ++c1;
-                            //console.log(countArray);
+                            countArray[4] = ++countArray[4];
                         }
                         if (feedbackArray[idx].result[i] == 2) {
-                            countArray[3] = ++c2;
-                            //console.log(countArray);
+                            countArray[3] = ++countArray[3];
                         }
                         if (feedbackArray[idx].result[i] == 3) {
-                            countArray[2] = ++c3;
-                            //console.log(countArray);
+                            countArray[2] = ++countArray[2];
                         }
                         if (feedbackArray[idx].result[i] == 4) {
-                            countArray[1] = ++c4;
-                            // console.log(countArray);
+                            countArray[1] = ++countArray[1];
                         }
                         if (feedbackArray[idx].result[i] == 5) {
-                            countArray[0] = ++c5;
-                            //console.log(countArray);
+                            countArray[0] = ++countArray[0];
                         }
                     }
                 }
@@ -313,7 +299,6 @@ module.exports = {
                     "_id": meeting.feedBack[idx]._id,
                     "title": meeting.feedBack[idx].title,
                     "content": meeting.feedBack[idx].content,
-                    "form": meeting.feedBack[idx].form,
                     "result": countArray
                 });
 
