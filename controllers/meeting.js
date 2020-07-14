@@ -99,10 +99,9 @@ async function proceedMeeting(adminEmail) {
         }
     }
 
+    const start = lastMeeting.date + " " + lastMeeting.startTime + ":00";
     const end = lastMeeting.date + " " + lastMeeting.endTime + ":00";
-    var feedBackEnd = new Date(end);
-    feedBackEnd.setHours(feedBackEnd.getHours()+2);
-    feedBackEnd = moment(feedBackEnd).format('YYYY.MM.DD HH:mm:ss');
+
 
     return {
         "groupId" : groupIdData,
@@ -110,8 +109,8 @@ async function proceedMeeting(adminEmail) {
         "name" : lastMeeting.name,
         "qrImg" : lastMeeting.qrImg,
         "headCount" : lastMeeting.headCount,
-        "start" : lastMeetingStartTime,
-        "end" : feedBackEnd
+        "start" : start,
+        "end" : end
     }
 }
 module.exports = {
@@ -236,7 +235,6 @@ module.exports = {
         }
 
         if (!name || !date || !startTime || !endTime || !late || !headCount) {
-            console.log(name,date, startTime,endTime, headCount, late);
             return res.status(400).send(util.fail(400, '필요한 값이 없습니다.'))
         }
 
@@ -375,6 +373,7 @@ module.exports = {
      * 모임 생성시 시간 중복 확인
      */
     time: async (req, res) => {
+        console.log(1);
         const adminEmail = req.email;
         const admin = await adminModel.findOne({
             email: adminEmail
@@ -388,7 +387,6 @@ module.exports = {
             startTime,
             endTime,
         } = req.body;
-
 
         for (let groupItem of allGroup) {
             for (let meetingId of groupItem.meetings) {
