@@ -245,6 +245,7 @@ const qrcodeController = {
           }, {
             $push: update
           });
+          req.io.to(meetingId).emit('homeAttendCnt',meetingInfo.user.length);
           res.status(200).send(util.success(200, "제출에 성공하였습니다."));
           return;
         }
