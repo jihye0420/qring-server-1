@@ -101,63 +101,6 @@ async function listLoop(allGroup) {
         proceed: resolvedResult.filter((item) => item.type === 'proceed').map((item) => item.Item)
     })
 }
-async function proceedMeeting(adminEmail) {
-    const admin = await adminModel.findOne({
-        email: adminEmail
-    })
-    const allGroup = admin.groups;
-
-
-    const now = moment().format("YYYY.MM.DD HH:mm:ss");
-    var lastMeeting = null;
-    var groupIdData = null;
-    let lastMeetingStartTime;
-    
-    for (let groupId of allGroup){
-        const group = await groupModel.findById({
-            _id : groupId
-        })
-        for (let meetingId of group.meetings){
-            const meeting = await meetingModel.findById({
-                _id : meetingId
-            })
-            const start = meeting.date + " " + meeting.startTime + ":00";
-            var attendeStart = new Date(start);
-            attendeStart.setHours(attendeStart.getHours()-1);
-            attendeStart = moment(attendeStart).format('YYYY.MM.DD HH:mm:ss');
-
-            const end = meeting.date + " " + meeting.endTime + ":00";
-            var feedBackEnd = new Date(end);
-            feedBackEnd.setHours(feedBackEnd.getHours()+2);
-            feedBackEnd = moment(feedBackEnd).format('YYYY.MM.DD HH:mm:ss');
-
-            //종료되지 않은 모임
-            if (now < feedBackEnd ){
-                //초기값이거나 시작시간이 더 빠른것
-                if (lastMeeting === null || attendeStart < lastMeetingStartTime){
-                    lastMeeting = meeting;
-                    lastMeetingStartTime = attendeStart; 
-                    groupIdData = groupId;
-                }
-            }
-        }
-    }
-
-    const start = lastMeeting.date + " " + lastMeeting.startTime + ":00";
-    const end = lastMeeting.date + " " + lastMeeting.endTime + ":00";
-
-
-    return {
-        "groupId" : groupIdData,
-        "meetingId" : lastMeeting._id,
-        "name" : lastMeeting.name,
-        "qrImg" : lastMeeting.qrImg,
-        "attendCount" : lastMeeting.user.length,
-        "headCount" : lastMeeting.headCount,
-        "start" : start,
-        "end" : end
-    }
-}
 module.exports = {
     // 첫 모임 생성 & 피드백
     createNewGroup: async (req, res) => {
