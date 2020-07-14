@@ -161,15 +161,19 @@ module.exports = {
                     resultArray.unshift(item);
                 }
 
-                response.push(resultArray);
+                resultArray = resultArray.slice(0, 7);
+                response.push({
+                    "단답형": resultArray
+                });
 
             }
             // 폼이 1(객관식) 일때,
             // 객관식일 때 {chocie: , count: }가 push.
             else if (feedbackArray[idx].form == 1) {
-
-                var countArray = [];
-                console.log("객관식인 문제: ", feedbackArray[idx]);
+                var resultArray = [];
+                resultArray.length = feedbackArray[idx].choice.length;
+                var countArray = [0, 0, 0, 0, 0, 0, 0];
+                countArray.length = feedbackArray[idx].choice.length;
                 for (var item of feedbackArray[idx].result) {
                     var c1 = 0;
                     var c2 = 0;
@@ -178,86 +182,94 @@ module.exports = {
                     var c5 = 0;
                     var c6 = 0;
                     var c7 = 0;
+
                     for (var i in feedbackArray[idx].result) {
-                        if (feedbackArray[idx].result[i] === "1") {
-                            c1++;
-                            countArray[0] = c1;
-                            //console.log(countArray);
-                        }
-                        if (feedbackArray[idx].result[i] === "2") {
-                            c2++;
-                            countArray[1] = c2;
-                        }
-                        if (feedbackArray[idx].result[i] === "3") {
-                            c3++;
-                            countArray[2] = c3;
-                        }
-                        if (feedbackArray[idx].result[i] === "4") {
-                            c4++;
-                            countArray[3] = c4;
-                        }
-                        if (feedbackArray[idx].result[i] === "5") {
-                            c5++;
-                            countArray[4] = c5;
-                        }
-                        if (feedbackArray[idx].result[i] === "6") {
-                            c6++;
-                            countArray[5] = c6;
-                        }
-                        if (feedbackArray[idx].result[i] === "7") {
-                            c7++;
-                            countArray[6] = c7;
-                            // console.log(countArray);
+                        // 보기 순서대로, count도 들어감
+                        resultArray[i] = feedbackArray[idx].choice[i];
+                        if (feedbackArray[idx].result[i] === "0") {
+                            countArray[0] = ++c1;
+                        } else if (feedbackArray[idx].result[i] === "1") {
+                            countArray[1] = ++c2;
+                        } else if (feedbackArray[idx].result[i] === "2") {
+                            countArray[2] = ++c3;
+                        } else if (feedbackArray[idx].result[i] === "3") {
+                            countArray[3] = ++c4;
+                        } else if (feedbackArray[idx].result[i] === "4") {
+                            countArray[4] = ++c5;
+                        } else if (feedbackArray[idx].result[i] === "5") {
+                            countArray[5] = ++c6;
+                        } else if (feedbackArray[idx].result[i] === "6") {
+                            countArray[6] = ++c7;
                         }
                     }
-                    //countArray.push
+
+                    //아무것도 체크한 답이 없다면 0을 push
                 }
 
-                response.push({
-                    //"choice": resultArray[idx],
-                    "count": countArray
-                });
+                var sortData = [];
+                for (var idx in resultArray) {
+                    sortData.push({
+                        "choice": resultArray[idx],
+                        "count": countArray[idx]
+                    });
+                }
 
-                console.log(response);
+                sortData = sortData.sort((a, b) => {
+                    return Number(b.count) - Number(a.count);
+                })
+
+                for (var item of sortData) {
+                    response.push({
+                        "객관식": item
+                    });
+                }
+
+
             }
             // 평점형일 때 {count: [5점,4점,3점,2점,1점] }가 push
             if (feedbackArray[idx].form == 2) {
                 countArray = [];
-                if (feedbackArray[idx].result[i] == 1) {
-                    c1 = c1 + 1;
-                    countArray[0] = c1;
-                    //console.log(countArray);
-                }
-                if (feedbackArray[idx].result[i] == 2) {
-                    c2 = c2 + 1;
-                    countArray[1] = c2;
-                    //console.log(countArray);
-                }
-                if (feedbackArray[idx].result[i] == 3) {
-                    c3 = c3 + 1;
-                    countArray[2] = c3;
-                    //console.log(countArray);
-                }
-                if (feedbackArray[idx].result[i] == 4) {
-                    c4 = c4 + 1;
-                    countArray[3] = c4;
-                    // console.log(countArray);
-                }
-                if (feedbackArray[idx].result[i] == 5) {
-                    c5 = c5 + 1;
-                    countArray[4] = c5;
-                    //console.log(countArray);
+                countArray.length = 5;
+                var c1 = 0;
+                var c2 = 0;
+                var c3 = 0;
+                var c4 = 0;
+                var c5 = 0;
+                var c6 = 0;
+                var c7 = 0;
+                for (var i in feedbackArray[idx].result) {
+                    {
+                        if (feedbackArray[idx].result[i] == 1) {
+                            countArray[4] = ++c1;
+                            //console.log(countArray);
+                        }
+                        if (feedbackArray[idx].result[i] == 2) {
+                            countArray[3] = ++c2;
+                            //console.log(countArray);
+                        }
+                        if (feedbackArray[idx].result[i] == 3) {
+                            countArray[2] = ++c3;
+                            //console.log(countArray);
+                        }
+                        if (feedbackArray[idx].result[i] == 4) {
+                            countArray[1] = ++c4;
+                            // console.log(countArray);
+                        }
+                        if (feedbackArray[idx].result[i] == 5) {
+                            countArray[0] = ++c5;
+                            //console.log(countArray);
+                        }
+                    }
                 }
 
                 response.push({
-                    "count": countArray
+                    "평점형": countArray
                 });
+
             }
         }
 
         // 이 전체 결과를 result배열에 정돈된 데이터로 배열 추가하고 그 배열 리스트 보내기
-
-
         res.status(200).send(util.success(200, "피드백 결과 목록 완료", response));
 
     },
