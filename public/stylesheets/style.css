@@ -1,13 +1,15 @@
 @font-face {
   font-family: "YiSunShinDotumM";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/YiSunShinDotumM.woff") format("woff");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/YiSunShinDotumM.woff")
+    format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: "CookieRun-Regular";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/CookieRun-Regular.woff") format("woff");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/CookieRun-Regular.woff")
+    format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -161,12 +163,12 @@ a {
 }
 
 /* On mouse-over, add a grey background color */
-.container:hover input~.checkmark {
+.container:hover input ~ .checkmark {
   /* background-color: #ccc; */
 }
 
 /* When the radio button is checked, add a blue background */
-.container input:checked~.checkmark {
+.container input:checked ~ .checkmark {
   border: 1px solid #ff6600;
 }
 
@@ -178,7 +180,7 @@ a {
 }
 
 /* Show the indicator (dot/circle) when checked */
-.container input:checked~.checkmark:after {
+.container input:checked ~ .checkmark:after {
   display: block;
 }
 
@@ -251,8 +253,8 @@ body {
   border-bottom: 2px solid rgb(22, 22, 22);
 }
 
-.form-input input:focus+.placeholder,
-.form-input input:valid+.placeholder {
+.form-input input:focus + .placeholder,
+.form-input input:valid + .placeholder {
   top: 0;
   cursor: inherit;
   font-size: 14px;
@@ -274,7 +276,6 @@ body {
   flex-direction: column;
   font-family: CookieRun-Regular;
 }
-
 
 .starR1.on {
   background-position: 0 0;
@@ -325,7 +326,7 @@ body {
   position: relative;
   z-index: 1;
   float: left;
-  width: 15px;
+  width: 30px;
   height: 30px;
   cursor: pointer;
   background-color: rgb(211, 211, 211);
@@ -338,7 +339,7 @@ body {
   position: absolute !important;
 }
 
-.startRadio__box input:checked+.startRadio__img {
+.startRadio__box input:checked + .startRadio__img {
   background-color: #ff6600;
   border: #ff6600;
 }
