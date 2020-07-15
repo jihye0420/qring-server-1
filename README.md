@@ -15,7 +15,7 @@
 <br>
 
 
-## :bookmark_tabs: 프로젝트 설명
+## :information_desk_person: 프로젝트 설명
 
 <b>모임의 시작과 끝을 함께하는, QRing입니다. 🐬</b> 
 <br />
