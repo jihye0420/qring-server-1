@@ -29,6 +29,7 @@ app.io.on('connection', (socket) => {
 
     console.log("joinRoom ok")
     socket.join(meetingId, () => {
+      console.log(meetingId);
       app.io.to(meetingId).emit('joinRoom', meetingId);
     });
   });
