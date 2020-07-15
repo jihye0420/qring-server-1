@@ -482,7 +482,7 @@ module.exports = {
 
             const data = {
                 "name": meeting.name,
-                "data": meeting.date,
+                "date": meeting.date,
                 "startTime": meeting.startTime,
                 "endTime": meeting.endTime,
                 "late": meeting.late,
@@ -539,7 +539,7 @@ module.exports = {
 
             const data = {
                 "name": meeting.name,
-                "data": meeting.date,
+                "date": meeting.date,
                 "startTime": meeting.startTime,
                 "endTime": meeting.endTime,
                 "late": meeting.late,
