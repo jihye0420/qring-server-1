@@ -49,7 +49,7 @@ app.io.on('connection', (socket) => {
 
   function sendHeartbeat() {
     setTimeout(sendHeartbeat, 9000);
-    app.io.to(meetingId).emit("ping", {
+    app.io.emit("ping", {
       beat: 1
     });
   }
