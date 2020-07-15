@@ -23,22 +23,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.io = require('socket.io')();
 
 app.io.on('connection', (socket) => {
-  console.log("연결 완료")
+  console.log("connection ok")
 
   socket.on('joinRoom', (meetingId) => {
+
+    console.log("joinRoom ok")
     socket.join(meetingId, () => {
       app.io.to(meetingId).emit('joinRoom', meetingId);
     });
   });
 
   socket.on('leaveRoom', (meetingId) => {
+    console.log("leaveRoom ok")
     socket.leave(meetingId, () => {
       app.io.to(meetingId).emit('leaveRoom', meetingId);
     });
   });
 
   socket.on('disconnect', () => {
-    console.log('관리자가 나갔다.');
+    console.log('disconnect ok');
   });
 
 });
