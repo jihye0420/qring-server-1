@@ -24,7 +24,8 @@ app.io = require('socket.io')();
 
 app.io.on('connection', (socket) => {
   console.log("connection ok")
-  setTimeout(sendHeartbeat, 9000);
+  //setTimeout(sendHeartbeat, 9000);
+  sendHeartbeat();
 
   socket.on('joinRoom', (meetingId) => {
 
@@ -48,7 +49,7 @@ app.io.on('connection', (socket) => {
 
   function sendHeartbeat() {
     setTimeout(sendHeartbeat, 9000);
-    app.io.emit("ping", {
+    app.io.to(meetingId).emit("ping", {
       beat: 1
     });
   }
