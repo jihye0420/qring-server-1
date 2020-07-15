@@ -435,14 +435,9 @@ module.exports = {
                 _id: meetingId,
             });
 
-            for (let userItem of meetingObject.user) {
-                userItem.attendance = "결석";
-            }
-
             const data = {
                 groupId: groupId,
                 meeting: {
-                    user: meetingObject.user,
                     name: meetingObject.name,
                     date: meetingObject.date,
                     startTime: meetingObject.startTime,
