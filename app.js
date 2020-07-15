@@ -24,8 +24,7 @@ app.io = require('socket.io')();
 
 app.io.on('connection', (socket) => {
   console.log("connection ok")
-  //setTimeout(sendHeartbeat, 9000);
-  sendHeartbeat;
+  setTimeout(sendHeartbeat, 9000);
 
   socket.on('joinRoom', (meetingId) => {
 
