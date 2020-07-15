@@ -252,7 +252,7 @@ module.exports = {
 
             await meeting.save();
 
-            req.io.to(meetingId).emit("meetingFeedbackCnt", meeting.feedBack.length);
+            req.io.to(meetingId).emit("meetingFeedbackCnt", meeting.feedBack[0].result.length);
             res.render("feedbackresult", {
                 meetingId: meetingId,
                 result: true,
