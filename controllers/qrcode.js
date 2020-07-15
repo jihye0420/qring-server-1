@@ -180,7 +180,6 @@ const qrcodeController = {
           meetingId: meetingId,
           result: 2,
         });
-        console.log("뭐지");
       }
       //첫 제출인 경우
       else {
@@ -200,9 +199,10 @@ const qrcodeController = {
         }, {
           $push: update,
         });
-
+        console.log("attend", meetingInfo.user.length);
         req.io.to(meetingId).emit('homeAttendCnt', meetingInfo.user.length + 1);
         req.io.to(meetingId).emit('meetingAttendCnt', meetingInfo.user.length + 1);
+        console.log("attend2", meetingInfo.user.length);
 
         res.render("checkresult", {
           groupId: groupId,
