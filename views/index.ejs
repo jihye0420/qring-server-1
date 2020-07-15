@@ -115,20 +115,22 @@
         $(".wrap_button").html(
           "<img style='width:30px;' src='/images/loading.gif'>"
         );
-        $(".wrap_button").attr("disabled", true);
         const ff = $(".input_email").val();
         if (!isEmail(ff)) {
+          alert("이메일 형식이 틀렸습니다.")
           return false;
         } else {
           localStorage.setItem("name", $(".input_name").val());
           localStorage.setItem("email", $(".input_email").val());
-          localStorage.setItem("info", '<%= result._id %>');
+          localStorage.setItem("info3", '<%= result._id %>');
+          $(".wrap_button").attr("disabled", true);
+
           return true;
         }
       });
     });
 
-    if (localStorage.getItem("info") == '<%= result._id %>') {
+    if (localStorage.getItem("info3") == '<%= result._id %>') {
       location.href =
         "http://qring-server-dev.ap-northeast-2.elasticbeanstalk.com/qrcode/submission/<%= gId %>/<%= result._id %>"
     }
