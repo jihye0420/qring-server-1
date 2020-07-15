@@ -93,31 +93,30 @@ const qrcodeController = {
     const groupId = req.params.groupId;
     const meetingId = req.params.meetingId;
 
-    const { name, email, abroad, health } = req.body;
+    const {
+      name,
+      email,
+      abroad,
+      health
+    } = req.body;
     //list에 있는 값을 feedback.result에 순서대로 하나씩 push해야한다.
-    const groupInfo = await groupModel.findById(
-      {
-        _id: groupId,
-      },
-      {
-        meetings: 1,
-      }
-    );
+    const groupInfo = await groupModel.findById({
+      _id: groupId,
+    }, {
+      meetings: 1,
+    });
 
     const meetingIdx = groupInfo.meetings.indexOf(meetingId);
-    const meetingInfo = await meetingModel.findById(
-      {
-        _id: meetingId,
-      },
-      {
-        _id: 0,
-        user: 1,
-        date: 1,
-        startTime: 1,
-        endTime: 1,
-        late: 1,
-      }
-    );
+    const meetingInfo = await meetingModel.findById({
+      _id: meetingId,
+    }, {
+      _id: 0,
+      user: 1,
+      date: 1,
+      startTime: 1,
+      endTime: 1,
+      late: 1,
+    });
 
     if (groupInfo === null || meetingInfo === null) {
       return res
@@ -130,15 +129,12 @@ const qrcodeController = {
     // 이어서 생성된 모임인 경우
     if (meetingIdx != 0) {
       const preMeetingId = groupInfo.meetings[meetingIdx - 1]; // 이전 회차 모임 id
-      const preMeetingInfo = await meetingModel.findById(
-        {
-          _id: preMeetingId,
-        },
-        {
-          _id: 0,
-          user: 1,
-        }
-      );
+      const preMeetingInfo = await meetingModel.findById({
+        _id: preMeetingId,
+      }, {
+        _id: 0,
+        user: 1,
+      });
       const result = preMeetingInfo.user.some((element) => {
         return !!~element.email.search(email);
       });
@@ -172,12 +168,12 @@ const qrcodeController = {
       });
       return;
     } else {
-      // 이메일 중복 제출 방지 : 똑같은 이메일로 제출한 경우
+      // 이메일 중복 제출 방지 : 똑같은 이메일로 제출한 경우 체크하기
       const flag = meetingInfo.user.some((element) => {
         return !!~element.email.search(email);
       });
-      // 해당 이메일로 이미 제출을 한 경우
 
+      // 해당 이메일로 이미 제출을 한 경우
       if (flag) {
         res.render("checkresult", {
           groupId: groupId,
@@ -199,14 +195,15 @@ const qrcodeController = {
             createdAt,
           },
         };
-        await meetingModel.findByIdAndUpdate(
-          {
-            _id: meetingId,
-          },
-          {
-            $push: update,
-          }
-        );
+        await meetingModel.findByIdAndUpdate({
+          _id: meetingId,
+        }, {
+          $push: update,
+        });
+
+        req.io.to(meetingId).emit('homeAttendCnt', meetingInfo.user.length);
+        req.io.to(meetingId).emit('meetingAttendCnt', meetingInfo.user.length);
+
         res.render("checkresult", {
           groupId: groupId,
           meetingId: meetingId,
@@ -217,94 +214,17 @@ const qrcodeController = {
     }
   },
 
-  //   // 새로 만든 모임인 경우
-  //   if (meetingIdx == 0) {
-  //     isAdded = false;
-  //   }
-  //   // 이어서 생성된 모임인 경우
-  //   else {
-  //     const preMeetingId = groupInfo.meetings[meetingIdx - 1]; // 이전 회차 모임 id
-  //     const preMeetingInfo = await meetingModel.findById({
-  //       _id: preMeetingId
-  //     }, {
-  //       _id: 0,
-  //       user: 1
-  //     });
-
-  //     const result = preMeetingInfo.user.some((element) => {
-  //       return !!~element.email.search(email);
-  //     });
-
-  //     // 이메일이 이전 회차에 존재하지 않는 경우
-  //     if (!result) {
-  //       isAdded = true;
-  //     }
-
-  //     // 출석 확인하기
-  //     const lDate = meetingInfo.date + " " + meetingInfo.startTime + ":00";
-  //     let limitDate = new Date(lDate);
-  //     limitDate.setHours(limitDate.getHours() - 1);
-  //     limitDate = moment(limitDate).format('YYYY.MM.DD HH:mm:ss');
-
-  //     // 출결 확인하기
-  //     const attendance =
-  //       await qrcodeController.checkAttendance(meetingInfo.startTime, meetingInfo.endTime, meetingInfo.late, meetingInfo.date, limitDate);
-
-  //     const createdAt = moment().format('YYYY.MM.DD HH:mm:ss');
-  //     if (attendance === -1) {
-  //       res.status(401).send(util.fail(401, "출석 가능 시간이 아닙니다."));
-  //       return;
-  //     } else {
-  //       // 이메일 중복 제출 방지 : 똑같은 이메일로 제출한 경우
-  //       const flag = meetingInfo.user.some((element) => {
-  //         return !!~element.email.search(email);
-  //       });
-
-  //       // 해당 이메일로 이미 제출을 한 경우
-  //       if (flag) {
-  //         res.status(400).send(util.fail(400, "이미 제출하셨습니다."));
-  //       }
-  //       //첫 제출인 경우
-  //       else {
-  //         const update = {
-  //           user: {
-  //             name,
-  //             email,
-  //             abroad,
-  //             health,
-  //             attendance,
-  //             isAdded,
-  //             createdAt,
-  //           },
-  //         };
-  //         await meetingModel.findByIdAndUpdate({
-  //           _id: meetingId
-  //         }, {
-  //           $push: update
-  //         });
-  //         req.io.to(meetingId).emit('homeAttendCnt', meetingInfo.user.length);
-  //         req.io.to(meetingId).emit('meetingAttendCnt', meetingInfo.user.length);
-  //         res.status(200).send(util.success(200, "제출에 성공하였습니다."));
-  //         return;
-  //       }
-  //     }
-  //   }
-  // },
-
   /**
    * 이전 미팅 참석자 가져오기
    */
   getPreUsers: async (meetingIdx, meetingId, groupInfo) => {
     const preMeetingId = groupInfo.meetings[meetingIdx - 1]; // 이어 만들기인 경우에만 이전 미팅 참석자를 가져오므로 -1 OK
-    const preMeetingInfo = await meetingModel.findById(
-      {
-        _id: preMeetingId,
-      },
-      {
-        _id: 0,
-        user: 1,
-      }
-    );
+    const preMeetingInfo = await meetingModel.findById({
+      _id: preMeetingId,
+    }, {
+      _id: 0,
+      user: 1,
+    });
 
     preMeetingInfo.user.forEach((element) => {
       element.attendance = -1;
@@ -318,11 +238,9 @@ const qrcodeController = {
       user: preMeetingInfo.user,
     };
     const meetingInfo = await meetingModel.findByIdAndUpdate(
-      filter,
-      {
+      filter, {
         $set: update,
-      },
-      {
+      }, {
         new: true,
       }
     );
@@ -466,15 +384,12 @@ const qrcodeController = {
           .status(401)
           .send(util.fail(401, "해당하는 userId가 없습니다."));
       }
-      const groupInfo = await groupModel.findById(
-        {
-          _id: groupId,
-        },
-        {
-          _id: 0,
-          meetings: 1,
-        }
-      );
+      const groupInfo = await groupModel.findById({
+        _id: groupId,
+      }, {
+        _id: 0,
+        meetings: 1,
+      });
       if (groupInfo === undefined || groupInfo === null) {
         return res
           .status(400)
@@ -525,15 +440,12 @@ const qrcodeController = {
    */
   loopMeetingList: async (meetings, email) => {
     const resultPromise = meetings.map(async (mId) => {
-      const preMeetingInfo = await meetingModel.findById(
-        {
-          _id: mId,
-        },
-        {
-          _id: 0,
-          user: 1,
-        }
-      );
+      const preMeetingInfo = await meetingModel.findById({
+        _id: mId,
+      }, {
+        _id: 0,
+        user: 1,
+      });
 
       const preUserInfo = preMeetingInfo.user.find(
         (element) => element.email === email
@@ -562,7 +474,10 @@ const qrcodeController = {
    */
   addUser: async (req, res) => {
     const meetingId = req.params.meetingId;
-    const { name, email } = req.body;
+    const {
+      name,
+      email
+    } = req.body;
 
     if (!meetingId) {
       res.status(401).send(util.fail(401, "meetingId가 없습니다."));
@@ -570,15 +485,12 @@ const qrcodeController = {
 
     const abroad = false;
     const health = false;
-    const result = await meetingModel.findById(
-      {
-        _id: meetingId,
-      },
-      {
-        _id: 0,
-        user: 1,
-      }
-    );
+    const result = await meetingModel.findById({
+      _id: meetingId,
+    }, {
+      _id: 0,
+      user: 1,
+    });
 
     if (result === null || result === undefined) {
       res.status(400).send(util.fail(400, "해당하는 meetingId가 없습니다."));
@@ -624,7 +536,9 @@ const qrcodeController = {
   updateUser: async (req, res) => {
     const meetingId = req.params.meetingId;
     const userId = req.params.userId;
-    const { name } = req.body;
+    const {
+      name
+    } = req.body;
 
     if (!name) {
       return res
@@ -674,17 +588,13 @@ const qrcodeController = {
     });
     if (idx > -1) users.splice(idx, 1);
 
-    const result = await meetingModel.findOneAndUpdate(
-      {
-        _id: meetingId,
-      },
-      {
-        user: users,
-      },
-      {
-        new: true,
-      }
-    );
+    const result = await meetingModel.findOneAndUpdate({
+      _id: meetingId,
+    }, {
+      user: users,
+    }, {
+      new: true,
+    });
 
     res.status(200).send(util.success(200, "참석자 삭제에 성공했습니다."));
   },
