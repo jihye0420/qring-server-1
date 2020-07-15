@@ -45,11 +45,11 @@
       </div>
       <div class="input_wrap">
         <div class="input_title" style="margin-top: 36px;">이름</div>
-        <input name="name" placeholder="홍길동" class="input name input_name" />
+        <input name="name" required placeholder="홍길동" class="input name input_name" />
       </div>
       <div class="input_wrap">
         <div class="input_title" style="margin-top: 14px;">이메일</div>
-        <input name="email" placeholder="eunsu.dev@gmail.com" class="input name input_email" />
+        <input name="email" required placeholder="eunsu.dev@gmail.com" class="input name input_email" />
       </div>
       <div class="wrap_bold" style="margin-top: 20px;">
         최근 14일 이내 위험 지역(이태원, 대구 등)을 방문하신 적이 있으신가요?
@@ -107,6 +107,8 @@
       return regExp.test(asValue); // 형식에 맞는 경우 true 리턴
     }
 
+    console.log()
+
     $(document).ready(function () {
       $(".formform").submit(function (e) {
         //stop submitting the form to see the disabled button effect
@@ -120,11 +122,16 @@
         } else {
           localStorage.setItem("name", $(".input_name").val());
           localStorage.setItem("email", $(".input_email").val());
-
+          localStorage.setItem("info", '<%= result._id %>');
           return true;
         }
       });
     });
+
+    if (localStorage.getItem("info") == '<%= result._id %>') {
+      location.href =
+        "http://qring-server-dev.ap-northeast-2.elasticbeanstalk.com/qrcode/submission/<%= gId %>/<%= result._id %>"
+    }
 
     if (localStorage.getItem("name") || localStorage.getItem("email")) {
       $(".input_name").val(localStorage.getItem("name"));
