@@ -25,7 +25,7 @@ router.put('/info/:groupid/:meetingid', auth.checkToken, upload.single('image'),
 //모임 정보 수정 meetingId (image:"url")
 router.put('/info/imageurl/:groupid/:meetingid', auth.checkToken, upload.single('image'), meetingController.putInfoImageUrl);
 
-// 모임삭제 meetingId
+// 모임삭제 
 router.delete('/:groupid/:meetingid', auth.checkToken, meetingController.deleteMeeting);
 
 //모임 리스트, 내 모임, 이어서 생성시

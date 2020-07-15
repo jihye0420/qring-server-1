@@ -511,15 +511,15 @@ module.exports = {
             meeting.image = image;
 
             const data = {
-                name: meeting.name,
-                data: meeting.date,
-                startTime: meeting.startTime,
-                endTime: meeting.endTime,
-                late: meeting.late,
-                headCount: meeting.headCount,
-                image: meeting.image,
-                qrImg: meeting.qrImg,
-            };
+                "name": meeting.name,
+                "date": meeting.date,
+                "startTime": meeting.startTime,
+                "endTime": meeting.endTime,
+                "late": meeting.late,
+                "headCount": meeting.headCount,
+                "image": meeting.image,
+                "qrImg": meeting.qrImg
+            }
             await meeting.save();
 
             await deleteProceeds(admin, meetingId);
@@ -570,15 +570,15 @@ module.exports = {
             meeting.headCount = req.body.headCount;
 
             const data = {
-                name: meeting.name,
-                data: meeting.date,
-                startTime: meeting.startTime,
-                endTime: meeting.endTime,
-                late: meeting.late,
-                headCount: meeting.headCount,
-                image: meeting.image,
-                qrImg: meeting.qrImg,
-            };
+                "name": meeting.name,
+                "date": meeting.date,
+                "startTime": meeting.startTime,
+                "endTime": meeting.endTime,
+                "late": meeting.late,
+                "headCount": meeting.headCount,
+                "image": meeting.image,
+                "qrImg": meeting.qrImg
+            }
 
             await meeting.save();
 
@@ -781,6 +781,7 @@ module.exports = {
         data = data.reverse();
         return res.status(200).send(util.success(200, "모임 회차 조회 성공", data));
     },
+  
     /**
      * QRcode 확인하기
      */
