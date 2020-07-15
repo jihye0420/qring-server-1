@@ -776,4 +776,19 @@ module.exports = {
         data = data.reverse();
         return res.status(200).send(util.success(200, "모임 회차 조회 성공", data));
     },
-}
+  
+    /**
+     * QRcode 확인하기
+     */
+    getQrcode: async(req,res) => {
+        const meetingId = req.params.meetingId;
+
+        const meeting = await meetingModel.findById({
+            _id: meetingId,
+        }, {_id : 0, qrImg:1});
+
+        console.log(meeting.qrImg);
+
+        return res.status(200).send(util.success(200, "qr코드 받아오기", meeting.qrImg));
+    }
+};

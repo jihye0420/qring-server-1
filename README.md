@@ -1,6 +1,6 @@
 # 🐬 Qring - QR코드로 만들어가는 우리의 모임 🐬
 
-<img style="border: 1px solid black !important; border-radius:20px;" src="https://user-images.githubusercontent.com/37949197/86798642-f6c0ea00-c0ab-11ea-92ee-56c7f83518be.png" width="200px" />
+<img style="border: 1px solid black !important; border-radius:20px;" src="https://user-images.githubusercontent.com/37949197/86798642-f6c0ea00-c0ab-11ea-92ee-56c7f83518be.png" width="250px" />
 
 
 ![node_badge](https://img.shields.io/badge/node-%3E%3D%2012.13.0-green)
@@ -135,6 +135,7 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 
 
 ## :computer: 개발자
+<img style="border: 1px solid black !important; border-radius:20px;" src="https://user-images.githubusercontent.com/37949197/87564632-9826ec00-c6fb-11ea-839b-4cdc8490919a.png" width="300px" />
 
 * [김민지](https://github.com/kimminji122258)
 > 마, 협업 처음인데 배운 것도 많고 팀원들이 너무 좋다마 <br />

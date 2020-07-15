@@ -37,5 +37,8 @@ router.get('/list/proceed', auth.checkToken, meetingController.ProceedMeeting);
 //모임 회차 정보 조회 groupId 
 router.get('/list/:groupid', auth.checkToken, meetingController.round);
 
+// qr코드 확인
+router.get('/qrcode/:meetingId', auth.checkToken, meetingController.getQrcode);
+
 
 module.exports = router;
