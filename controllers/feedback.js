@@ -96,9 +96,7 @@ module.exports = {
         });
 
         if (!meeting) {
-            res
-                .status(400)
-                .send(util.fail(400, "meeting ID를 DB에서 찾을 수 없습니다."));
+            res.status(400).send(util.fail(400, "meeting ID를 DB에서 찾을 수 없습니다."));
         }
 
         var feedbackArray = [];
@@ -131,33 +129,38 @@ module.exports = {
             else if (feedbackArray[idx].form == 1) {
                 var resultArray = [];
                 resultArray.length = feedbackArray[idx].choice.length;
-                for (var item of feedbackArray[idx].result) {
+
+                if (feedbackArray[idx].result == null) {
+                    console.log("0임")
+                    countArray = [0, 0, 0, 0, 0, 0, 0];
+                    resultArray[i] = feedbackArray[idx].choice[i];
+                } else {
+
                     var countArray = [0, 0, 0, 0, 0, 0, 0];
                     countArray.length = feedbackArray[idx].choice.length;
+                    for (var item of feedbackArray[idx].result) {
 
-                    for (var i in feedbackArray[idx].result) {
-                        if (feedbackArray[idx].result == null) {
-                            countArray = [0, 0, 0, 0, 0, 0, 0];
-                        }
-                        // 보기 순서대로, count도 들어감
-                        // 질문이 들어가는게 resultArray배열
-                        resultArray[i] = feedbackArray[idx].choice[i];
-                        if (feedbackArray[idx].result[i] == 1) {
-                            countArray[0] = ++countArray[0];
-                        } else if (feedbackArray[idx].result[i] == 2) {
-                            countArray[1] = ++countArray[1];
-                        } else if (feedbackArray[idx].result[i] == 3) {
-                            countArray[2] = ++countArray[2];
-                        } else if (feedbackArray[idx].result[i] == 4) {
-                            countArray[3] = ++countArray[3];
-                        } else if (feedbackArray[idx].result[i] == 5) {
-                            countArray[4] = ++countArray[4];
-                        } else if (feedbackArray[idx].result[i] == 6) {
-                            countArray[5] = ++countArray[5];
-                        } else if (feedbackArray[idx].result[i] == 7) {
-                            countArray[6] = ++countArray[6];
+                        for (var i in feedbackArray[idx].result) {
+                            resultArray[i] = feedbackArray[idx].choice[i];
+
+                            if (feedbackArray[idx].result[i] == 1) {
+                                countArray[0] = ++countArray[0];
+                            } else if (feedbackArray[idx].result[i] == 2) {
+                                countArray[1] = ++countArray[1];
+                            } else if (feedbackArray[idx].result[i] == 3) {
+                                countArray[2] = ++countArray[2];
+                            } else if (feedbackArray[idx].result[i] == 4) {
+                                countArray[3] = ++countArray[3];
+                            } else if (feedbackArray[idx].result[i] == 5) {
+                                countArray[4] = ++countArray[4];
+                            } else if (feedbackArray[idx].result[i] == 6) {
+                                countArray[5] = ++countArray[5];
+                            } else if (feedbackArray[idx].result[i] == 7) {
+                                countArray[6] = ++countArray[6];
+                            }
                         }
                     }
+
                 }
 
                 resultArray = resultArray.slice(0, feedbackArray[idx].choice.length);
@@ -181,6 +184,7 @@ module.exports = {
                     result: sortData,
                 });
             }
+
             // 평점형일 때 {count: [5점,4점,3점,2점,1점] }가 push
             else if (feedbackArray[idx].form == 2) {
                 var countArray = [0, 0, 0, 0, 0];
@@ -214,6 +218,7 @@ module.exports = {
                 });
             }
         }
+
 
         // 이 전체 결과를 result배열에 정돈된 데이터로 배열 추가하고 그 배열 리스트 보내기
         res.status(200).send(
