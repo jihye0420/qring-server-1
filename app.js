@@ -23,9 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.io = require('socket.io')();
 
 app.io.on('connection', (socket) => {
-  socket.on('init', (data) => {
-    console.log("관리자가 들어왔다.");
-  });
+  console.log("연결 완료")
 
   socket.on('joinRoom', (meetingId) => {
     socket.join(meetingId, () => {
