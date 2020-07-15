@@ -145,48 +145,14 @@
           "<img style='width:30px;' src='/images/loading.gif'>"
         );
         $(".wrap_button").attr("disabled", true);
+        localStorage.setItem("info", '<%= result._id %>');
         return true;
       });
     });
 
-    if (
-      localStorage.getItem("name") ||
-      localStorage.getItem("phone") ||
-      localStorage.getItem("address") ||
-      localStorage.getItem("part")
-    ) {
-      $(".input_name").val(localStorage.getItem("name"));
-      $(".input_phone").val(localStorage.getItem("phone"));
-      $(".input_address").val(localStorage.getItem("address"));
-
-      var part = localStorage.getItem("part");
-
-      if (part == "plan") {
-        $("input:radio[name='part']:radio[value='plan']").prop(
-          "checked",
-          true
-        ); // 선택하기
-      } else if (part == "design") {
-        $("input:radio[name='part']:radio[value='design']").prop(
-          "checked",
-          true
-        ); // 선택하기
-      } else if (part == "android") {
-        $("input:radio[name='part']:radio[value='android']").prop(
-          "checked",
-          true
-        ); // 선택하기
-      } else if (part == "iOS") {
-        $("input:radio[name='part']:radio[value='iOS']").prop(
-          "checked",
-          true
-        ); // 선택하기
-      } else if (part == "server") {
-        $("input:radio[name='part']:radio[value='server']").prop(
-          "checked",
-          true
-        ); // 선택하기
-      }
+    if (localStorage.getItem("info") == '<%= result._id %>') {
+      location.href =
+        "http://qring-server-dev.ap-northeast-2.elasticbeanstalk.com/feedback/submission/<%= result._id %>"
     }
   </script>
 </body>
