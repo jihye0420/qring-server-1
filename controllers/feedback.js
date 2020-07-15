@@ -2,6 +2,7 @@ const express = require("express");
 const GroupModel = require("../models/group.js");
 const AdminModel = require("../models/admin.js");
 const MeetingModel = require("../models/meeting.js");
+const moment = require("moment");
 const util = require("../modules/util");
 
 module.exports = {
@@ -230,6 +231,15 @@ module.exports = {
     );
   },
 
+  aleadySubmitResult: async (req, res) => {
+    const meetingId = req.params.meetingId;
+
+    res.render("feedbackresult", {
+      meetingId: meetingId,
+      result: true,
+    });
+  },
+
   submitResult: async (req, res) => {
     //날짜를 받아와서 db에 넣어주기
 
@@ -240,7 +250,7 @@ module.exports = {
       const meeting = await MeetingModel.findOne({
         _id: meetingId,
       });
-      const now = momnt().format("YYYY.MM.DD HH:mm:ss");
+      const now = moment().format("YYYY.MM.DD HH:mm:ss");
 
       for (var idx in list) {
         meeting.feedBack[idx].result.push(list[idx]);
