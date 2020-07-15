@@ -13,13 +13,21 @@
     </section>
     <section class="section2">
       <div class="checkout-wrap" style="text-align: center;">
+        <% if (result == 0){ %>
+        <img class="check-img" src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-unchecked.png" /><br>
+        <% }else if (result == 1){ %>
         <img class="check-img" src="https://qring.s3.ap-northeast-2.amazonaws.com/qring_check.png" /><br>
-        <% if (result == false){ %>
-        <span class="qring-main-checkout">출석 가능한 시간이 아닙니다</span><br><br>
         <% }else{ %>
-        <span class="qring-main-checkout">출석이 완료되었습니다</span><br><br>
+        <img class="check-img" src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-x.png" /><br>
         <% } %>
-        <% if (result == false){ %>
+        <% if (result == 0){ %>
+        <span class="qring-main-checkout">출석 가능한 시간이 아닙니다</span><br><br>
+        <% }else if (result == 1){ %>
+        <span class="qring-main-checkout">출석이 완료되었습니다</span><br><br>
+        <% }else{ %>
+        <span class="qring-main-checkout">이미 출석하였습니다</span><br><br>
+        <% } %>
+        <% if (result == 0){ %>
         <span class="qring-under-checkout">출석 가능한 시간이 지나서 출석체크를 할 수<br>
           없습니다. 모임 관리자에게 문의해주세요.
         </span><br><br>
@@ -27,7 +35,7 @@
         <span class="qring-under-checkout">모임이 종료되었다면 아래 버튼을 눌러서<br>
           피드백을 작성해주세요.</span><br><br>
         <div class="qring-button"
-          OnClick="location.href ='http://localhost:3000/qrcode/feedback/<%=groupId%>/<%=meetingId%>'">
+          OnClick="location.href ='http://qring-server-dev.ap-northeast-2.elasticbeanstalk.com/qrcode/feedback/<%=groupId%>/<%=meetingId%>'">
           피드백
           작성하기</div>
         <% } %>

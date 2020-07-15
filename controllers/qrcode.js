@@ -78,6 +78,17 @@ const qrcodeController = {
   /**
    * 웹 출석 폼 제출 : 이전 미팅 참석자들 참조
    */
+
+  alreadyFeedback: async (req, res) => {
+    const groupId = req.params.groupId;
+    const meetingId = req.params.meetingId;
+    res.render("checkresult", {
+      groupId: groupId,
+      meetingId: meetingId,
+      result: 1,
+    });
+  },
+
   submitForm: async (req, res) => {
     const groupId = req.params.groupId;
     const meetingId = req.params.meetingId;
@@ -158,7 +169,7 @@ const qrcodeController = {
       res.render("checkresult", {
         groupId: groupId,
         meetingId: meetingId,
-        result: false,
+        result: 0,
       });
       return;
     } else {
@@ -169,7 +180,11 @@ const qrcodeController = {
       // 해당 이메일로 이미 제출을 한 경우
 
       if (flag) {
-        res.status(400).send(util.fail(400, "이미 제출하셨습니다."));
+        res.render("checkresult", {
+          groupId: groupId,
+          meetingId: meetingId,
+          result: 2,
+        });
         console.log("뭐지");
       }
       //첫 제출인 경우
@@ -185,7 +200,6 @@ const qrcodeController = {
             createdAt,
           },
         };
-        console.log(update);
         await meetingModel.findByIdAndUpdate(
           {
             _id: meetingId,
@@ -197,7 +211,7 @@ const qrcodeController = {
         res.render("checkresult", {
           groupId: groupId,
           meetingId: meetingId,
-          result: true,
+          result: 1,
         });
         return;
       }
