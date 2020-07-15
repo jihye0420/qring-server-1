@@ -14,19 +14,51 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({
+  extended: false
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.io = require('socket.io')();
+
+app.io.on('connection', (socket) => {
+  socket.on('init', (data) => {
+    console.log("관리자가 들어왔다.");
+  });
+
+  socket.on('joinRoom', (meetingId) => {
+    socket.join(meetingId, () => {
+      app.io.to(meetingId).emit('joinRoom', meetingId);
+    });
+  });
+
+  socket.on('leaveRoom', (meetingId) => {
+    socket.leave(meetingId, () => {
+      app.io.to(meetingId).emit('leaveRoom', meetingId);
+    });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('관리자가 나갔다.');
+  });
+
+});
+
+app.use((req, res, next) => {
+  req.io = app.io;
+  next();
+});
 
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
