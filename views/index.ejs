@@ -122,13 +122,13 @@
         } else {
           localStorage.setItem("name", $(".input_name").val());
           localStorage.setItem("email", $(".input_email").val());
-          localStorage.setItem("info", '<%= result._id %>');
+          localStorage.setItem("info3", '<%= result._id %>');
           return true;
         }
       });
     });
 
-    if (localStorage.getItem("info") == '<%= result._id %>') {
+    if (localStorage.getItem("info3") == '<%= result._id %>') {
       location.href =
         "http://qring-server-dev.ap-northeast-2.elasticbeanstalk.com/qrcode/submission/<%= gId %>/<%= result._id %>"
     }
