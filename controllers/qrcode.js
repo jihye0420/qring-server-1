@@ -94,7 +94,6 @@ const qrcodeController = {
     const meetingId = req.params.meetingId;
 
     const { name, email, abroad, health } = req.body;
-
     //list에 있는 값을 feedback.result에 순서대로 하나씩 push해야한다.
     const groupInfo = await groupModel.findById(
       {
