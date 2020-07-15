@@ -746,38 +746,6 @@ module.exports = {
 
             const meetings = group.meetings;
 
-            // for (let Item of meetings) {
-            //     try {
-            //         let meeting = await meetingModel.findOne({
-            //             _id: Item
-            //         })
-
-            //         const userCount = meeting.user.length;
-
-            //         let isFeedBack = false;
-            //         var feedBackCount;
-            //         if (meeting.feedBack.length > 0) {
-            //             isFeedBack =true;
-            //             feedBackCount = meeting.feedBack[0].result.length;
-            //         } else feedBackCount = 0;
-            //         const meetingdata = {
-            //             "meetingid": meeting._id,
-            //             "image": meeting.image,
-            //             "qrImg": meeting.qrImg,
-            //             "name": meeting.name,
-            //             "date": meeting.date,
-            //             "headCount": meeting.headCount,
-            //             "userCount": userCount,
-            //             "feedBackCount": feedBackCount,
-            //             "isFeedBack" : isFeedBack
-            //         }
-
-            //         data.push(meetingdata);
-            //     } catch (e) {
-            //         return res.status(401).send(util.fail(401, "meeting 데이터 오류"));
-            //     }
-            // }
-
             try {
                 const resultPromises = meetings.map(async (Item) => {
                     let meeting = await meetingModel.findOne({

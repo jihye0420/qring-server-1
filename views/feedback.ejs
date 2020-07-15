@@ -18,8 +18,7 @@
 
 <body>
   <div id="wrap">
-    <form class="formform" action="/qrcode/submitfeedback/<%=groupId%>/<%=result._id%>" method="POST"
-      autocomplete="off">
+    <form class="formform" action="/feedback/submission/<%=result._id%>" method="POST" autocomplete="off">
       <div style="text-align: center; margin-top: 32px;">
         <img src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-banner.png" width="88px;" />
       </div>
@@ -68,11 +67,11 @@
       <div class="wrap_bold" style="margin-top: 20px;"><%= result.feedBack[i].title %></div>
       <div class="wrap_sub" style="margin-top: 5px;"><%= result.feedBack[i].content %></div>
       <div class="radio_wrap" style="text-align: left;">
-        <% result.feedBack[i].choice.forEach(t=>{ %>
-        <label class="container"><%= t %>
-          <input required="true" type="radio" value="true" name='<%=i%>' />
+        <%for(t = 0; t < result.feedBack[i].choice.length; t++) { %>
+        <label class="container"><%= result.feedBack[i].choice[t] %>
+          <input required="true" type="radio" value="<%=t+1%>" name='<%=i%>' />
           <span class="checkmark"></span> </label><br />
-        <% }) %>
+        <% } %>
       </div>
       <% } else if(result.feedBack[i].form == 2){ %>
       <div class="hrhr" style="

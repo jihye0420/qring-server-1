@@ -114,6 +114,7 @@ const qrcodeController = {
         .status(402)
         .send(util.fail(402, "해당하는 groupId 또는 meetingId가 없습니다."));
     }
+    console.log("qweeq");
 
     let isAdded = false;
     // 이어서 생성된 모임인 경우
@@ -137,7 +138,6 @@ const qrcodeController = {
         isAdded = true;
       }
     }
-
     // 출석 확인하기
     const lDate = meetingInfo.date + " " + meetingInfo.startTime + ":00";
     let limitDate = new Date(lDate);
@@ -167,8 +167,10 @@ const qrcodeController = {
         return !!~element.email.search(email);
       });
       // 해당 이메일로 이미 제출을 한 경우
+
       if (flag) {
         res.status(400).send(util.fail(400, "이미 제출하셨습니다."));
+        console.log("뭐지");
       }
       //첫 제출인 경우
       else {
@@ -183,6 +185,7 @@ const qrcodeController = {
             createdAt,
           },
         };
+        console.log(update);
         await meetingModel.findByIdAndUpdate(
           {
             _id: meetingId,
