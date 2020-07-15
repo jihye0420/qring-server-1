@@ -134,16 +134,16 @@ module.exports = {
                 var resultArray = [];
                 resultArray.length = feedbackArray[idx].choice.length;
 
-                var a = [];
-
-                for (var item of feedbackArray[idx].choice) {
-                    a.push({
-                        "choice": item,
-                        "count": 0
-                    })
-                }
-
                 if (feedbackArray[idx].result == 0) {
+                    var a = [];
+
+                    for (var item of feedbackArray[idx].choice) {
+                        a.push({
+                            "choice": item,
+                            "count": 0
+                        })
+                    }
+
                     multiChoice.push({
                         "_id": meeting.feedBack[idx]._id,
                         "title": meeting.feedBack[idx].title,
@@ -151,37 +151,26 @@ module.exports = {
                         "result": a
                     });
                 } else {
-                    for (var item of feedbackArray[idx].result) {
+                    var countArray = [0, 0, 0, 0, 0, 0, 0];
+                    countArray.length = feedbackArray[idx].choice.length;
 
-                        var countArray = [0, 0, 0, 0, 0, 0, 0];
-                        countArray.length = feedbackArray[idx].choice.length;
-
-                        for (var i in feedbackArray[idx].result) {
-
-                            if (feedbackArray[idx].result == null) {
-                                countArray = [0, 0, 0, 0, 0, 0, 0];
-                                console.log("result가 0임");
-                            }
-                            // 보기 순서대로, count도 들어감
-                            // 질문이 들어가는게 resultArray배열
-                            resultArray[i] = feedbackArray[idx].choice[i];
-                            if (feedbackArray[idx].result[i] == 1) {
-                                countArray[0] = ++countArray[0];
-                            } else if (feedbackArray[idx].result[i] == 2) {
-                                countArray[1] = ++countArray[1];
-                            } else if (feedbackArray[idx].result[i] == 3) {
-                                countArray[2] = ++countArray[2];
-                            } else if (feedbackArray[idx].result[i] == 4) {
-                                countArray[3] = ++countArray[3];
-                            } else if (feedbackArray[idx].result[i] == 5) {
-                                countArray[4] = ++countArray[4];
-                            } else if (feedbackArray[idx].result[i] == 6) {
-                                countArray[5] = ++countArray[5];
-                            } else if (feedbackArray[idx].result[i] == 7) {
-                                countArray[6] = ++countArray[6];
-                            }
+                    for (var i in feedbackArray[idx].result) {
+                        resultArray[i] = feedbackArray[idx].choice[i];
+                        if (feedbackArray[idx].result[i] == 1) {
+                            countArray[0] = ++countArray[0];
+                        } else if (feedbackArray[idx].result[i] == 2) {
+                            countArray[1] = ++countArray[1];
+                        } else if (feedbackArray[idx].result[i] == 3) {
+                            countArray[2] = ++countArray[2];
+                        } else if (feedbackArray[idx].result[i] == 4) {
+                            countArray[3] = ++countArray[3];
+                        } else if (feedbackArray[idx].result[i] == 5) {
+                            countArray[4] = ++countArray[4];
+                        } else if (feedbackArray[idx].result[i] == 6) {
+                            countArray[5] = ++countArray[5];
+                        } else if (feedbackArray[idx].result[i] == 7) {
+                            countArray[6] = ++countArray[6];
                         }
-
                     }
 
                     resultArray = resultArray.slice(0, feedbackArray[idx].choice.length);
@@ -198,11 +187,10 @@ module.exports = {
                         return Number(b.count) - Number(a.count);
                     })
 
-
                     multiChoice.push({
-                        "_id": meeting.feedBack[idx]._id,
-                        "title": meeting.feedBack[idx].title,
-                        "content": meeting.feedBack[idx].content,
+                        "_id": feedbackArray[idx]._id,
+                        "title": feedbackArray[idx].title,
+                        "content": feedbackArray[idx].content,
                         "result": sortData
                     });
                 }
