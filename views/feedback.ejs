@@ -85,42 +85,27 @@
         <div class="wrap_bold" style="margin-top: 20px;"><%= result.feedBack[i].title %></div>
         <div class="wrap_sub" style="margin-top: 5px;"><%= result.feedBack[i].content %></div>
         <div class="startRadio">
+
           <label class="startRadio__box">
-            <input type="radio" checked name="<%=i%>" id="" value="0.5">
-            <span class="startRadio__img"><span class="blind">별 1개</span></span>
-          </label>
-          <label class="startRadio__box">
-            <input type="radio" name="<%=i%>" id="" value="1">
+            <input type="radio" checked name="<%=i%>" id="" value="1">
             <span class="startRadio__img"><span class="blind">별 1.5개</span></span>
           </label>
-          <label class="startRadio__box">
-            <input type="radio" name="<%=i%>" id="" value="1.5">
-            <span class="startRadio__img"><span class="blind">별 2개</span></span>
-          </label>
+
           <label class="startRadio__box">
             <input type="radio" name="<%=i%>" id="" value="2">
             <span class="startRadio__img"><span class="blind">별 2.5개</span></span>
           </label>
-          <label class="startRadio__box">
-            <input type="radio" name="<%=i%>" id="" value="2.5">
-            <span class="startRadio__img"><span class="blind">별 3개</span></span>
-          </label>
+
           <label class="startRadio__box">
             <input type="radio" name="<%=i%>" id="" value="3">
             <span class="startRadio__img"><span class="blind">별 3.5개</span></span>
           </label>
-          <label class="startRadio__box">
-            <input type="radio" name="<%=i%>" id="" value="3.5">
-            <span class="startRadio__img"><span class="blind">별 4개</span></span>
-          </label>
+
           <label class="startRadio__box">
             <input type="radio" name="<%=i%>" id="" value="4">
             <span class="startRadio__img"><span class="blind">별 4.5개</span></span>
           </label>
-          <label class="startRadio__box">
-            <input type="radio" name="<%=i%>" id="" value="4.5">
-            <span class="startRadio__img"><span class="blind">별 5개</span></span>
-          </label>
+
           <label class="startRadio__box">
             <input type="radio" name="<%=i%>" id="" value="5">
             <span class="startRadio__img"><span class="blind">별 5.5개</span></span>
@@ -160,48 +145,14 @@
           "<img style='width:30px;' src='/images/loading.gif'>"
         );
         $(".wrap_button").attr("disabled", true);
+        localStorage.setItem("info", '<%= result._id %>');
         return true;
       });
     });
 
-    if (
-      localStorage.getItem("name") ||
-      localStorage.getItem("phone") ||
-      localStorage.getItem("address") ||
-      localStorage.getItem("part")
-    ) {
-      $(".input_name").val(localStorage.getItem("name"));
-      $(".input_phone").val(localStorage.getItem("phone"));
-      $(".input_address").val(localStorage.getItem("address"));
-
-      var part = localStorage.getItem("part");
-
-      if (part == "plan") {
-        $("input:radio[name='part']:radio[value='plan']").prop(
-          "checked",
-          true
-        ); // 선택하기
-      } else if (part == "design") {
-        $("input:radio[name='part']:radio[value='design']").prop(
-          "checked",
-          true
-        ); // 선택하기
-      } else if (part == "android") {
-        $("input:radio[name='part']:radio[value='android']").prop(
-          "checked",
-          true
-        ); // 선택하기
-      } else if (part == "iOS") {
-        $("input:radio[name='part']:radio[value='iOS']").prop(
-          "checked",
-          true
-        ); // 선택하기
-      } else if (part == "server") {
-        $("input:radio[name='part']:radio[value='server']").prop(
-          "checked",
-          true
-        ); // 선택하기
-      }
+    if (localStorage.getItem("info") == '<%= result._id %>') {
+      location.href =
+        "http://qring-server-dev.ap-northeast-2.elasticbeanstalk.com/feedback/submission/<%= result._id %>"
     }
   </script>
 </body>
