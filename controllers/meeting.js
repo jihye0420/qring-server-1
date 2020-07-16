@@ -53,6 +53,25 @@ async function cleanProceeds(admin) {
     await admin.save();
 }
 
+async function timeCompareProceeds(admin,newMeeting){
+    for (let meetingItem of admin.proceeds) {
+        if (meetingItem.date == newMeeting.date) {
+            if (meetingItem.meetingId ==newMeeting.meetingId) {
+                continue;
+            }
+            else if (meetingItem.endTime <= newMeeting.startTime) {
+                continue;
+            } else if (meetingItem.startTime >= newMeeting.endTime) {
+                continue;
+            } else {
+                return false;
+            }
+        } else if (meetingItem.date > newMeeting.date) break;
+    }
+
+    return true;
+}
+
 async function listLoop(allGroup) {
     const today = moment().format("YYYY.MM.DD");
     const resultPromises = allGroup.map(async (groupid, index, array) => {
@@ -395,33 +414,26 @@ module.exports = {
         const admin = await adminModel.findOne({
             email: adminEmail,
         });
-        const allGroup = await groupModel.find({
-            admin: admin._id,
-        });
 
-        const {
-            date,
-            startTime,
-            endTime
-        } = req.body;
-        await cleanProceeds(admin);
-        for (let meetingItem of admin.proceeds) {
-            if (meetingItem.date == date) {
-                if (meetingItem.endTime <= startTime) {
-                    continue;
-                } else if (meetingItem.startTime >= endTime) {
-                    continue;
-                } else {
-                    return res
-                        .status(400)
-                        .send(util.fail(400, "모임 시간이 중복됩니다."));
-                }
-            } else if (meetingItem.date > date) break;
+        const newMeeting = {
+            meetingId: null,
+            date : req.body.date,
+            startTime: req.body.startTime,
+            endTime : req.body.endTime
         }
 
-        return res
+        await cleanProceeds(admin);
+        const result = await timeCompareProceeds(admin, newMeeting);
+
+        if (result) {
+            return res
             .status(200)
             .send(util.success(200, "모임 생성이 가능한 시간입니다."));
+        }else {
+            return res
+            .status(400)
+            .send(util.fail(400, "모임 시간이 중복됩니다."));
+        }
     },
 
     /**
@@ -485,12 +497,23 @@ module.exports = {
                 return res.status(400).send(util.fail(400, "필요한 값이 없습니다."));
             }
 
-            meeting.name = req.body.name;
-            meeting.date = req.body.date;
-            meeting.startTime = req.body.startTime;
-            meeting.endTime = req.body.endTime;
-            meeting.late = req.body.late;
-            meeting.headCount = req.body.headCount;
+            const newMeeting = {
+                meetingId: meetingId,
+                date : req.body.date,
+                startTime: req.body.startTime,
+                endTime : req.body.endTime
+            }
+            
+            console.log(newMeeting);
+            await cleanProceeds(admin);
+            const result = await timeCompareProceeds(admin, newMeeting);
+    
+            console.log(result);
+            if (!result) {
+                return res
+                .status(403)
+                .send(util.fail(403, "모임 시간이 중복됩니다."));
+            }
 
             let image = null;
             // data check - undefined
@@ -503,7 +526,16 @@ module.exports = {
                         .send(util.fail(401, "유효하지 않은 형식입니다."));
                 }
             }
+
+            meeting.name = req.body.name;
+            meeting.date = req.body.date;
+            meeting.startTime = req.body.startTime;
+            meeting.endTime = req.body.endTime;
+            meeting.late = req.body.late;
+            meeting.headCount = req.body.headCount;
             meeting.image = image;
+
+            await meeting.save();
 
             const data = {
                 "name": meeting.name,
@@ -515,7 +547,6 @@ module.exports = {
                 "image": meeting.image,
                 "qrImg": meeting.qrImg
             }
-            await meeting.save();
 
             await deleteProceeds(admin, meetingId);
             await pushProceeds(admin, groupId, meeting);
