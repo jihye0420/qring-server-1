@@ -98,7 +98,7 @@ async function listLoop(allGroup) {
             name: lastMeeting.name,
             date: lastMeeting.date,
             headCount: lastMeeting.headCount,
-            userCount: present,
+            userCount: present.length,
             feedBackCount: feedBackCount,
             isFeedBack: isFeedBack,
         };
