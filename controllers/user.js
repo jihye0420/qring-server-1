@@ -304,7 +304,7 @@ const userController = {
     /**
      * 토큰 검사 완료
      */
-    checkToken: async(req, res) => {
+    checkToken: async (req, res) => {
         res.status(200).send(util.success(200, "토큰 검사 완료"));
     }
 };
