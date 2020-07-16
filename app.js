@@ -23,8 +23,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.io = require('socket.io')();
 
 app.io.on('connection', (socket) => {
-  console.log("connection ok")
-  setTimeout(sendHeartbeat, 9000);
+  // console.log("connection ok")
+  // setTimeout(sendHeartbeat, 9000);
 
   socket.on('joinRoom', (meetingId) => {
 
@@ -46,13 +46,13 @@ app.io.on('connection', (socket) => {
     console.log('disconnect ok');
   });
 
-  function sendHeartbeat() {
-    console.log("in ping");
-    setTimeout(sendHeartbeat, 9000);
-    app.io.emit("ping", {
-      beat: 1
-    });
-  }
+  // function sendHeartbeat() {
+  //   console.log("in ping");
+  //   setTimeout(sendHeartbeat, 9000);
+  //   app.io.emit("ping", {
+  //     beat: 1
+  //   });
+  // }
 
 });
 
