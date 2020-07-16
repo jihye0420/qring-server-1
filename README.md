@@ -65,18 +65,18 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 
 사용 패키지(모듈)은 다음과 같습니다.
 
-- **nodemailer** : 회원 가입 시 이메일 인증을 위한 이메일 전송
-- **jsonwebtoken** : JWT(Json Web Token) 생성 및 인증
-- **rand-token**
-- **pbkdf2**
-- **mongoose**
-- **qrcode**
-- **aws-sdk**
-- **multer**
-- **multer-s3**
-- **moment** : 출석체크 시, 현재 시간 받아오기
-- **socket.io**
-- **connect**
+- **nodemailer** - 회원 가입 시 이메일 인증을 위한 이메일 전송
+- **jsonwebtoken** - JWT(Json Web Token) 생성 및 인증
+- **rand-token** - 랜덤으로 Token 생성
+- **pbkdf2** - 솔트를 적용한 후 해시 함수의 반복 횟수를 임의로 선택
+- **mongoose** - 몽고DB ODM 문서를 DB에서 조회할 때 자바스크립트 객체로 바꿔주는 역할
+- **qrcode** - QR코드 생성
+- **aws-sdk** - AWS에 API를 제공
+- **multer** - 이미지 업로드
+- **multer-s3** - 이미지 S3에 업로드
+- **moment** - 출석체크, 피드백 제출 날짜 포맷
+- **socket.io** - websocket 프로토콜을 지원하는 네트워킹 라이브러리
+- **connect** - RESTful Web Services를 쉽게 사용
 
 ```json
 "dependencies": {
@@ -141,11 +141,12 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 <img style="border: 1px solid black !important; border-radius:20px;" src="https://user-images.githubusercontent.com/37949197/87564632-9826ec00-c6fb-11ea-839b-4cdc8490919a.png" width="300px" />
 
 * [김민지](https://github.com/kimminji122258)
-> 마, 협업 처음인데 배운 것도 많고 팀원들이 너무 좋다마 <br />
-> 큐링 서버파트 최고다 :->
+> 마, 너네랑 같이 해서 행운이다 마 <br />
+> 큐링 서버파트 최고다~ :)
 * [이현주](https://github.com/bokdoll)
->
->
+> 마, 애더라<br />
+> 고맙데이 ~ 니덜이랑 같이해서 억수로 좋았다 마
+> 니들도 그렇제?
 * [이지윤](https://github.com/EZYOON)
 >
 >

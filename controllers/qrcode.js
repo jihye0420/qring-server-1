@@ -123,7 +123,6 @@ const qrcodeController = {
         .status(402)
         .send(util.fail(402, "해당하는 groupId 또는 meetingId가 없습니다."));
     }
-    console.log("qweeq");
 
     let isAdded = false;
     // 이어서 생성된 모임인 경우
@@ -199,10 +198,10 @@ const qrcodeController = {
         }, {
           $push: update,
         });
-        console.log("attend", meetingInfo.user.length);
-        req.io.to(meetingId).emit('homeAttendCnt', meetingInfo.user.length + 1);
-        req.io.to(meetingId).emit('meetingAttendCnt', meetingInfo.user.length + 1);
-        console.log("attend2", meetingInfo.user.length);
+
+        let present = await meetingInfo.user.filter((data) => data.attendance >= 0);
+        req.io.to(meetingId).emit('homeAttendCnt', present.length+ 1);
+        req.io.to(meetingId).emit('meetingAttendCnt', present.length + 1);
 
         res.render("checkresult", {
           groupId: groupId,
