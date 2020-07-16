@@ -141,7 +141,7 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 <img style="border: 1px solid black !important; border-radius:20px;" src="https://user-images.githubusercontent.com/37949197/87564632-9826ec00-c6fb-11ea-839b-4cdc8490919a.png" width="300px" />
 
 * [김민지](https://github.com/kimminji122258)
-> 마, 협업 처음인데 배운 것도 많고 팀원들이 너무 좋다마 <br />
+> 마, 너네랑 같이 해서 행운이다 마 <br />
 > 큐링 서버파트 최고다 :->
 * [이현주](https://github.com/bokdoll)
 > 마, 애더라<br />
