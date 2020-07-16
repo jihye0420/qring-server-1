@@ -134,7 +134,7 @@ module.exports = {
             // 객관식일 때 {chocie: , count: }가 push.
             else if (feedbackArray[idx].form == 1) {
                 var resultArray = [];
-                resultArray.length = feedbackArray[idx].choice.length;
+                var countArray = [];
 
                 if (feedbackArray[idx].result == 0) {
                     var a = [];
@@ -153,11 +153,15 @@ module.exports = {
                         "result": a
                     });
                 } else {
-                    var countArray = [0, 0, 0, 0, 0, 0, 0];
-                    countArray.length = feedbackArray[idx].choice.length;
+                    for (var item of feedbackArray[idx].choice) {
+                        resultArray.push(item);
+                        countArray.push(0);
+                    }
+
+                    //console.log(resultArray);
+                    //console.log(countArray);
 
                     for (var i in feedbackArray[idx].result) {
-                        resultArray[i] = feedbackArray[idx].choice[i];
                         if (feedbackArray[idx].result[i] == 1) {
                             countArray[0] = ++countArray[0];
                         } else if (feedbackArray[idx].result[i] == 2) {
@@ -174,8 +178,7 @@ module.exports = {
                             countArray[6] = ++countArray[6];
                         }
                     }
-
-                    resultArray = resultArray.slice(0, feedbackArray[idx].choice.length);
+                    //console.log(countArray);
 
                     var sortData = [];
                     for (var idx in resultArray) {
