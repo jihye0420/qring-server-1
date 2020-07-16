@@ -111,7 +111,8 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 <br>
 
 ## :green_book: Architecture
-![ARCHITECTURE](https://user-images.githubusercontent.com/37949197/87673226-2c9e5680-c7af-11ea-9e6c-d60af5fc65ed.png)
+![ARCHITECTURE](https://user-images.githubusercontent.com/37949197/87674794-75570f00-c7b1-11ea-8aca-81eed27419cc.png)
+
 
 
 <br>
