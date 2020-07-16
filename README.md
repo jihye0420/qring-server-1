@@ -4,7 +4,10 @@
 
 
 ![node_badge](https://img.shields.io/badge/node-%3E%3D%2012.13.0-green)
-![npm_bedge](https://img.shields.io/badge/npm-v6.14.2-blue)
+![npm_bedge](https://img.shields.io/badge/npm-v6.14.2-blue) 
+<br>
+
+[![HitCount](http://hits.dwyl.com/kimminji122258/https://githubcom/qring-sopt/qring-servergit.svg)](http://hits.dwyl.com/kimminji122258/https://githubcom/qring-sopt/qring-servergit)
 
 * <b> SOPT 26th APPJAM
     
