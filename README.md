@@ -15,7 +15,7 @@
 <br>
 
 
-## :bookmark_tabs: 프로젝트 설명
+## :information_desk_person: 프로젝트 설명
 
 <b>모임의 시작과 끝을 함께하는, QRing입니다. 🐬</b> 
 <br />
@@ -24,7 +24,8 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 <br>
 
 ## :bookmark_tabs: 기능 명세서
-<b>* [기능 명세서 노션 링크](https://www.notion.so/caa0852754f44797a3ecf35168023d06) </b>
+
+* <b>[기능 명세서 노션 링크](https://www.notion.so/caa0852754f44797a3ecf35168023d06) </b>
 
 <br>
 <br>
@@ -113,11 +114,13 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 
 <br>
 
-## :closed_book: 배포
+## :bulb: 배포
 
 * AWS EC2 - 클라우드 컴퓨팅 시스템
 * AWS elastic beanstlak - 서버 배포및 관리 프로비저닝 서비스
 * AWS S3 - 클라우드 데이터 저장소
+* Atlas - MongoDB 클라우드 호스팅 서비스
+* Docker - 컨테이너 기반 가상화 소프트웨어 플랫폼
 * Nginx - 프록시 서버 (보안 향상 및 캐시를 활용한 전송 속도 향상)
 
 <br>

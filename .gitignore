@@ -111,7 +111,6 @@ temp/
 
 
 .elasticbeanstalk/
-# Elast0ic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
