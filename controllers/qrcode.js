@@ -199,10 +199,10 @@ const qrcodeController = {
         }, {
           $push: update,
         });
-        console.log("attend", meetingInfo.user.length);
+        console.log("attend", meetingInfo.user.length + 1);
         req.io.to(meetingId).emit('homeAttendCnt', meetingInfo.user.length + 1);
         req.io.to(meetingId).emit('meetingAttendCnt', meetingInfo.user.length + 1);
-        console.log("attend2", meetingInfo.user.length);
+        console.log("attend2", meetingInfo.user.length + 1);
 
         res.render("checkresult", {
           groupId: groupId,
