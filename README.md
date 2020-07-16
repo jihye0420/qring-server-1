@@ -106,6 +106,7 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
   ```
 
 <br>
+
 ## :green_book: Architecture
 
 <br>
