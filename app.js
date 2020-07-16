@@ -26,6 +26,13 @@ app.io.on('connection', (socket) => {
   console.log("connection ok")
   setInterval(sendHeartbeat, 9000);
 
+  socket.on('leaveRoom', (meetingId) => {
+    console.log("leaveRoom ok")
+    socket.leave(meetingId, () => {
+      app.io.to(meetingId).emit('leaveRoom', meetingId);
+    });
+  });
+
   socket.on('joinRoom', (meetingId) => {
 
     console.log("joinRoom ok")
@@ -35,16 +42,11 @@ app.io.on('connection', (socket) => {
     });
   });
 
-  socket.on('leaveRoom', (meetingId) => {
-    console.log("leaveRoom ok")
-    socket.leave(meetingId, () => {
-      app.io.to(meetingId).emit('leaveRoom', meetingId);
-    });
-  });
-
   socket.on('disconnect', () => {
     console.log('disconnect ok');
   });
+
+  socket.on("pong", function (data) {});
 
   function sendHeartbeat() {
     console.log("in ping");
@@ -60,6 +62,7 @@ app.use((req, res, next) => {
   req.io = app.io;
   next();
 });
+
 
 app.use('/', indexRouter);
 
