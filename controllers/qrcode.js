@@ -330,6 +330,7 @@ const qrcodeController = {
 
     // -1일 땐 전체 참석자 정보 받아오기
     if (userId === "-1") {
+      console.log("-1ㅇㅔ 들어옴");
       absent = meetingInfo.user.filter((data) => data.attendance < 0);
       //참석자가 headCount수보다 작은 경우 익명의 가데이터 보내주기
       const alluser = present.length + absent.length;
@@ -347,90 +348,74 @@ const qrcodeController = {
             createdAt: null,
           });
         }
-        return res.status(201).send(
-          util.success(201, "모임이 끝난 후 전체 참석자 정보 불러오기 성공", {
-            startTime: startTime,
-            endTime: endTime,
-            present: present,
-            absent: absent,
+      }
+      return res.status(201).send(
+        util.success(201, "모임이 끝난 후 전체 참석자 정보 불러오기 성공", {
+          startTime: startTime,
+          endTime: endTime,
+          present: present,
+          absent: absent,
+        })
+      );
+    } else {
+      // 참석자 4명 이하로 받아오기
+      if (userId === "4") {
+        let limit = 0;
+        if (present.length < 4) {
+          limit = present.length;
+        } else {
+          limit = 4;
+        }
+        return res.status(202).send(
+          util.success(202, "참석자 정보 4명만 불러오기 성공", {
+            present: present.slice(0, limit),
           })
         );
       }
-    }
 
-    // 참석자 4명 이하로 받아오기
-    if (userId === "4") {
-      let limit = 0;
-      if (present.length < 4) {
-        limit = present.length;
-      } else {
-        limit = 4;
+      // 특정 참석자 정보 받아오기
+      else {
+        let userInfo = meetingInfo.user.find(
+          (element) => element._id.toString() === userId
+        );
+        if (userInfo === undefined || userInfo === null) {
+          return res
+            .status(401)
+            .send(util.fail(401, "해당하는 userId가 없습니다."));
+        }
+        const groupInfo = await groupModel.findById({
+          _id: groupId,
+        }, {
+          _id: 0,
+          meetings: 1,
+        });
+        if (groupInfo === undefined || groupInfo === null) {
+          return res
+            .status(400)
+            .send(util.fail(402, "해당하는 groupId가 없습니다."));
+        }
+        const meetings = groupInfo.meetings;
+
+        //let attendance = [0, 0, 0];
+        const email = userInfo.email;
+
+        let attendance = [0, 0, 0];
+        const attendanceList = await qrcodeController.loopMeetingList(
+          meetings,
+          email,
+          userId
+        );
+        attendanceList.attendance.forEach((state) => {
+          attendance[state + 1] += 1;
+        });
+
+        await res.status(200).send(
+          util.success(200, "참석자 불러오기 성공", {
+            userInfo,
+            attendance,
+          })
+        );
       }
-      return res.status(202).send(
-        util.success(202, "참석자 정보 4명만 불러오기 성공", {
-          present: present.slice(0, limit),
-        })
-      );
-    }
-
-    // 특정 참석자 정보 받아오기
-    else {
-      let userInfo = meetingInfo.user.find(
-        (element) => element._id.toString() === userId
-      );
-      if (userInfo === undefined || userInfo === null) {
-        return res
-          .status(401)
-          .send(util.fail(401, "해당하는 userId가 없습니다."));
-      }
-      const groupInfo = await groupModel.findById({
-        _id: groupId,
-      }, {
-        _id: 0,
-        meetings: 1,
-      });
-      if (groupInfo === undefined || groupInfo === null) {
-        return res
-          .status(400)
-          .send(util.fail(402, "해당하는 groupId가 없습니다."));
-      }
-      const meetings = groupInfo.meetings;
-
-      //let attendance = [0, 0, 0];
-      const email = userInfo.email;
-
-      let attendance = [0, 0, 0];
-      // 병렬 처리(iterator)를 위해 forEach 대신 for ... of 사용
-      // for (const mId of meetings) {
-      //   const preMeetingInfo = await meetingModel.findById({
-      //     _id: mId
-      //   }, {
-      //     _id: 0,
-      //     user: 1
-      //   });
-      //   const preUserInfo = await preMeetingInfo.user.find(element => element.email === email);
-      //   if (preUserInfo === null || preUserInfo === undefined) {
-      //     //continue
-      //   } else {
-      //     attendance[preUserInfo.attendance + 1] += 1
-      //   }
-      // }
-
-      const attendanceList = await qrcodeController.loopMeetingList(
-        meetings,
-        email,
-        userId
-      );
-      attendanceList.attendance.forEach((state) => {
-        attendance[state + 1] += 1;
-      });
-
-      await res.status(200).send(
-        util.success(200, "참석자 불러오기 성공", {
-          userInfo,
-          attendance,
-        })
-      );
     }
   },
 
