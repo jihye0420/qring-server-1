@@ -1,10 +1,13 @@
-# 🐬 Qring - QR코드로 만들어가는 우리의 모임 🐬
+# 🐬 QRing - QR코드로 만들어가는 우리의 모임 🐬
 
 <img style="border: 1px solid black !important; border-radius:20px;" src="https://user-images.githubusercontent.com/37949197/86798642-f6c0ea00-c0ab-11ea-92ee-56c7f83518be.png" width="250px" />
 
 
 ![node_badge](https://img.shields.io/badge/node-%3E%3D%2012.13.0-green)
-![npm_bedge](https://img.shields.io/badge/npm-v6.14.2-blue)
+![npm_bedge](https://img.shields.io/badge/npm-v6.14.2-blue) 
+<br>
+
+[![HitCount](http://hits.dwyl.com/kimminji122258/https://githubcom/qring-sopt/qring-servergit.svg)](http://hits.dwyl.com/kimminji122258/https://githubcom/qring-sopt/qring-servergit)
 
 * <b> SOPT 26th APPJAM
     
@@ -107,8 +110,16 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 
 <br>
 
+## :green_book: Architecture
+![ARCHITECTURE](https://user-images.githubusercontent.com/37949197/87674794-75570f00-c7b1-11ea-8aca-81eed27419cc.png)
+
+
+
+<br>
+
 ## :orange_book: DB ERD
-![image](https://user-images.githubusercontent.com/37949197/86893275-5535a900-c13c-11ea-81f8-baf1332b33e7.png)
+![ERD](https://user-images.githubusercontent.com/37949197/87675200-03cb9080-c7b2-11ea-86eb-7e6e9cc599c3.png)
+
 
 
 
