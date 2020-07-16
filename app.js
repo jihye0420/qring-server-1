@@ -47,6 +47,7 @@ app.io.on('connection', (socket) => {
   });
 
   function sendHeartbeat() {
+    console.log("in ping");
     setTimeout(sendHeartbeat, 9000);
     app.io.emit("ping", {
       beat: 1
