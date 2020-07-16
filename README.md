@@ -25,7 +25,7 @@ QR 코드를 통해 모임의 시작을 빠르게, 모임의 끝엔 원활한 �
 
 ## :bookmark_tabs: 기능 명세서
 
-* <h6>[기능 명세서 노션 링크](https://www.notion.so/caa0852754f44797a3ecf35168023d06) </h6>
+* <b>[기능 명세서 노션 링크](https://www.notion.so/caa0852754f44797a3ecf35168023d06) </b>
 
 <br>
 <br>
