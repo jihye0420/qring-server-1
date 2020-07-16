@@ -777,7 +777,7 @@ module.exports = {
                     let meeting = await meetingModel.findOne({
                         _id: Item,
                     });
-                    const userCount = meeting.user.length;
+                    const present = await meeting.user.filter((data) => data.attendance >= 0);
                     let isFeedBack = false;
                     var feedBackCount;
                     if (meeting.feedBack.length > 0) {
@@ -791,7 +791,7 @@ module.exports = {
                         name: meeting.name,
                         date: meeting.date,
                         headCount: meeting.headCount,
-                        userCount: userCount,
+                        userCount: present.length,
                         feedBackCount: feedBackCount,
                         isFeedBack: isFeedBack,
                     };
