@@ -24,6 +24,7 @@ app.io = require('socket.io')();
 
 app.io.on('connection', (socket) => {
   console.log("connection ok")
+  console.log(socket.adapter.rooms)
   //setTimeout(sendHeartbeat, 9000);
   setInterval(sendHeartbeat, 9000);
 
