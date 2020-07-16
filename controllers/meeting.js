@@ -497,6 +497,26 @@ module.exports = {
                 return res.status(400).send(util.fail(400, "필요한 값이 없습니다."));
             }
 
+            const now = moment().format("YYYY.MM.DD HH:mm:ss");
+
+            const start = meeting.date + " " + meeting.startTime + ":00";
+            var attendStart = new Date(start);
+            attendStart.setHours(attendStart.getHours() - 1);
+            attendStart = moment(attendStart).format("YYYY.MM.DD HH:mm:ss");
+
+            if (attendStart < now) {
+                return res.status(406).send(util.success(406, "이미 진행중인 혹은 종료된 모임입니다."));
+            }
+        
+            const newStart = date + " " + startTime + ":00";
+            var newAttendStart = new Date(newStart);
+            newAttendStart.setHours(newAttendStart.getHours() - 2);
+            newAttendStart = moment(newAttendStart).format("YYYY.MM.DD HH:mm:ss");
+    
+            if (newAttendStart < now) {
+                return res.status(404).send(util.success(404, "모임 시작 시간이 너무 가까워 수정이 불가합니다."));
+            }
+
             const newMeeting = {
                 meetingId: meetingId,
                 date : req.body.date,
@@ -504,11 +524,9 @@ module.exports = {
                 endTime : req.body.endTime
             }
             
-            console.log(newMeeting);
             await cleanProceeds(admin);
             const result = await timeCompareProceeds(admin, newMeeting);
     
-            console.log(result);
             if (!result) {
                 return res
                 .status(403)
@@ -817,8 +835,6 @@ module.exports = {
         const meeting = await meetingModel.findById({
             _id: meetingId,
         }, {_id : 0, qrImg:1});
-
-        console.log(meeting.qrImg);
 
         return res.status(200).send(util.success(200, "qr코드 받아오기", meeting.qrImg));
     }
