@@ -43,8 +43,15 @@ async function cleanProceeds(admin) {
         feedBackEnd.setHours(feedBackEnd.getHours() + 2);
         feedBackEnd = moment(feedBackEnd).format("YYYY.MM.DD HH:mm:ss");
 
+        var nextAttendStart = moment().format("YYYY.MM.DD HH:mm:ss");
+        if (admin.proceeds[1] != undefined){
+            const start = admin.proceeds[1].date + " " + admin.proceeds[1].startTime + ":00";
+            nextAttendStart = new Date(start);
+            nextAttendStart.setHours(nextAttendStart.getHours() - 1);
+            nextAttendStart = moment(nextAttendStart).format("YYYY.MM.DD HH:mm:ss");
+        }
         //피드백 제출까지 종료된 모임
-        if (now >= feedBackEnd) {
+        if (feedBackEnd < now || nextAttendStart < now) {
             admin.proceeds.shift();
         } else {
             break;
