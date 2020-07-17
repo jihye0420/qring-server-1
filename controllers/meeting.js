@@ -645,7 +645,6 @@ module.exports = {
         //const lastMeeting = await proceedMeeting(req.email);
         //data에 이미지랑 isFeedBack FeedBackCount
         await cleanProceeds(admin);
-        console.log(admin.proceeds[0]);
         if (admin.proceeds.length > 0) {
             const lastMeeting = await meetingModel.findById({
                 _id: admin.proceeds[0].meetingId,
