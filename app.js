@@ -24,16 +24,9 @@ app.io = require('socket.io')();
 
 app.io.on('connection', (socket) => {
   console.log("connection ok")
-  setTimeout(sendHeartbeat, 9000);
-
-  socket.on('joinRoom', (meetingId) => {
-
-    console.log("joinRoom ok")
-    socket.join(meetingId, () => {
-      console.log(meetingId);
-      app.io.to(meetingId).emit('joinRoom', meetingId);
-    });
-  });
+  console.log(socket.adapter.rooms)
+  //setTimeout(sendHeartbeat, 9000);
+  setInterval(sendHeartbeat, 9000);
 
   socket.on('leaveRoom', (meetingId) => {
     console.log("leaveRoom ok")
@@ -42,13 +35,22 @@ app.io.on('connection', (socket) => {
     });
   });
 
+  socket.on('joinRoom', (meetingId) => {
+    console.log("joinRoom ok")
+    socket.join(meetingId, () => {
+      console.log(meetingId);
+      app.io.to(meetingId).emit('joinRoom', meetingId);
+    });
+  });
+
   socket.on('disconnect', () => {
     console.log('disconnect ok');
   });
 
   function sendHeartbeat() {
-    setTimeout(sendHeartbeat, 9000);
-    app.io.emit("ping", {
+    console.log("in ping");
+    //setTimeout(sendHeartbeat, 9000);
+    app.io.to(socket.id).emit("ping", {
       beat: 1
     });
   }
@@ -60,6 +62,7 @@ app.use((req, res, next) => {
   req.io = app.io;
   next();
 });
+
 
 app.use('/', indexRouter);
 
