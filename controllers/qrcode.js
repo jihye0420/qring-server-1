@@ -295,6 +295,12 @@ const qrcodeController = {
     const meetingId = req.params.meetingId;
     const userId = req.params.userId;
 
+    if (!groupId || !meetingId || !userId) {
+      return res
+        .status(400)
+        .send(util.fail(400, "파라미터 값이 없습니다."));
+    }
+
     let filter = {
       _id: meetingId,
     };
