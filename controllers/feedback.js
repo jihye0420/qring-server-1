@@ -1,6 +1,3 @@
-const express = require("express");
-const GroupModel = require("../models/group.js");
-const AdminModel = require("../models/admin.js");
 const MeetingModel = require("../models/meeting.js");
 const moment = require("moment");
 const util = require("../modules/util");
@@ -66,15 +63,20 @@ module.exports = {
         // 모든 피드백 질문들 가져옴
         const meeting = await MeetingModel.findOne({
             _id: meetingId,
-        }, {
-            _id: 0,
-            feedBack: 1,
         });
+
         if (meeting === undefined || !meeting) {
             res
                 .status(400)
                 .send(util.fail(400, "해당 meetingId에 해당하는 meeting이 없습니다."));
         }
+
+        for (var i in meeting.feedBack) {
+            meeting.feedBack[i].result = [];
+        }
+
+        await meeting.save();
+
         res
             .status(200)
             .send(util.success(200, "피드백 질문 목록 완료", meeting.feedBack));
@@ -132,18 +134,18 @@ module.exports = {
             // 객관식일 때 {chocie: , count: }가 push.
             else if (feedbackArray[idx].form == 1) {
                 var resultArray = [];
-                resultArray.length = feedbackArray[idx].choice.length;
-
-                var a = [];
-
-                for (var item of feedbackArray[idx].choice) {
-                    a.push({
-                        "choice": item,
-                        "count": 0
-                    })
-                }
+                var countArray = [];
 
                 if (feedbackArray[idx].result == 0) {
+                    var a = [];
+
+                    for (var item of feedbackArray[idx].choice) {
+                        a.push({
+                            "choice": item,
+                            "count": 0
+                        })
+                    }
+
                     multiChoice.push({
                         "_id": meeting.feedBack[idx]._id,
                         "title": meeting.feedBack[idx].title,
@@ -151,40 +153,32 @@ module.exports = {
                         "result": a
                     });
                 } else {
-                    for (var item of feedbackArray[idx].result) {
-
-                        var countArray = [0, 0, 0, 0, 0, 0, 0];
-                        countArray.length = feedbackArray[idx].choice.length;
-
-                        for (var i in feedbackArray[idx].result) {
-
-                            if (feedbackArray[idx].result == null) {
-                                countArray = [0, 0, 0, 0, 0, 0, 0];
-                                console.log("result가 0임");
-                            }
-                            // 보기 순서대로, count도 들어감
-                            // 질문이 들어가는게 resultArray배열
-                            resultArray[i] = feedbackArray[idx].choice[i];
-                            if (feedbackArray[idx].result[i] == 1) {
-                                countArray[0] = ++countArray[0];
-                            } else if (feedbackArray[idx].result[i] == 2) {
-                                countArray[1] = ++countArray[1];
-                            } else if (feedbackArray[idx].result[i] == 3) {
-                                countArray[2] = ++countArray[2];
-                            } else if (feedbackArray[idx].result[i] == 4) {
-                                countArray[3] = ++countArray[3];
-                            } else if (feedbackArray[idx].result[i] == 5) {
-                                countArray[4] = ++countArray[4];
-                            } else if (feedbackArray[idx].result[i] == 6) {
-                                countArray[5] = ++countArray[5];
-                            } else if (feedbackArray[idx].result[i] == 7) {
-                                countArray[6] = ++countArray[6];
-                            }
-                        }
-
+                    for (var item of feedbackArray[idx].choice) {
+                        resultArray.push(item);
+                        countArray.push(0);
                     }
 
-                    resultArray = resultArray.slice(0, feedbackArray[idx].choice.length);
+                    //console.log(resultArray);
+                    //console.log(countArray);
+
+                    for (var i in feedbackArray[idx].result) {
+                        if (feedbackArray[idx].result[i] == 1) {
+                            countArray[0] = ++countArray[0];
+                        } else if (feedbackArray[idx].result[i] == 2) {
+                            countArray[1] = ++countArray[1];
+                        } else if (feedbackArray[idx].result[i] == 3) {
+                            countArray[2] = ++countArray[2];
+                        } else if (feedbackArray[idx].result[i] == 4) {
+                            countArray[3] = ++countArray[3];
+                        } else if (feedbackArray[idx].result[i] == 5) {
+                            countArray[4] = ++countArray[4];
+                        } else if (feedbackArray[idx].result[i] == 6) {
+                            countArray[5] = ++countArray[5];
+                        } else if (feedbackArray[idx].result[i] == 7) {
+                            countArray[6] = ++countArray[6];
+                        }
+                    }
+                    //console.log(countArray);
 
                     var sortData = [];
                     for (var idx in resultArray) {
@@ -198,11 +192,10 @@ module.exports = {
                         return Number(b.count) - Number(a.count);
                     })
 
-
                     multiChoice.push({
-                        "_id": meeting.feedBack[idx]._id,
-                        "title": meeting.feedBack[idx].title,
-                        "content": meeting.feedBack[idx].content,
+                        "_id": feedbackArray[idx]._id,
+                        "title": feedbackArray[idx].title,
+                        "content": feedbackArray[idx].content,
                         "result": sortData
                     });
                 }
@@ -280,7 +273,7 @@ module.exports = {
 
             await meeting.save();
 
-            req.io.to(meetingId).emit("meetingFeedbackCnt", meeting.feedBack[0].result.length);
+            req.io.to(meetingId).emit("meetingFeedbackCnt", meeting.feedBack[0].result.length + 1);
             res.render("feedbackresult", {
                 meetingId: meetingId,
                 result: true,

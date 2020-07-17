@@ -43,8 +43,15 @@ async function cleanProceeds(admin) {
         feedBackEnd.setHours(feedBackEnd.getHours() + 2);
         feedBackEnd = moment(feedBackEnd).format("YYYY.MM.DD HH:mm:ss");
 
+        var nextAttendStart = moment().format("YYYY.MM.DD HH:mm:ss");
+        if (admin.proceeds[1] != undefined){
+            const start = admin.proceeds[1].date + " " + admin.proceeds[1].startTime + ":00";
+            nextAttendStart = new Date(start);
+            nextAttendStart.setHours(nextAttendStart.getHours());
+            nextAttendStart = moment(nextAttendStart).format("YYYY.MM.DD HH:mm:ss");
+        }
         //피드백 제출까지 종료된 모임
-        if (now >= feedBackEnd) {
+        if (feedBackEnd < now || nextAttendStart < now) {
             admin.proceeds.shift();
         } else {
             break;
@@ -83,7 +90,7 @@ async function listLoop(allGroup) {
         const lastMeeting = await meetingModel.findById({
             _id: group.meetings[group.meetings.length - 1],
         });
-        const userCount = lastMeeting.user.length;
+        const present = await lastMeeting.user.filter((data) => data.attendance >= 0);
         var feedBackCount;
         let isFeedBack = false;
         if (lastMeeting.feedBack.length > 0) {
@@ -98,7 +105,7 @@ async function listLoop(allGroup) {
             name: lastMeeting.name,
             date: lastMeeting.date,
             headCount: lastMeeting.headCount,
-            userCount: userCount,
+            userCount: present.length,
             feedBackCount: feedBackCount,
             isFeedBack: isFeedBack,
         };
@@ -221,93 +228,6 @@ module.exports = {
 
         await pushProceeds(admin, newGroup._id, newMeeting);
         return res.status(200).send(util.success(200, "새 모임 생성 성공", data));
-    },
-
-    /**
-     * 이어서 모임 생성 이미지는 URL
-     */
-    createNewMeetingImageUrl: async (req, res) => {
-        const adminEmail = req.email;
-        const admin = await adminModel.findOne({
-            email: adminEmail,
-        });
-        const groupId = req.params.groupid;
-        const {
-            image,
-            name,
-            date,
-            startTime,
-            endTime,
-            late,
-            headCount,
-            feedBack,
-        } = req.body;
-
-        // 피드백 파싱
-        let isFeedBack = false;
-        if (feedBack) {
-            isFeedBack = true;
-            var parsedFeedbacks = await feedBack.map((fb) => {
-                let parsedFb;
-                if (typeof fb === "string") {
-                    parsedFb = JSON.parse(fb);
-                }
-                return parsedFb;
-            });
-        }
-
-        if (!name || !date || !startTime || !endTime || !late || !headCount) {
-            return res.status(400).send(util.fail(400, "필요한 값이 없습니다."));
-        }
-
-        //데이터 대입
-        var newMeeting = new meetingModel();
-        newMeeting.image = req.body.image;
-        newMeeting.name = req.body.name;
-        newMeeting.date = req.body.date;
-        newMeeting.startTime = req.body.startTime;
-        newMeeting.endTime = req.body.endTime;
-        newMeeting.late = req.body.late;
-        newMeeting.headCount = req.body.headCount;
-        if (feedBack) {
-            newMeeting.feedBack = parsedFeedbacks;
-        }
-
-        let fin_meeting = await newMeeting.save();
-
-        // qr코드 생성
-        newMeeting.qrImg = await qrcodeController.makeQrcode(
-            adminEmail,
-            groupId,
-            fin_meeting._id
-        );
-
-        try {
-            const group = await groupModel.findOne({
-                _id: groupId,
-            });
-            group.meetings.push(fin_meeting._id);
-            await group.save();
-
-            const data = {
-                groupid: group._id,
-                name: newMeeting.name,
-                date: newMeeting.date,
-                startTime: newMeeting.startTime,
-                endTime: newMeeting.endTime,
-                image: newMeeting.image,
-                qrImg: newMeeting.qrImg,
-                late: newMeeting.late,
-                headCount: newMeeting.headCount,
-                isFeedBack: isFeedBack,
-            };
-            await pushProceeds(admin, group._id, fin_meeting);
-            return res
-                .status(200)
-                .send(util.success(200, "이어서 모임 생성 성공", data));
-        } catch (e) {
-            return res.status(402).send(util.fail(402, "해당하는 group이 없습니다."));
-        }
     },
     /**
      * 이어서 모임 생성
@@ -435,7 +355,45 @@ module.exports = {
             .send(util.fail(400, "모임 시간이 중복됩니다."));
         }
     },
-
+    /**
+     * 이어서 모임 생성할 때, default값으로 띄어줄때 사용하는 API
+     */
+    getInfoInRound: async (req, res) => {
+        //try {
+            const meetingId = req.params.meetingid;
+            const meeting = await meetingModel.findById({
+                _id : meetingId
+            })
+    
+            const present = await meeting.user.filter((data) => data.attendance >= 0);
+    
+            let isFeedBack = false;
+            let feedBackCount;
+            if (meeting.feedBack.length > 0) {
+                isFeedBack = true;
+                feedBackCount = meeting.feedBack[0].result.length;
+            } else feedBackCount = 0;
+    
+            const data = {
+                meetingId: req.params.meetingid,
+                image: meeting.image,
+                qrImg: meeting.qrImg,
+                name: meeting.name,
+                date: meeting.date,
+                startTime : meeting.startTime,
+                endTime : meeting.endTime,
+                headCount: meeting.headCount,
+                userCount: present.length,
+                feedBackCount: feedBackCount,
+                isFeedBack: isFeedBack
+            }
+    
+            return res.status(200).send(util.success(200,"각 회차 모임 정보 조회", data));
+        // } catch (e){
+        //     return res.status(400).send(util.success(400,"해당하는 meeting이 없습니다."));
+        // }
+        
+    },
     /**
      * 이어서 모임 생성할 때, default값으로 띄어줄때 사용하는 API
      */
@@ -578,66 +536,6 @@ module.exports = {
         }
     },
     /**
-     * 모임 편집 기능
-     */
-    putInfoImageUrl: async (req, res) => {
-        const admin = await adminModel.findOne({
-            email: req.email,
-        });
-        const meetingId = req.params.meetingid;
-        const groupId = req.params.groupid;
-        try {
-            let meeting = await meetingModel.findOne({
-                _id: meetingId,
-            });
-
-            const {
-                image,
-                name,
-                date,
-                startTime,
-                endTime,
-                late,
-                headCount,
-            } = req.body;
-
-            if (!name || !date || !startTime || !endTime || !late || !headCount) {
-                return res.status(400).send(util.fail(400, "필요한 값이 없습니다."));
-            }
-
-            meeting.image = req.body.image;
-            meeting.name = req.body.name;
-            meeting.date = req.body.date;
-            meeting.startTime = req.body.startTime;
-            meeting.endTime = req.body.endTime;
-            meeting.late = req.body.late;
-            meeting.headCount = req.body.headCount;
-
-            const data = {
-                "name": meeting.name,
-                "date": meeting.date,
-                "startTime": meeting.startTime,
-                "endTime": meeting.endTime,
-                "late": meeting.late,
-                "headCount": meeting.headCount,
-                "image": meeting.image,
-                "qrImg": meeting.qrImg
-            }
-
-            await meeting.save();
-
-            await deleteProceeds(admin, meetingId);
-            await pushProceeds(admin, groupId, meeting);
-            return res
-                .status(200)
-                .send(util.success(200, "모임 정보 수정 성공", data));
-        } catch (e) {
-            return res
-                .status(402)
-                .send(util.fail(402, "해당하는 meeting이 없습니다."));
-        }
-    },
-    /**
      * 모임 삭제
      */
     deleteMeeting: async (req, res) => {
@@ -747,6 +645,7 @@ module.exports = {
         //const lastMeeting = await proceedMeeting(req.email);
         //data에 이미지랑 isFeedBack FeedBackCount
         await cleanProceeds(admin);
+        console.log(admin.proceeds[0]);
         if (admin.proceeds.length > 0) {
             const lastMeeting = await meetingModel.findById({
                 _id: admin.proceeds[0].meetingId,
@@ -757,7 +656,8 @@ module.exports = {
             let isFeedBack = false;
             if (lastMeeting.feedBack.length > 0) {
                 isFeedBack = true;
-            }
+                feedBackCount = lastMeeting.feedBack[0].result.length;
+            } else feedBackCount = 0;
             const data = {
                 groupId: admin.proceeds[0].groupId,
                 meetingId: lastMeeting._id,
@@ -767,7 +667,7 @@ module.exports = {
                 start: start,
                 end: end,
                 attendCount: lastMeeting.user.length,
-                feedBackCount: lastMeeting.feedBack.length,
+                feedBackCount: feedBackCount,
                 headCount: lastMeeting.headCount,
                 isFeedBack: isFeedBack,
             };
@@ -825,16 +725,19 @@ module.exports = {
         data = data.reverse();
         return res.status(200).send(util.success(200, "모임 회차 조회 성공", data));
     },
-  
+
     /**
      * QRcode 확인하기
      */
-    getQrcode: async(req,res) => {
+    getQrcode: async (req, res) => {
         const meetingId = req.params.meetingId;
 
         const meeting = await meetingModel.findById({
             _id: meetingId,
-        }, {_id : 0, qrImg:1});
+        }, {
+            _id: 0,
+            qrImg: 1
+        });
 
         return res.status(200).send(util.success(200, "qr코드 받아오기", meeting.qrImg));
     }
