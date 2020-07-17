@@ -1,59 +1,80 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/stylesheets/mailsuccess.css" />
+  </head>
 
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel='stylesheet' href='/stylesheets/mailsuccess.css' />
-</head>
-
-<body>
-  <div class="main_wrap">
-    <section class="section1">
-      <img src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-banner.png" class="qring-img" />
-    </section>
-    <section class="section2">
-      <div class="checkout-wrap" style="text-align: center;">
-        <% if (result == 0){ %>
-        <img class="check-img" src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-unchecked.png" /><br>
-        <% }else if (result == 1){ %>
-        <img class="check-img" src="https://qring.s3.ap-northeast-2.amazonaws.com/qring_check.png" /><br>
-        <% }else{ %>
-        <img class="check-img" src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-x.png" /><br>
-        <% } %>
-        <% if (result == 0){ %>
-        <span class="qring-main-checkout">출석 가능한 시간이 아닙니다</span><br><br>
-        <% }else if (result == 1){ %>
-        <span class="qring-main-checkout">출석이 완료되었습니다</span><br><br>
-        <% }else{ %>
-        <span class="qring-main-checkout">이미 출석하였습니다</span><br><br>
-        <% } %>
-        <% if (result == 0){ %>
-        <span class="qring-under-checkout">출석 가능한 시간이 지나서 출석체크를 할 수<br>
-          없습니다. 모임 관리자에게 문의해주세요.
-        </span><br><br>
-        <% }else{ %>
-        <span class="qring-under-checkout">모임이 종료되었다면 아래 버튼을 눌러서<br>
-          피드백을 작성해주세요.</span><br><br>
-        <div class="qring-button"
-          OnClick="location.href ='http://qring-server-dev.ap-northeast-2.elasticbeanstalk.com/qrcode/feedback/<%=groupId%>/<%=meetingId%>'">
-          피드백
-          작성하기</div>
-        <% } %>
-        <div class="under-title-checkout">도움이 필요하신가요? <span style="color:#ff6600;">contact@qring.co</span> 로 연락주세요</div>
-      </div>
-    </section>
-    <section class="section3">
-      <div style="text-align: center;">
-        <div class="qring-title">
-          14-14, Yanghwa-ro 16-gil, Mapo-gu, Seoul, Republic of Korea
+  <body>
+    <div class="main_wrap">
+      <section class="section1">
+        <img
+          src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-banner.png"
+          class="qring-img"
+        />
+      </section>
+      <section class="section2">
+        <div class="checkout-wrap" style="text-align: center;">
+          <% if (result == 0){ %>
+          <img
+            class="check-img"
+            src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-unchecked.png"
+          /><br />
+          <% }else if (result == 1){ %>
+          <img
+            class="check-img"
+            src="https://qring.s3.ap-northeast-2.amazonaws.com/qring_check.png"
+          /><br />
+          <% }else{ %>
+          <img
+            class="check-img"
+            src="https://qring.s3.ap-northeast-2.amazonaws.com/qring-x.png"
+          /><br />
+          <% } %> <% if (result == 0){ %>
+          <span class="qring-main-checkout">출석 가능한 시간이 아닙니다</span
+          ><br /><br />
+          <% }else if (result == 1){ %>
+          <span class="qring-main-checkout">출석이 완료되었습니다</span
+          ><br /><br />
+          <% }else{ %>
+          <span class="qring-main-checkout">이미 출석하였습니다</span
+          ><br /><br />
+          <% } %> <% if (result == 0){ %>
+          <span class="qring-under-checkout"
+            >출석 가능한 시간이 지나서 출석체크를 할 수<br />
+            없습니다. 모임 관리자에게 문의해주세요. </span
+          ><br /><br />
+          <% }else{ %> <% if(meetingInfo.feedBack.length !== 0){ %>
+          <span class="qring-under-checkout"
+            >모임이 종료되었다면 아래 버튼을 눌러서<br />
+            피드백을 작성해주세요.</span
+          ><br /><br />
+          <div
+            class="qring-button"
+            OnClick="location.href ='http://qring-server-dev.ap-northeast-2.elasticbeanstalk.com/qrcode/feedback/<%=groupId%>/<%=meetingId%>'"
+          >
+            피드백 작성하기
+          </div>
+          <% } %> <% } %>
+          <div class="under-title-checkout">
+            도움이 필요하신가요?
+            <span style="color: #ff6600;">contact@qring.co</span> 로 연락주세요
+          </div>
         </div>
-        <img src="https://qring.s3.ap-northeast-2.amazonaws.com/qring_logo.png" class="qring-under-img" />
-      </div>
-    </section>
-
-
-  </div>
-  <!-- <div class="wrap" style="text-align:center;padding:40px 32px;
+      </section>
+      <section class="section3">
+        <div style="text-align: center;">
+          <div class="qring-title">
+            14-14, Yanghwa-ro 16-gil, Mapo-gu, Seoul, Republic of Korea
+          </div>
+          <img
+            src="https://qring.s3.ap-northeast-2.amazonaws.com/qring_logo.png"
+            class="qring-under-img"
+          />
+        </div>
+      </section>
+    </div>
+    <!-- <div class="wrap" style="text-align:center;padding:40px 32px;
   width:574px;height:980px;border:1px solid black;">
     <div class="hrhr" style="margin-top: 40px;
     width: 574px;
@@ -138,6 +159,5 @@
     </div>
     <img style="margin-top: 50px;" src="https://qring.s3.ap-northeast-2.amazonaws.com/qring_logo.png" width="70px" />
   </div> -->
-</body>
-
+  </body>
 </html>
