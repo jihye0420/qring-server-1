@@ -47,7 +47,7 @@ async function cleanProceeds(admin) {
         if (admin.proceeds[1] != undefined){
             const start = admin.proceeds[1].date + " " + admin.proceeds[1].startTime + ":00";
             nextAttendStart = new Date(start);
-            nextAttendStart.setHours(nextAttendStart.getHours() - 1);
+            nextAttendStart.setHours(nextAttendStart.getHours());
             nextAttendStart = moment(nextAttendStart).format("YYYY.MM.DD HH:mm:ss");
         }
         //피드백 제출까지 종료된 모임
@@ -645,6 +645,7 @@ module.exports = {
         //const lastMeeting = await proceedMeeting(req.email);
         //data에 이미지랑 isFeedBack FeedBackCount
         await cleanProceeds(admin);
+        console.log(admin.proceeds[0]);
         if (admin.proceeds.length > 0) {
             const lastMeeting = await meetingModel.findById({
                 _id: admin.proceeds[0].meetingId,
